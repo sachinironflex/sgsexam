@@ -3,6 +3,43 @@
 <html lang="hi">
 
 <head>
+  <script type="module">
+  // Firebase के जरूरी import
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+  // 🔐 Firebase Config — बस यही डालना है
+  const firebaseConfig = {
+    apiKey: "AIzaSyA6DYHjkJYF0LfeEmciw9nAlJ_90FVc_uQ",
+    authDomain: "sachin-ironflex.firebaseapp.com",
+    projectId: "sachin-ironflex",
+    storageBucket: "sachin-ironflex.firebasestorage.app",
+    messagingSenderId: "141202512614",
+    appId: "1:141202512614:web:54ab082a7c7e278961f927"
+  };
+
+  // Firebase चालू करो
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // ✅ जब कोई वेबसाइट पर आए — सबसे पहले Login हो
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      signInWithPopup(auth, provider).then(() => {
+        location.reload();
+      });
+    }
+  });
+
+  // ✅ Logout Function — drawer में जो Logout Button है उसपे काम करेगा
+  window.logout = function () {
+    signOut(auth).then(() => {
+      alert("✅ Logout successful");
+      location.reload();
+    });
+  };
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="google-site-verification" content="n6gutNuaXm4jPFef6_Yxsfz5UcDynkGHi86Py-8IH-0" />
