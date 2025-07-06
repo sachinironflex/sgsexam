@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sachinironflex.github.io/sgsexam/sitemap.xml
