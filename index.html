@@ -165,10 +165,10 @@
 
   <div id="popup" style="display:none;">
     <div id="popup-content">
-      <h3>स्वागत है! अपना नाम दर्ज करें</h3>
-      <input type="text" id="username" placeholder="अपना नाम लिखें..." />
+      <h3>स्वागत है! Enter Your Name</h3>
+      <input type="text" id="username" placeholder="Write your name..." />
       <br />
-      <button onclick="saveName()">सबमिट करें</button>
+      <button onclick="saveName()">Submit</button>
     </div>
   </div>
 
@@ -345,7 +345,7 @@
         document.getElementById("popup").style.display = "none";
         document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
       } else {
-        alert("कृपया नाम भरें!");
+        alert("Please Enter Your Name!");
       }
     }
   </script>
