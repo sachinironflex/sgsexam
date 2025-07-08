@@ -415,17 +415,23 @@
     drawer.style.left = drawer.style.left === '0px' ? '-260px' : '0px';
   }
 
-  function showSection(id) {
+  function showSection(id, push = true) {
     document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-    document.getElementById(id).classList.add('active-section');
-    history.pushState({ sectionId: id }, '', '#' + id); // 👈 Back support
+    const section = document.getElementById(id);
+    if (section) {
+      section.classList.add('active-section');
+      if (push) history.pushState({ id }, '', '#' + id);
+    }
     toggleDrawer();
   }
 
-  function showContent(id) {
+  function showContent(id, push = true) {
     document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-    document.getElementById(id).classList.add('active-section');
-    history.pushState({ sectionId: id }, '', '#' + id); // 👈 Back support
+    const section = document.getElementById(id);
+    if (section) {
+      section.classList.add('active-section');
+      if (push) history.pushState({ id }, '', '#' + id);
+    }
   }
 
   function toggleSub(id) {
@@ -433,23 +439,33 @@
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
   }
 
-  // ✅ Back Button काम करेगा
+  // ✅ Back Button Support
   window.onpopstate = function (event) {
-    if (event.state && event.state.sectionId) {
-      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-      document.getElementById(event.state.sectionId).classList.add('active-section');
+    const id = location.hash.replace('#', '') || 'home'; // Default to home
+    document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+    const section = document.getElementById(id);
+    if (section) {
+      section.classList.add('active-section');
     }
   };
 
-  // 👇 Name popup script
-  window.onload = function () {
+  // ✅ Load correct section on first page load
+  window.addEventListener('DOMContentLoaded', () => {
+    const id = location.hash.replace('#', '') || 'home';
+    document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+    const section = document.getElementById(id);
+    if (section) {
+      section.classList.add('active-section');
+    }
+
+    // Show popup if name not set
     const name = localStorage.getItem("username");
     if (!name) {
       document.getElementById("popup").style.display = "flex";
     } else {
       document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
     }
-  };
+  });
 
   function saveName() {
     const name = document.getElementById("username").value.trim();
@@ -462,6 +478,7 @@
     }
   }
 </script>
+
 
 </body>
 </html>
