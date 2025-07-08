@@ -288,14 +288,14 @@
 </html>
 
 
-
 </p></section>
 
 
 
   <section class="content-section" id="result"><h2>Check Result</h2><p>COMING SOON 🚧</p></section>
 
-  <section class="content-section" id="rtps"><h2>RTPS</h2><p><!DOCTYPE html>
+  <section class="content-section" id="rtps"><h2>RTPS</h2><p>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -409,74 +409,65 @@
 
   <footer>©️ 2025 SGS EXAM CRACKER. All Rights Reserved.</footer>
 
-<script>
-  function toggleDrawer() {
-    const drawer = document.getElementById('drawer');
-    drawer.style.left = drawer.style.left === '0px' ? '-260px' : '0px';
-  }
-
-  function showSection(id, push = true) {
-    document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-    const section = document.getElementById(id);
-    if (section) {
-      section.classList.add('active-section');
-      if (push) history.pushState({ id }, '', '#' + id);
+  <script>
+    function toggleDrawer() {
+      const drawer = document.getElementById('drawer');
+      drawer.style.left = drawer.style.left === '0px' ? '-260px' : '0px';
     }
-    toggleDrawer();
-  }
-
-  function showContent(id, push = true) {
-    document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-    const section = document.getElementById(id);
-    if (section) {
-      section.classList.add('active-section');
-      if (push) history.pushState({ id }, '', '#' + id);
+    function showSection(id) {
+      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+      document.getElementById(id).classList.add('active-section');
+      toggleDrawer();
     }
-  }
-
-  function toggleSub(id) {
-    const el = document.getElementById(id);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
-
-  // ✅ Handle Back Button
-  window.onpopstate = function () {
-    const id = location.hash.replace('#', '') || 'home';
-    document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-    const section = document.getElementById(id);
-    if (section) {
-      section.classList.add('active-section');
+    function showContent(id) {
+      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+      document.getElementById(id).classList.add('active-section');
     }
-  };
-
-  // ✅ On first page load – open correct section
-  window.addEventListener('DOMContentLoaded', () => {
-    const id = location.hash.replace('#', '') || 'home';
-    document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-    const section = document.getElementById(id);
-    if (section) {
-      section.classList.add('active-section');
+    function toggleSub(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+ function toggleDrawer() {
+      const drawer = document.getElementById('drawer');
+      drawer.style.left = drawer.style.left === '0px' ? '-260px' : '0px';
     }
 
-    // Popup for name input
-    const name = localStorage.getItem("username");
-    if (!name) {
-      document.getElementById("popup").style.display = "flex";
-    } else {
-      document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
+    function showSection(id) {
+      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+      document.getElementById(id).classList.add('active-section');
+      toggleDrawer();
     }
-  });
 
-  function saveName() {
-    const name = document.getElementById("username").value.trim();
-    if (name !== "") {
-      localStorage.setItem("username", name);
-      document.getElementById("popup").style.display = "none";
-      document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
-    } else {
-      alert("Please Enter Your Name!");
+    function showContent(id) {
+      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
+      document.getElementById(id).classList.add('active-section');
     }
-  }
-</script>
+
+    function toggleSub(id) {
+      const el = document.getElementById(id);
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // 👇 Popup + name show script
+    window.onload = function () {
+      const name = localStorage.getItem("username");
+      if (!name) {
+        document.getElementById("popup").style.display = "flex";
+      } else {
+        document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
+      }
+    };
+
+    function saveName() {
+      const name = document.getElementById("username").value.trim();
+      if (name !== "") {
+        localStorage.setItem("username", name);
+        document.getElementById("popup").style.display = "none";
+        document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
+      } else {
+        alert("Please Enter Your Name!");
+      }
+    }
+  </script>
 </body>
 </html>
