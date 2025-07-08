@@ -850,7 +850,7 @@
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
   }
 
-  // Handle browser back/forward buttons
+  // Back / Forward button support
   window.onpopstate = function (event) {
     if (event.state && event.state.sectionId) {
       document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
@@ -859,17 +859,8 @@
     }
   };
 
-  // Load section from hash if present
+  // Combined load logic (username + hash section)
   window.addEventListener('load', () => {
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById(hash)) {
-      document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
-      document.getElementById(hash).classList.add('active-section');
-    }
-  });
-
-  // Username popup logic (unchanged)
-  window.onload = function () {
     const name = localStorage.getItem("username");
     if (!name) {
       document.getElementById("popup").style.display = "flex";
@@ -877,13 +868,16 @@
       document.getElementById("welcome-name").innerText = `Hello, ${name} 👋`;
     }
 
-    // Also handle section on reload
+    // Show section if hash exists in URL
     const hash = window.location.hash.replace('#', '');
     if (hash && document.getElementById(hash)) {
       document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
       document.getElementById(hash).classList.add('active-section');
+    } else {
+      // Default: home section
+      document.getElementById('home').classList.add('active-section');
     }
-  };
+  });
 
   function saveName() {
     const name = document.getElementById("username").value.trim();
