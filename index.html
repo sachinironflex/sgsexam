@@ -439,9 +439,9 @@
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
   }
 
-  // ✅ Back Button Support
-  window.onpopstate = function (event) {
-    const id = location.hash.replace('#', '') || 'home'; // Default to home
+  // ✅ Handle Back Button
+  window.onpopstate = function () {
+    const id = location.hash.replace('#', '') || 'home';
     document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
     const section = document.getElementById(id);
     if (section) {
@@ -449,7 +449,7 @@
     }
   };
 
-  // ✅ Load correct section on first page load
+  // ✅ On first page load – open correct section
   window.addEventListener('DOMContentLoaded', () => {
     const id = location.hash.replace('#', '') || 'home';
     document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active-section'));
@@ -458,7 +458,7 @@
       section.classList.add('active-section');
     }
 
-    // Show popup if name not set
+    // Popup for name input
     const name = localStorage.getItem("username");
     if (!name) {
       document.getElementById("popup").style.display = "flex";
@@ -478,7 +478,5 @@
     }
   }
 </script>
-
-
 </body>
 </html>
