@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>SGS EXAM CRACKER</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <style>
     :root {
       --bg: #f4f4f4;
@@ -39,8 +39,7 @@
       align-items: center;
     }
     header h1 { margin: 0 auto; font-size: 20px; }
-    #userName { display: none; }
-    #logoutBtn button, .toggle-btn {
+    #logoutBtn button {
       background: var(--danger);
       color: white;
       border: none;
@@ -109,7 +108,15 @@
       transition: all 0.3s;
     }
     .grid-btn:hover { background: var(--btn-hover); transform: scale(1.05); }
-    .auth-toggle { display: flex; gap: 10px; margin: 20px; }
+    .auth-toggle { display: flex; gap: 10px; margin: 20px; flex-wrap: wrap; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    textarea { height: 120px; }
     .hidden { display: none; }
     @media (max-width: 600px) {
       header h1 { font-size: 16px; }
@@ -118,12 +125,15 @@
   </style>
 </head>
 <body>
+
   <button id="menuToggle" onclick="toggleDrawer()">☰</button>
+
   <div class="drawer" id="drawer">
     <button onclick="openSection('About')">📘 About</button>
     <button onclick="openSection('Privacy')">🔐 Privacy</button>
     <button onclick="openSection('Terms')">📄 Terms</button>
   </div>
+
   <header>
     <span id="userName"></span>
     <h1>SGS EXAM CRACKER</h1>
@@ -132,19 +142,36 @@
       <button onclick="toggleDarkMode()">Dark Mode</button>
     </div>
   </header>
+
   <div id="helloUser"></div>
+
   <div class="section" id="authSection">
     <div class="auth-toggle">
-      <button onclick="firebaseLogin()">Google Login</button>
-      <button onclick="emailPasswordLogin()">Email Login</button>
+      <button onclick="showLogin()">Email Login</button>
+      <button onclick="showSignup()">Signup</button>
+      <button onclick="googleLogin()">Google Login</button>
       <button onclick="showAgentLogin()">Agent</button>
     </div>
+
+    <div id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button onclick="emailLogin()">Login</button>
+    </div>
+
+    <div id="signupForm" class="hidden">
+      <input type="email" id="signupEmail" placeholder="New Email">
+      <input type="password" id="signupPassword" placeholder="New Password">
+      <button onclick="emailSignup()">Signup</button>
+    </div>
+
     <div id="agentForm" class="hidden">
       <input type="text" id="agentUser" placeholder="Agent ID">
       <input type="password" id="agentPass" placeholder="Password">
       <button onclick="agentLogin()">Login as Agent</button>
     </div>
   </div>
+
   <div class="section" id="mainSection">
     <div class="button-grid" id="buttonGrid">
       <button class="grid-btn" onclick="openSection('📕 PAID PDF')">📕 PAID PDF</button>
@@ -164,6 +191,7 @@
       <button onclick="deleteHtml()">Delete</button>
     </div>
   </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBkSxVO7HXW9TID2jJwttD6h0MOguhdaBI",
@@ -174,11 +202,13 @@
       appId: "1:396394913179:web:b3bc1d88819267f14f553e"
     };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
     let currentUser = null, currentSection = '', pageHistory = [];
 
     window.onload = () => {
       if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
-      firebase.auth().onAuthStateChanged(user => {
+      auth.onAuthStateChanged(user => {
         if (user) {
           currentUser = user.displayName || user.email;
           showMain();
@@ -191,20 +221,28 @@
       });
     };
 
-    function firebaseLogin() {
+    function googleLogin() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider).catch(alert);
+      auth.signInWithPopup(provider).catch(alert);
     }
 
-    function emailPasswordLogin() {
-      const email = prompt("Enter Email:"), pass = prompt("Enter Password:");
-      firebase.auth().signInWithEmailAndPassword(email, pass)
-        .catch(e => {
-          if (e.code === 'auth/user-not-found') {
-            firebase.auth().createUserWithEmailAndPassword(email, pass)
-              .catch(alert);
-          } else alert(e.message);
-        });
+    function emailSignup() {
+      const email = signupEmail.value, pass = signupPassword.value;
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(() => alert("Signup successful"))
+        .catch(e => alert(e.message));
+    }
+
+    function emailLogin() {
+      const email = loginEmail.value, pass = loginPassword.value;
+      auth.signInWithEmailAndPassword(email, pass)
+        .catch(e => alert(e.message));
+    }
+
+    function logout() {
+      auth.signOut();
+      localStorage.removeItem("currentUser");
+      location.reload();
     }
 
     function agentLogin() {
@@ -215,16 +253,10 @@
       } else alert("Invalid agent credentials");
     }
 
-    function logout() {
-      firebase.auth().signOut();
-      localStorage.removeItem("currentUser");
-      location.reload();
-    }
-
     function showMain() {
-      document.getElementById("authSection").style.display = "none";
-      document.getElementById("mainSection").style.display = "block";
-      document.getElementById("helloUser").textContent = "👋 Hello, " + currentUser;
+      authSection.style.display = "none";
+      mainSection.style.display = "block";
+      helloUser.textContent = "👋 Hello, " + currentUser;
     }
 
     function openSection(name) {
@@ -232,8 +264,8 @@
       pageHistory.push(contentArea.innerHTML);
       const html = localStorage.getItem("content_" + name) || `<p>No content posted for <b>${name}</b>.</p>`;
       contentArea.innerHTML = `<h2>${name}</h2>` + html;
-      document.getElementById("buttonGrid").style.display = "none";
-      document.getElementById("drawer").classList.remove("show");
+      buttonGrid.style.display = "none";
+      drawer.classList.remove("show");
       if (currentUser === "Admin") {
         adminEditor.classList.remove("hidden");
         htmlInput.value = localStorage.getItem("content_" + name) || "";
@@ -242,8 +274,7 @@
     }
 
     function saveHtml() {
-      const html = htmlInput.value;
-      localStorage.setItem("content_" + currentSection, html);
+      localStorage.setItem("content_" + currentSection, htmlInput.value);
       alert("Content saved!");
       openSection(currentSection);
     }
@@ -255,28 +286,47 @@
       }
     }
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    }
-
     function toggleDrawer() {
-      const drawer = document.getElementById("drawer");
       drawer.classList.toggle("show");
-      if (drawer.classList.contains("show")) history.pushState({ drawerOpen: true }, "");
+      if (drawer.classList.contains("show")) {
+        history.pushState({ drawerOpen: true }, "");
+      }
     }
 
     window.onpopstate = () => {
-      const drawer = document.getElementById("drawer");
       if (drawer.classList.contains("show")) {
         drawer.classList.remove("show");
         return;
       }
       if (pageHistory.length > 0) {
         contentArea.innerHTML = pageHistory.pop();
-        document.getElementById("buttonGrid").style.display = "grid";
+        buttonGrid.style.display = "grid";
       }
+    };
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    }
+
+    function showLogin() {
+      loginForm.classList.remove("hidden");
+      signupForm.classList.add("hidden");
+      agentForm.classList.add("hidden");
+    }
+
+    function showSignup() {
+      signupForm.classList.remove("hidden");
+      loginForm.classList.add("hidden");
+      agentForm.classList.add("hidden");
+    }
+
+    function showAgentLogin() {
+      agentForm.classList.remove("hidden");
+      loginForm.classList.add("hidden");
+      signupForm.classList.add("hidden");
     }
   </script>
+
 </body>
 </html>
