@@ -125,15 +125,12 @@
   </style>
 </head>
 <body>
-
   <button id="menuToggle" onclick="toggleDrawer()">☰</button>
-
   <div class="drawer" id="drawer">
     <button onclick="openSection('About')">📘 About</button>
     <button onclick="openSection('Privacy')">🔐 Privacy</button>
     <button onclick="openSection('Terms')">📄 Terms</button>
   </div>
-
   <header>
     <span id="userName"></span>
     <h1>SGS EXAM CRACKER</h1>
@@ -142,9 +139,7 @@
       <button onclick="toggleDarkMode()">Dark Mode</button>
     </div>
   </header>
-
   <div id="helloUser"></div>
-
   <div class="section" id="authSection">
     <div class="auth-toggle">
       <button onclick="showLogin()">Email Login</button>
@@ -152,26 +147,23 @@
       <button onclick="googleLogin()">Google Login</button>
       <button onclick="showAgentLogin()">Agent</button>
     </div>
-
     <div id="loginForm">
       <input type="email" id="loginEmail" placeholder="Email">
       <input type="password" id="loginPassword" placeholder="Password">
       <button onclick="emailLogin()">Login</button>
+      <button onclick="sendResetLink()" style="background:orange;color:white">Forgot Password?</button>
     </div>
-
     <div id="signupForm" class="hidden">
       <input type="email" id="signupEmail" placeholder="New Email">
       <input type="password" id="signupPassword" placeholder="New Password">
       <button onclick="emailSignup()">Signup</button>
     </div>
-
     <div id="agentForm" class="hidden">
       <input type="text" id="agentUser" placeholder="Agent ID">
       <input type="password" id="agentPass" placeholder="Password">
       <button onclick="agentLogin()">Login as Agent</button>
     </div>
   </div>
-
   <div class="section" id="mainSection">
     <div class="button-grid" id="buttonGrid">
       <button class="grid-btn" onclick="openSection('📕 PAID PDF')">📕 PAID PDF</button>
@@ -191,7 +183,6 @@
       <button onclick="deleteHtml()">Delete</button>
     </div>
   </div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBkSxVO7HXW9TID2jJwttD6h0MOguhdaBI",
@@ -203,9 +194,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
     let currentUser = null, currentSection = '', pageHistory = [];
-
     window.onload = () => {
       if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
       auth.onAuthStateChanged(user => {
@@ -220,31 +209,33 @@
         }
       });
     };
-
     function googleLogin() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).catch(alert);
     }
-
     function emailSignup() {
       const email = signupEmail.value, pass = signupPassword.value;
       auth.createUserWithEmailAndPassword(email, pass)
         .then(() => alert("Signup successful"))
         .catch(e => alert(e.message));
     }
-
     function emailLogin() {
       const email = loginEmail.value, pass = loginPassword.value;
       auth.signInWithEmailAndPassword(email, pass)
         .catch(e => alert(e.message));
     }
-
+    function sendResetLink() {
+      const email = loginEmail.value;
+      if (!email) return alert("Please enter your email first.");
+      auth.sendPasswordResetEmail(email)
+        .then(() => alert("Password reset link sent to email."))
+        .catch(e => alert(e.message));
+    }
     function logout() {
       auth.signOut();
       localStorage.removeItem("currentUser");
       location.reload();
     }
-
     function agentLogin() {
       if (agentUser.value === "Sachin" && agentPass.value === "802165") {
         currentUser = "Admin";
@@ -252,13 +243,11 @@
         showMain();
       } else alert("Invalid agent credentials");
     }
-
     function showMain() {
       authSection.style.display = "none";
       mainSection.style.display = "block";
       helloUser.textContent = "👋 Hello, " + currentUser;
     }
-
     function openSection(name) {
       currentSection = name;
       pageHistory.push(contentArea.innerHTML);
@@ -272,27 +261,23 @@
       } else adminEditor.classList.add("hidden");
       history.pushState({ page: name }, "");
     }
-
     function saveHtml() {
       localStorage.setItem("content_" + currentSection, htmlInput.value);
       alert("Content saved!");
       openSection(currentSection);
     }
-
     function deleteHtml() {
       if (confirm("Delete this content?")) {
         localStorage.removeItem("content_" + currentSection);
         openSection(currentSection);
       }
     }
-
     function toggleDrawer() {
       drawer.classList.toggle("show");
       if (drawer.classList.contains("show")) {
         history.pushState({ drawerOpen: true }, "");
       }
     }
-
     window.onpopstate = () => {
       if (drawer.classList.contains("show")) {
         drawer.classList.remove("show");
@@ -303,30 +288,25 @@
         buttonGrid.style.display = "grid";
       }
     };
-
     function toggleDarkMode() {
       document.body.classList.toggle("dark");
       localStorage.setItem("darkMode", document.body.classList.contains("dark"));
     }
-
     function showLogin() {
       loginForm.classList.remove("hidden");
       signupForm.classList.add("hidden");
       agentForm.classList.add("hidden");
     }
-
     function showSignup() {
       signupForm.classList.remove("hidden");
       loginForm.classList.add("hidden");
       agentForm.classList.add("hidden");
     }
-
     function showAgentLogin() {
       agentForm.classList.remove("hidden");
       loginForm.classList.add("hidden");
       signupForm.classList.add("hidden");
     }
   </script>
-
 </body>
 </html>
