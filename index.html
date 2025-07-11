@@ -269,19 +269,13 @@
       const html = localStorage.getItem("content_" + name) || `<p>No content posted for <b>${name}</b>.</p>`;
       contentArea.innerHTML = `<h2>${name}</h2>` + html;
       document.getElementById("buttonGrid").style.display = "none";
-      document.getElementById("drawer").style.display = "none";
+      document.getElementById("drawer").classList.remove("show");
       if (currentUser === "Admin") {
         adminEditor.classList.remove("hidden");
         htmlInput.value = localStorage.getItem("content_" + name) || "";
       } else adminEditor.classList.add("hidden");
       history.pushState({ page: name }, "");
     }
-
-    window.onpopstate = () => {
-      document.getElementById("buttonGrid").style.display = "grid";
-      document.getElementById("drawer").style.display = "block";
-      contentArea.innerHTML = "";
-    };
 
     function saveHtml() {
       const html = htmlInput.value;
@@ -308,8 +302,24 @@
     }
 
     function toggleDrawer() {
-      document.getElementById("drawer").classList.toggle("show");
+      const drawer = document.getElementById("drawer");
+      drawer.classList.toggle("show");
+      if (drawer.classList.contains("show")) {
+        history.pushState({ drawerOpen: true }, "");
+      }
     }
+
+    window.onpopstate = (e) => {
+      const drawer = document.getElementById("drawer");
+      if (drawer.classList.contains("show")) {
+        drawer.classList.remove("show");
+        return;
+      }
+      if (pageHistory.length > 0) {
+        contentArea.innerHTML = pageHistory.pop();
+        document.getElementById("buttonGrid").style.display = "grid";
+      }
+    };
   </script>
 
 </body>
