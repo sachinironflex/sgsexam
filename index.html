@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>SGS EXAM CRACKER</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <style>
     :root {
       --bg: #f4f4f4;
@@ -36,13 +38,8 @@
       justify-content: space-between;
       align-items: center;
     }
-    header h1 {
-      margin: 0 auto;
-      font-size: 20px;
-    }
-    #userName {
-      display: none;
-    }
+    header h1 { margin: 0 auto; font-size: 20px; }
+    #userName { display: none; }
     #logoutBtn button, .toggle-btn {
       background: var(--danger);
       color: white;
@@ -52,14 +49,12 @@
       cursor: pointer;
       margin-left: 5px;
     }
-
     #helloUser {
       padding: 10px 15px;
       font-size: 16px;
       font-weight: bold;
       color: var(--primary);
     }
-
     #menuToggle {
       position: fixed;
       top: 15px;
@@ -71,7 +66,6 @@
       padding: 6px 10px;
       z-index: 1000;
     }
-
     .drawer {
       position: fixed;
       left: 0;
@@ -94,7 +88,6 @@
       border: none;
       cursor: pointer;
     }
-
     .section { padding: 20px; display: none; }
     .button-grid {
       display: grid;
@@ -116,20 +109,8 @@
       transition: all 0.3s;
     }
     .grid-btn:hover { background: var(--btn-hover); transform: scale(1.05); }
-
     .auth-toggle { display: flex; gap: 10px; margin: 20px; }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    textarea { height: 120px; }
-
     .hidden { display: none; }
-
     @media (max-width: 600px) {
       header h1 { font-size: 16px; }
       .grid-btn { padding: 20px; font-size: 14px; }
@@ -137,15 +118,12 @@
   </style>
 </head>
 <body>
-
   <button id="menuToggle" onclick="toggleDrawer()">☰</button>
-
   <div class="drawer" id="drawer">
     <button onclick="openSection('About')">📘 About</button>
     <button onclick="openSection('Privacy')">🔐 Privacy</button>
     <button onclick="openSection('Terms')">📄 Terms</button>
   </div>
-
   <header>
     <span id="userName"></span>
     <h1>SGS EXAM CRACKER</h1>
@@ -154,35 +132,19 @@
       <button onclick="toggleDarkMode()">Dark Mode</button>
     </div>
   </header>
-
   <div id="helloUser"></div>
-
   <div class="section" id="authSection">
     <div class="auth-toggle">
-      <button onclick="showLogin()">Login</button>
-      <button onclick="showSignup()">Signup</button>
+      <button onclick="firebaseLogin()">Google Login</button>
+      <button onclick="emailPasswordLogin()">Email Login</button>
       <button onclick="showAgentLogin()">Agent</button>
     </div>
-
-    <div id="loginForm">
-      <input type="text" id="loginUser" placeholder="Username">
-      <input type="password" id="loginPass" placeholder="Password">
-      <button onclick="login()">Login</button>
-    </div>
-
-    <div id="signupForm" class="hidden">
-      <input type="text" id="signupUser" placeholder="New Username">
-      <input type="password" id="signupPass" placeholder="New Password">
-      <button onclick="signup()">Signup</button>
-    </div>
-
     <div id="agentForm" class="hidden">
       <input type="text" id="agentUser" placeholder="Agent ID">
       <input type="password" id="agentPass" placeholder="Password">
       <button onclick="agentLogin()">Login as Agent</button>
     </div>
   </div>
-
   <div class="section" id="mainSection">
     <div class="button-grid" id="buttonGrid">
       <button class="grid-btn" onclick="openSection('📕 PAID PDF')">📕 PAID PDF</button>
@@ -202,51 +164,47 @@
       <button onclick="deleteHtml()">Delete</button>
     </div>
   </div>
-
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBkSxVO7HXW9TID2jJwttD6h0MOguhdaBI",
+      authDomain: "exam-cracker-be78d.firebaseapp.com",
+      projectId: "exam-cracker-be78d",
+      storageBucket: "exam-cracker-be78d.appspot.com",
+      messagingSenderId: "396394913179",
+      appId: "1:396394913179:web:b3bc1d88819267f14f553e"
+    };
+    firebase.initializeApp(firebaseConfig);
     let currentUser = null, currentSection = '', pageHistory = [];
 
     window.onload = () => {
       if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
-      const saved = localStorage.getItem("currentUser");
-      if (saved) { currentUser = saved; showMain(); }
-      else document.getElementById("authSection").style.display = "block";
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user.displayName || user.email;
+          showMain();
+        } else if (localStorage.getItem("currentUser") === "Admin") {
+          currentUser = "Admin";
+          showMain();
+        } else {
+          document.getElementById("authSection").style.display = "block";
+        }
+      });
     };
 
-    function showLogin() {
-      loginForm.classList.remove("hidden");
-      signupForm.classList.add("hidden");
-      agentForm.classList.add("hidden");
+    function firebaseLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).catch(alert);
     }
 
-    function showSignup() {
-      signupForm.classList.remove("hidden");
-      loginForm.classList.add("hidden");
-      agentForm.classList.add("hidden");
-    }
-
-    function showAgentLogin() {
-      agentForm.classList.remove("hidden");
-      loginForm.classList.add("hidden");
-      signupForm.classList.add("hidden");
-    }
-
-    function signup() {
-      const user = signupUser.value, pass = signupPass.value;
-      if (user && pass) {
-        localStorage.setItem("user_" + user, pass);
-        alert("Signup successful!");
-        showLogin();
-      }
-    }
-
-    function login() {
-      const user = loginUser.value, pass = loginPass.value;
-      if (localStorage.getItem("user_" + user) === pass) {
-        currentUser = user;
-        localStorage.setItem("currentUser", user);
-        showMain();
-      } else alert("Invalid login");
+    function emailPasswordLogin() {
+      const email = prompt("Enter Email:"), pass = prompt("Enter Password:");
+      firebase.auth().signInWithEmailAndPassword(email, pass)
+        .catch(e => {
+          if (e.code === 'auth/user-not-found') {
+            firebase.auth().createUserWithEmailAndPassword(email, pass)
+              .catch(alert);
+          } else alert(e.message);
+        });
     }
 
     function agentLogin() {
@@ -255,6 +213,12 @@
         localStorage.setItem("currentUser", "Admin");
         showMain();
       } else alert("Invalid agent credentials");
+    }
+
+    function logout() {
+      firebase.auth().signOut();
+      localStorage.removeItem("currentUser");
+      location.reload();
     }
 
     function showMain() {
@@ -291,11 +255,6 @@
       }
     }
 
-    function logout() {
-      localStorage.removeItem("currentUser");
-      location.reload();
-    }
-
     function toggleDarkMode() {
       document.body.classList.toggle("dark");
       localStorage.setItem("darkMode", document.body.classList.contains("dark"));
@@ -304,12 +263,10 @@
     function toggleDrawer() {
       const drawer = document.getElementById("drawer");
       drawer.classList.toggle("show");
-      if (drawer.classList.contains("show")) {
-        history.pushState({ drawerOpen: true }, "");
-      }
+      if (drawer.classList.contains("show")) history.pushState({ drawerOpen: true }, "");
     }
 
-    window.onpopstate = (e) => {
+    window.onpopstate = () => {
       const drawer = document.getElementById("drawer");
       if (drawer.classList.contains("show")) {
         drawer.classList.remove("show");
@@ -319,8 +276,7 @@
         contentArea.innerHTML = pageHistory.pop();
         document.getElementById("buttonGrid").style.display = "grid";
       }
-    };
+    }
   </script>
-
 </body>
 </html>
