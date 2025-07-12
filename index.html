@@ -151,7 +151,6 @@
 <body>
   <div id="splash"><h1>SGS EXAM CRACKER</h1></div>
 
-  <!-- ✅ Sound preload and fallback source -->
   <audio id="clickSound" preload="auto">
     <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
@@ -168,6 +167,8 @@
   <header>
     <span id="userName"></span>
     <h1>SGS EXAM CRACKER</h1>
+    <!-- ✅ Added profile image -->
+    <img id="userPic" src="" alt="User Pic" style="width:35px;height:35px;border-radius:50%;margin-left:10px;display:none;">
     <div id="logoutBtn">
       <button onclick="playSound(); logout()">Logout</button>
       <button onclick="playSound(); toggleDarkMode()">Dark Mode</button>
@@ -241,7 +242,6 @@
     const auth = firebase.auth();
     let currentUser = null, currentSection = '', pageHistory = [];
 
-    // ✅ Final working playSound function
     function playSound() {
       const sound = document.getElementById("clickSound");
       if (sound) {
@@ -321,6 +321,12 @@
       authSection.style.display = "none";
       mainSection.style.display = "block";
       helloUser.textContent = "👋 Hello, " + currentUser;
+
+      if (auth.currentUser && auth.currentUser.photoURL) {
+        const pic = document.getElementById("userPic");
+        pic.src = auth.currentUser.photoURL;
+        pic.style.display = "inline-block";
+      }
     }
 
     function openSection(name) {
