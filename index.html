@@ -346,6 +346,11 @@
         pic.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
         pic.style.display = "inline-block";
       }
+
+      if (!auth.currentUser.photoURL && currentUser !== "Admin") {
+        pic.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+        pic.style.display = "inline-block";
+      }
     }
 
     function openSection(name) {
