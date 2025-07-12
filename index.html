@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <style>
     :root {
-      --bg: #f4f4f4;
+      --bg: linear-gradient(135deg, #e0f7fa, #e1bee7);
       --text: #000;
       --primary: #6200ea;
       --btn: #2196f3;
@@ -16,7 +16,7 @@
       --danger: #ff5722;
     }
     body.dark {
-      --bg: #121212;
+      --bg: linear-gradient(135deg, #212121, #424242);
       --text: #fff;
       --primary: #bb86fc;
       --btn: #3700b3;
@@ -29,6 +29,30 @@
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
+    }
+    #splash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeOut 1s ease 2s forwards;
+    }
+    #splash h1 {
+      font-size: 30px;
+      font-weight: bold;
+      color: var(--primary);
+      animation: slideDown 1s ease;
+    }
+    @keyframes slideDown {
+      0% { transform: translateY(-50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
     }
     header {
       background: var(--primary);
@@ -125,65 +149,86 @@
   </style>
 </head>
 <body>
-  <button id="menuToggle" onclick="toggleDrawer()">☰</button>
+  <div id="splash"><h1>SGS EXAM CRACKER</h1></div>
+
+  <!-- ✅ Sound preload and fallback source -->
+  <audio id="clickSound" preload="auto">
+    <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <button id="menuToggle" onclick="playSound(); toggleDrawer()">☰</button>
+
   <div class="drawer" id="drawer">
-    <button onclick="openSection('About')">📘 About</button>
-    <button onclick="openSection('Privacy')">🔐 Privacy</button>
-    <button onclick="openSection('Terms')">📄 Terms</button>
+    <button onclick="playSound(); openSection('About')">📘 About</button>
+    <button onclick="playSound(); openSection('Privacy')">🔐 Privacy</button>
+    <button onclick="playSound(); openSection('Terms')">📄 Terms</button>
   </div>
+
   <header>
     <span id="userName"></span>
     <h1>SGS EXAM CRACKER</h1>
     <div id="logoutBtn">
-      <button onclick="logout()">Logout</button>
-      <button onclick="toggleDarkMode()">Dark Mode</button>
+      <button onclick="playSound(); logout()">Logout</button>
+      <button onclick="playSound(); toggleDarkMode()">Dark Mode</button>
     </div>
   </header>
+
   <div id="helloUser"></div>
+
   <div class="section" id="authSection">
     <div class="auth-toggle">
-      <button onclick="showLogin()">Email Login</button>
-      <button onclick="showSignup()">Signup</button>
-      <button onclick="googleLogin()">Google Login</button>
-      <button onclick="showAgentLogin()">Agent</button>
+      <button onclick="playSound(); showLogin()">Email Login</button>
+      <button onclick="playSound(); showSignup()">Signup</button>
+      <button onclick="playSound(); googleLogin()">Google Login</button>
+      <button onclick="playSound(); showAgentLogin()">Agent</button>
     </div>
     <div id="loginForm">
       <input type="email" id="loginEmail" placeholder="Email">
       <input type="password" id="loginPassword" placeholder="Password">
-      <button onclick="emailLogin()">Login</button>
-      <button onclick="sendResetLink()" style="background:orange;color:white">Forgot Password?</button>
+      <button onclick="playSound(); emailLogin()">Login</button>
+      <button onclick="playSound(); sendResetLink()" style="background:orange;color:white">Forgot Password?</button>
     </div>
     <div id="signupForm" class="hidden">
       <input type="email" id="signupEmail" placeholder="New Email">
       <input type="password" id="signupPassword" placeholder="New Password">
-      <button onclick="emailSignup()">Signup</button>
+      <button onclick="playSound(); emailSignup()">Signup</button>
     </div>
     <div id="agentForm" class="hidden">
       <input type="text" id="agentUser" placeholder="Agent ID">
       <input type="password" id="agentPass" placeholder="Password">
-      <button onclick="agentLogin()">Login as Agent</button>
+      <button onclick="playSound(); agentLogin()">Login as Agent</button>
     </div>
   </div>
+
   <div class="section" id="mainSection">
     <div class="button-grid" id="buttonGrid">
-      <button class="grid-btn" onclick="openSection('📕 PAID PDF')">📕 PAID PDF</button>
-      <button class="grid-btn" onclick="openSection('📗 FREE PDF')">📗 FREE PDF</button>
-      <button class="grid-btn" onclick="openSection('📝 MOCK TEST')">📝 MOCK TEST</button>
-      <button class="grid-btn" onclick="openSection('🏛 VKSU')">🏛 VKSU</button>
-      <button class="grid-btn" onclick="openSection('💼 GOV JOB')">💼 GOV JOB</button>
-      <button class="grid-btn" onclick="openSection('📢 NOTICE BOARD')">📢 NOTICE BOARD</button>
-      <button class="grid-btn" onclick="openSection('📜 PREVIOUS YEAR')">📜 PREVIOUS YEAR</button>
-      <button class="grid-btn" onclick="openSection('🚔 SSC GD')">🚔 SSC GD</button>
-      <button class="grid-btn" onclick="openSection('📦 SSC MTS')">📦 SSC MTS</button>
+      <button class="grid-btn" onclick="playSound(); openSection('📕 PAID PDF')">📕 PAID PDF</button>
+      <button class="grid-btn" onclick="playSound(); openSection('📗 FREE PDF')">📗 FREE PDF</button>
+      <button class="grid-btn" onclick="playSound(); openSection('📝 MOCK TEST')">📝 MOCK TEST</button>
+      <button class="grid-btn" onclick="playSound(); openSection('🏛 VKSU')">🏛 VKSU</button>
+      <button class="grid-btn" onclick="playSound(); openSection('💼 GOV JOB')">💼 GOV JOB</button>
+      <button class="grid-btn" onclick="playSound(); openSection('📢 NOTICE BOARD')">📢 NOTICE BOARD</button>
+      <button class="grid-btn" onclick="playSound(); openSection('📜 PREVIOUS YEAR')">📜 PREVIOUS YEAR</button>
+      <button class="grid-btn" onclick="playSound(); openSection('🚔 SSC GD')">🚔 SSC GD</button>
+      <button class="grid-btn" onclick="playSound(); openSection('📦 SSC MTS')">📦 SSC MTS</button>
     </div>
     <div id="contentArea" style="margin-top:20px;"></div>
     <div id="adminEditor" class="hidden">
       <textarea id="htmlInput"></textarea>
-      <button onclick="saveHtml()">Save</button>
-      <button onclick="deleteHtml()">Delete</button>
+      <button onclick="playSound(); saveHtml()">Save</button>
+      <button onclick="playSound(); deleteHtml()">Delete</button>
     </div>
   </div>
+
+  <div style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); display: flex; justify-content: space-around; padding: 10px 0; z-index:999;">
+    <button onclick="playSound(); goHome()" style="background:white; color: var(--primary); border:none; border-radius:10px; padding:10px 20px; font-weight:bold;">🏠 Home</button>
+    <button onclick="playSound(); openSection('🆘 HELP')" style="background:white; color: var(--primary); border:none; border-radius:10px; padding:10px 20px; font-weight:bold;">🆘 Help</button>
+  </div>
+
   <script>
+    setTimeout(() => document.getElementById("splash").style.display = "none", 3000);
+
     const firebaseConfig = {
       apiKey: "AIzaSyBkSxVO7HXW9TID2jJwttD6h0MOguhdaBI",
       authDomain: "exam-cracker-be78d.firebaseapp.com",
@@ -195,6 +240,33 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     let currentUser = null, currentSection = '', pageHistory = [];
+
+    // ✅ Final working playSound function
+    function playSound() {
+      const sound = document.getElementById("clickSound");
+      if (sound) {
+        try {
+          sound.pause();
+          sound.currentTime = 0;
+          let playPromise = sound.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(err => {
+              console.warn("Audio play failed:", err);
+            });
+          }
+        } catch (e) {
+          console.warn("Audio error:", e);
+        }
+      }
+    }
+
+    function goHome() {
+      contentArea.innerHTML = '';
+      buttonGrid.style.display = "grid";
+      adminEditor.classList.add("hidden");
+      history.pushState({}, "");
+    }
+
     window.onload = () => {
       if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
       auth.onAuthStateChanged(user => {
@@ -209,33 +281,34 @@
         }
       });
     };
+
     function googleLogin() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider).catch(alert);
     }
+
     function emailSignup() {
       const email = signupEmail.value, pass = signupPassword.value;
-      auth.createUserWithEmailAndPassword(email, pass)
-        .then(() => alert("Signup successful"))
-        .catch(e => alert(e.message));
+      auth.createUserWithEmailAndPassword(email, pass).then(() => alert("Signup successful")).catch(e => alert(e.message));
     }
+
     function emailLogin() {
       const email = loginEmail.value, pass = loginPassword.value;
-      auth.signInWithEmailAndPassword(email, pass)
-        .catch(e => alert(e.message));
+      auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
     }
+
     function sendResetLink() {
       const email = loginEmail.value;
       if (!email) return alert("Please enter your email first.");
-      auth.sendPasswordResetEmail(email)
-        .then(() => alert("Password reset link sent to email."))
-        .catch(e => alert(e.message));
+      auth.sendPasswordResetEmail(email).then(() => alert("Password reset link sent.")).catch(e => alert(e.message));
     }
+
     function logout() {
       auth.signOut();
       localStorage.removeItem("currentUser");
       location.reload();
     }
+
     function agentLogin() {
       if (agentUser.value === "Sachin" && agentPass.value === "802165") {
         currentUser = "Admin";
@@ -243,11 +316,13 @@
         showMain();
       } else alert("Invalid agent credentials");
     }
+
     function showMain() {
       authSection.style.display = "none";
       mainSection.style.display = "block";
       helloUser.textContent = "👋 Hello, " + currentUser;
     }
+
     function openSection(name) {
       currentSection = name;
       pageHistory.push(contentArea.innerHTML);
@@ -261,23 +336,27 @@
       } else adminEditor.classList.add("hidden");
       history.pushState({ page: name }, "");
     }
+
     function saveHtml() {
       localStorage.setItem("content_" + currentSection, htmlInput.value);
       alert("Content saved!");
       openSection(currentSection);
     }
+
     function deleteHtml() {
       if (confirm("Delete this content?")) {
         localStorage.removeItem("content_" + currentSection);
         openSection(currentSection);
       }
     }
+
     function toggleDrawer() {
       drawer.classList.toggle("show");
       if (drawer.classList.contains("show")) {
         history.pushState({ drawerOpen: true }, "");
       }
     }
+
     window.onpopstate = () => {
       if (drawer.classList.contains("show")) {
         drawer.classList.remove("show");
@@ -288,20 +367,24 @@
         buttonGrid.style.display = "grid";
       }
     };
+
     function toggleDarkMode() {
       document.body.classList.toggle("dark");
       localStorage.setItem("darkMode", document.body.classList.contains("dark"));
     }
+
     function showLogin() {
       loginForm.classList.remove("hidden");
       signupForm.classList.add("hidden");
       agentForm.classList.add("hidden");
     }
+
     function showSignup() {
       signupForm.classList.remove("hidden");
       loginForm.classList.add("hidden");
       agentForm.classList.add("hidden");
     }
+
     function showAgentLogin() {
       agentForm.classList.remove("hidden");
       loginForm.classList.add("hidden");
