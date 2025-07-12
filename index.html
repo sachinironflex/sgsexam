@@ -63,15 +63,6 @@
       align-items: center;
     }
     header h1 { margin: 0 auto; font-size: 20px; }
-    #logoutBtn button {
-      background: var(--danger);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-left: 5px;
-    }
     #helloUser {
       padding: 10px 15px;
       font-size: 16px;
@@ -146,6 +137,32 @@
       header h1 { font-size: 16px; }
       .grid-btn { padding: 20px; font-size: 14px; }
     }
+
+    /* 🔻 Profile Dropdown Styles */
+    #profileDropdown {
+      position: absolute;
+      top: 60px;
+      right: 10px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      padding: 10px;
+      z-index: 1001;
+    }
+    #profileDropdown button {
+      background: var(--btn);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #profileDropdown button:hover {
+      background: var(--btn-hover);
+    }
   </style>
 </head>
 <body>
@@ -167,13 +184,14 @@
   <header>
     <span id="userName"></span>
     <h1>SGS EXAM CRACKER</h1>
-    <!-- ✅ Added profile image -->
-    <img id="userPic" src="" alt="User Pic" style="width:35px;height:35px;border-radius:50%;margin-left:10px;display:none;">
-    <div id="logoutBtn">
-      <button onclick="playSound(); logout()">Logout</button>
-      <button onclick="playSound(); toggleDarkMode()">Dark Mode</button>
-    </div>
+    <img id="userPic" src="" alt="User Pic" onclick="toggleProfileDropdown()" style="width:35px;height:35px;border-radius:50%;margin-left:10px;display:none;cursor:pointer;">
   </header>
+
+  <!-- 🔻 Profile Dropdown Box -->
+  <div id="profileDropdown">
+    <button onclick="playSound(); logout()">Logout</button>
+    <button onclick="playSound(); toggleDarkMode()">Dark Mode</button>
+  </div>
 
   <div id="helloUser"></div>
 
@@ -396,6 +414,20 @@
       loginForm.classList.add("hidden");
       signupForm.classList.add("hidden");
     }
+
+    // 🔻 Profile Dropdown toggle
+    function toggleProfileDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    document.addEventListener('click', function (event) {
+      const dropdown = document.getElementById('profileDropdown');
+      const profilePic = document.getElementById('userPic');
+      if (!dropdown.contains(event.target) && !profilePic.contains(event.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>
