@@ -4,124 +4,725 @@
   <meta charset="UTF-8" />
   <title>SGS EXAM CRACKER</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; text-align: center; background-color: #f0f0f0; }
-    header { background: #2196f3; padding: 1em; color: white; font-size: 1.5em; position: relative; }
-    #userName { position: absolute; left: 10px; top: 15px; font-size: 1em; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; }
-    button { padding: 1em; font-size: 1em; border: none; background: #4caf50; color: white; border-radius: 8px; cursor: pointer; }
-    button:hover { background: #45a049; }
-    #contentArea { padding: 20px; }
-    .auth-buttons { margin: 10px; }
+    :root {
+      --bg: linear-gradient(135deg, #e0f7fa, #e1bee7);
+      --text: #000;
+      --primary: #6200ea;
+      --btn: #2196f3;
+      --btn-hover: #1976d2;
+      --danger: #ff5722;
+    }
+    body.dark {
+      --bg: linear-gradient(135deg, #212121, #424242);
+      --text: #fff;
+      --primary: #bb86fc;
+      --btn: #3700b3;
+      --btn-hover: #6200ea;
+      --danger: #cf6679;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    #splash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeOut 1s ease 2s forwards;
+    }
+    #splash h1 {
+      font-size: 30px;
+      font-weight: bold;
+      color: var(--primary);
+      animation: slideDown 1s ease;
+    }
+    @keyframes slideDown {
+      0% { transform: translateY(-50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin: 0 auto; font-size: 20px; }
+    #helloUser {
+      padding: 10px 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    #menuToggle {
+      position: fixed;
+      top: 15px;
+      left: 10px;
+      background: var(--btn);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      z-index: 1000;
+    }
+    .drawer {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      width: 180px;
+      background: transparent;
+      padding: 10px;
+      z-index: 999;
+      display: none;
+    }
+    .drawer.show { display: block; }
+    .drawer button {
+      width: 100%;
+      background: white;
+      color: var(--primary);
+      font-weight: bold;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    .section { padding: 20px; display: none; }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+      padding: 20px;
+    }
+    .grid-btn {
+      padding: 30px;
+      background: var(--btn);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+    .grid-btn:hover { background: var(--btn-hover); transform: scale(1.05); }
+    .auth-toggle { display: flex; gap: 10px; margin: 20px; flex-wrap: wrap; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    textarea { height: 120px; }
+    .hidden { display: none; }
+    @media (max-width: 600px) {
+      header h1 { font-size: 16px; }
+      .grid-btn { padding: 20px; font-size: 14px; }
+    }
+
+    #profileDropdown {
+      position: absolute;
+      top: 60px;
+      right: 10px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      padding: 10px;
+      z-index: 1001;
+    }
+    #profileDropdown button {
+      background: var(--btn);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #profileDropdown button:hover {
+      background: var(--btn-hover);
+    }
+
+    /* ✅ BLUE GLOW FOR ALL AUTH BUTTONS */
+    .auth-toggle button,
+    #loginForm button,
+    #signupForm button,
+    #agentForm button {
+      background: var(--btn);
+      color: white;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 10px 18px;
+      box-shadow: 0 0 10px rgba(33, 150, 243, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .auth-toggle button:hover,
+    #loginForm button:hover,
+    #signupForm button:hover,
+    #agentForm button:hover {
+      background: var(--btn-hover);
+      box-shadow: 0 0 18px rgba(33, 150, 243, 1);
+      transform: scale(1.02);
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <span id="userName"></span>
-  SGS EXAM CRACKER
-</header>
+  <div id="splash"><h1>SGS EXAM CRACKER</h1></div>
 
-<div class="auth-buttons">
-  <button onclick="login()">Login with Google</button>
-  <button onclick="logout()">Logout</button>
-</div>
 
-<div class="grid">
-  <button onclick="loadContent('paid_pdf')">PAID PDF</button>
-  <button onclick="loadContent('free_pdf')">FREE PDF</button>
-  <button onclick="loadContent('mock_test')">MOCK TEST</button>
-  <button onclick="loadContent('vksu')">VKSU</button>
-  <button onclick="loadContent('gov_job')">GOV JOB</button>
-  <button onclick="loadContent('notice_board')">NOTICE BOARD</button>
-  <button onclick="loadContent('previous_year')">PREVIOUS YEAR</button>
-  <button onclick="loadContent('ssc_gd')">SSC GD</button>
-  <button onclick="loadContent('ssc_mts')">SSC MTS</button>
-</div>
 
-<div id="contentArea">Login to view content...</div>
+  <audio id="clickSound" preload="auto">
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <source src="https://www.soundjay.com/buttons/sounds/button-16.mp3" type="audio/mpeg">
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBxbvZf6yAWXVz7zD5-O8NC3ux2mGzN0SI",
-    authDomain: "sgs-exam-cracker-9bd6e.firebaseapp.com",
-    projectId: "sgs-exam-cracker-9bd6e",
-    storageBucket: "sgs-exam-cracker-9bd6e.appspot.com",
-    messagingSenderId: "145550267499",
-    appId: "1:145550267499:web:5b0076c985eb2290678d2e",
-    databaseURL: "https://sgs-exam-cracker-9bd6e-default-rtdb.firebaseio.com"
-  };
+  </audio>
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
 
-  let currentUserEmail = null;
 
-  function login() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(result => {
-        const user = result.user;
-        currentUserEmail = user.email.replace(/\./g, "_");
-        document.getElementById('userName').innerText = "Hello, " + user.displayName;
-        document.getElementById('contentArea').innerHTML = "Click any button to view your content.";
+  <button id="menuToggle" onclick="playSound(); toggleDrawer()">☰</button>
+
+
+
+  <div class="drawer" id="drawer">
+
+    <button onclick="playSound(); openSection('About')">📘 About</button>
+
+    <button onclick="playSound(); openSection('Privacy')">🔐 Privacy</button>
+
+    <button onclick="playSound(); openSection('Terms')">📄 Terms</button>
+
+  </div>
+
+
+
+  <header>
+
+    <span id="userName"></span>
+
+    <h1>SGS EXAM CRACKER</h1>
+
+    <img id="userPic" src="" alt="User Pic" onclick="toggleProfileDropdown()" style="width:35px;height:35px;border-radius:50%;margin-left:10px;display:none;cursor:pointer;">
+
+  </header>
+
+
+
+  <div id="profileDropdown">
+
+    <button onclick="playSound(); logout()">Logout</button>
+
+    <button onclick="playSound(); toggleDarkMode()">Dark Mode</button>
+
+  </div>
+
+
+
+  <div id="helloUser"></div>
+
+
+
+  <div class="section" id="authSection">
+
+    <div class="auth-toggle">
+
+      <button onclick="playSound(); showLogin()">Email Login</button>
+
+      <button onclick="playSound(); showSignup()">Signup</button>
+
+      <button onclick="playSound(); googleLogin()">Google Login</button>
+
+      <button onclick="playSound(); showAgentLogin()">Agent</button>
+
+    </div>
+
+    <div id="loginForm">
+
+      <input type="email" id="loginEmail" placeholder="Email">
+
+      <input type="password" id="loginPassword" placeholder="Password">
+
+      <button onclick="playSound(); emailLogin()">Login</button>
+
+      <button onclick="playSound(); sendResetLink()" style="background:orange;color:white">Forgot Password?</button>
+
+    </div>
+
+    <div id="signupForm" class="hidden">
+
+      <input type="email" id="signupEmail" placeholder="New Email">
+
+      <input type="password" id="signupPassword" placeholder="New Password">
+
+      <button onclick="playSound(); emailSignup()">Signup</button>
+
+    </div>
+
+    <div id="agentForm" class="hidden">
+
+      <input type="text" id="agentUser" placeholder="Agent ID">
+
+      <input type="password" id="agentPass" placeholder="Password">
+
+      <button onclick="playSound(); agentLogin()">Login as Agent</button>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="section" id="mainSection">
+
+    <div class="button-grid" id="buttonGrid">
+
+      <button class="grid-btn" onclick="playSound(); openSection('📕 PAID PDF')">📕 PAID PDF</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('📗 FREE PDF')">📗 FREE PDF</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('📝 MOCK TEST')">📝 MOCK TEST</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('🏛 VKSU')">🏛 VKSU</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('💼 GOV JOB')">💼 GOV JOB</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('📢 NOTICE BOARD')">📢 NOTICE BOARD</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('📜 PREVIOUS YEAR')">📜 PREVIOUS YEAR</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('🚔 SSC GD')">🚔 SSC GD</button>
+
+      <button class="grid-btn" onclick="playSound(); openSection('📦 SSC MTS')">📦 SSC MTS</button>
+
+    </div>
+
+    <div id="contentArea" style="margin-top:20px;"></div>
+
+    <div id="adminEditor" class="hidden">
+
+      <textarea id="htmlInput"></textarea>
+
+      <button onclick="playSound(); saveHtml()">Save</button>
+
+      <button onclick="playSound(); deleteHtml()">Delete</button>
+
+    </div>
+
+  </div>
+
+
+
+  <div style="position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary); display: flex; justify-content: space-around; padding: 10px 0; z-index:999;">
+
+    <button onclick="playSound(); goHome()" style="background:white; color: var(--primary); border:none; border-radius:10px; padding:10px 20px; font-weight:bold;">🏠 Home</button>
+
+    <button onclick="playSound(); openSection('🆘 HELP')" style="background:white; color: var(--primary); border:none; border-radius:10px; padding:10px 20px; font-weight:bold;">🆘 Help</button>
+
+  </div>
+
+
+
+  <script>
+
+    setTimeout(() => document.getElementById("splash").style.display = "none", 3000);
+
+
+
+    const firebaseConfig = {
+
+     const firebaseConfig = {
+  apiKey: "AIzaSyBxbvZf6yAWXVz7zD5-O8NC3ux2mGzN0SI",
+  authDomain: "sgs-exam-cracker-9bd6e.firebaseapp.com",
+  projectId: "sgs-exam-cracker-9bd6e",
+  storageBucket: "sgs-exam-cracker-9bd6e.firebasestorage.app",
+  messagingSenderId: "145550267499",
+  appId: "1:145550267499:web:5b0076c985eb2290678d2e"
+};
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
+    let currentUser = null, currentSection = '', pageHistory = [];
+
+
+
+    function playSound() {
+
+      const sound = document.getElementById("clickSound");
+
+      if (sound) {
+
+        try {
+
+          sound.pause();
+
+          sound.currentTime = 0;
+
+          let playPromise = sound.play();
+
+          if (playPromise !== undefined) {
+
+            playPromise.catch(err => console.warn("Audio play failed:", err));
+
+          }
+
+        } catch (e) {
+
+          console.warn("Audio error:", e);
+
+        }
+
+      }
+
+    }
+
+
+
+    function goHome() {
+
+      contentArea.innerHTML = '';
+
+      buttonGrid.style.display = "grid";
+
+      adminEditor.classList.add("hidden");
+
+      history.pushState({}, "");
+
+    }
+
+
+
+    window.onload = () => {
+
+      if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
+
+      auth.onAuthStateChanged(user => {
+
+        if (user) {
+
+          currentUser = user.displayName || user.email;
+
+          showMain();
+
+        } else if (localStorage.getItem("currentUser") === "Admin") {
+
+          currentUser = "Admin";
+
+          showMain();
+
+        } else {
+
+          document.getElementById("authSection").style.display = "block";
+
+        }
+
       });
-  }
 
-  function logout() {
-    auth.signOut().then(() => {
-      currentUserEmail = null;
-      document.getElementById('userName').innerText = "";
-      document.getElementById('contentArea').innerHTML = "Logged out.";
-    });
-  }
+    };
 
-  function loadContent(section) {
-    if (!currentUserEmail) {
-      alert("Please login to view your content.");
-      return;
+
+
+    function googleLogin() {
+
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      auth.signInWithPopup(provider).catch(alert);
+
     }
 
-    db.ref("users/" + currentUserEmail + "/" + section).once("value", snapshot => {
-      const content = snapshot.val();
-      if (content) {
-        document.getElementById("contentArea").innerHTML = content;
-      } else {
-        document.getElementById("contentArea").innerHTML = "No content uploaded yet for: " + section;
+
+
+    function emailSignup() {
+
+      const email = signupEmail.value, pass = signupPassword.value;
+
+      auth.createUserWithEmailAndPassword(email, pass).then(() => alert("Signup successful")).catch(e => alert(e.message));
+
+    }
+
+
+
+    function emailLogin() {
+
+      const email = loginEmail.value, pass = loginPassword.value;
+
+      auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+
+    }
+
+
+
+    function sendResetLink() {
+
+      const email = loginEmail.value;
+
+      if (!email) return alert("Please enter your email first.");
+
+      auth.sendPasswordResetEmail(email).then(() => alert("Password reset link sent.")).catch(e => alert(e.message));
+
+    }
+
+
+
+    function logout() {
+
+      auth.signOut();
+
+      localStorage.removeItem("currentUser");
+
+      location.reload();
+
+    }
+
+
+
+    function agentLogin() {
+
+      if (agentUser.value === "Sachin" && agentPass.value === "802165") {
+
+        currentUser = "Admin";
+
+        localStorage.setItem("currentUser", "Admin");
+
+        showMain();
+
+      } else alert("Invalid agent credentials");
+
+    }
+
+
+
+    function showMain() {
+
+      authSection.style.display = "none";
+
+      mainSection.style.display = "block";
+
+      helloUser.textContent = "👋 Hello, " + currentUser;
+
+
+
+      const pic = document.getElementById("userPic");
+
+
+
+      if (auth.currentUser && auth.currentUser.photoURL) {
+
+        pic.src = auth.currentUser.photoURL;
+
+        pic.style.display = "inline-block";
+
       }
-    });
-  }
 
-  // Auto login check
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      currentUserEmail = user.email.replace(/\./g, "_");
-      document.getElementById('userName').innerText = "Hello, " + user.displayName;
-    }
-  });
 
-  // Admin upload code
-  const adminID = "Sachin";
-  const adminPass = "802165";
-  const isAdmin = prompt("Admin ID:");
-  if (isAdmin === adminID) {
-    const isPass = prompt("Admin Password:");
-    if (isPass === adminPass) {
-      const section = prompt("Enter Section Name (e.g., paid_pdf):");
-      const content = prompt("Enter HTML content to save:");
-      if (section && content) {
-        db.ref("users/admin/" + section).set(content);
-        alert("Content uploaded to: " + section);
+
+      if (currentUser === "Admin") {
+
+        pic.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        pic.style.display = "inline-block";
+
       }
+
+
+
+      if (!auth.currentUser.photoURL && currentUser !== "Admin") {
+
+        pic.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        pic.style.display = "inline-block";
+
+      }
+
     }
-  }
-</script>
+
+
+
+    function openSection(name) {
+
+      currentSection = name;
+
+      pageHistory.push(contentArea.innerHTML);
+
+      const html = localStorage.getItem("content_" + name) || `<p>No content posted for <b>${name}</b>.</p>`;
+
+      contentArea.innerHTML = `<h2>${name}</h2>` + html;
+
+      buttonGrid.style.display = "none";
+
+      drawer.classList.remove("show");
+
+      if (currentUser === "Admin") {
+
+        adminEditor.classList.remove("hidden");
+
+        htmlInput.value = localStorage.getItem("content_" + name) || "";
+
+      } else adminEditor.classList.add("hidden");
+
+      history.pushState({ page: name }, "");
+
+    }
+
+
+
+    function saveHtml() {
+
+      localStorage.setItem("content_" + currentSection, htmlInput.value);
+
+      alert("Content saved!");
+
+      openSection(currentSection);
+
+    }
+
+
+
+    function deleteHtml() {
+
+      if (confirm("Delete this content?")) {
+
+        localStorage.removeItem("content_" + currentSection);
+
+        openSection(currentSection);
+
+      }
+
+    }
+
+
+
+    function toggleDrawer() {
+
+      drawer.classList.toggle("show");
+
+      if (drawer.classList.contains("show")) {
+
+        history.pushState({ drawerOpen: true }, "");
+
+      }
+
+    }
+
+
+
+    window.onpopstate = () => {
+
+      if (drawer.classList.contains("show")) {
+
+        drawer.classList.remove("show");
+
+        return;
+
+      }
+
+      if (pageHistory.length > 0) {
+
+        contentArea.innerHTML = pageHistory.pop();
+
+        buttonGrid.style.display = "grid";
+
+      }
+
+    };
+
+
+
+    function toggleDarkMode() {
+
+      document.body.classList.toggle("dark");
+
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+
+    }
+
+
+
+    function showLogin() {
+
+      loginForm.classList.remove("hidden");
+
+      signupForm.classList.add("hidden");
+
+      agentForm.classList.add("hidden");
+
+    }
+
+
+
+    function showSignup() {
+
+      signupForm.classList.remove("hidden");
+
+      loginForm.classList.add("hidden");
+
+      agentForm.classList.add("hidden");
+
+    }
+
+
+
+    function showAgentLogin() {
+
+      agentForm.classList.remove("hidden");
+
+      loginForm.classList.add("hidden");
+
+      signupForm.classList.add("hidden");
+
+    }
+
+
+
+    function toggleProfileDropdown() {
+
+      const dropdown = document.getElementById('profileDropdown');
+
+      dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+
+    }
+
+
+
+    document.addEventListener('click', function (event) {
+
+      const dropdown = document.getElementById('profileDropdown');
+
+      const profilePic = document.getElementById('userPic');
+
+      if (!dropdown.contains(event.target) && !profilePic.contains(event.target)) {
+
+        dropdown.style.display = 'none';
+
+      }
+
+    });
+
+  </script>
 
 </body>
+
 </html>
