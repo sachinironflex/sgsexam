@@ -172,12 +172,12 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.15); /* Stronger shadow on hover */
     }
     /* Specific style for Admin Login button */
-    #loginPanel button[onclick="adminLogin()"] {
+    #loginPanel .admin-login-fields button { /* Targeting the login button inside the admin fields container */
       background: #f0c14b; /* Amazon-like yellow-orange */
       color: #111; /* Dark text for contrast */
-      margin-bottom: 25px; /* More space below login button */
+      margin-bottom: 0; /* No extra margin here */
     }
-    #loginPanel button[onclick="adminLogin()"]:hover {
+    #loginPanel .admin-login-fields button:hover {
       background: #ddb347; /* Darker yellow-orange on hover */
     }
     /* Specific style for ENTER STUDY HUB button (formerly SHOP NOW) */
@@ -248,6 +248,24 @@
     }
     #loginPanel .auth-separator:not(:empty)::after {
         margin-left: .25em;
+    }
+
+    /* Admin Login Fields Container */
+    #adminLoginFieldsContainer {
+        display: none; /* Hidden by default */
+        width: 100%;
+        max-width: 350px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        text-align: center;
+    }
+    #adminLoginFieldsContainer h2 {
+        font-size: 1.8em; /* Slightly smaller for this section */
+        margin-bottom: 15px;
+    }
+    #adminLoginFieldsContainer input {
+        margin-bottom: 10px; /* Less margin for compact form */
     }
 
     /* User Panel (Home Page) Styling */
@@ -780,11 +798,6 @@
   <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
 
   <div id="loginPanel">
-    <h2>Admin Login</h2>
-    <input type="text" id="adminId" placeholder="Admin ID" />
-    <input type="password" id="adminPass" placeholder="Password" />
-    <button onclick="adminLogin()">Login</button>
-    <hr />
     <h2>User Login / Sign Up</h2>
     <input type="email" id="userEmail" placeholder="Email" />
     <input type="password" id="userPassword" placeholder="Password" />
@@ -803,6 +816,17 @@
         <button onclick="signInAnonymouslyUser()" class="anonymous-btn">
             <i class="fas fa-user-secret"></i> Continue Anonymously
         </button>
+    </div>
+
+    <button onclick="toggleAdminLoginFields()" style="margin-top: 30px; background: #555; color: white;">
+        Admin Login
+    </button>
+
+    <div id="adminLoginFieldsContainer">
+        <h2>Admin Panel Login</h2>
+        <input type="text" id="adminId" placeholder="Admin ID" />
+        <input type="password" id="adminPass" placeholder="Password" />
+        <button onclick="adminLogin()">Login</button>
     </div>
   </div>
 
@@ -945,10 +969,8 @@
     policiesRef.on('value', (snapshot) => {
         policies = snapshot.val() || {};
         console.log("Policies loaded from Firebase:", policies);
-        // If admin panel is currently visible, populate fields
-        if (document.getElementById('adminPanel').style.display === 'block') {
-            populatePolicyFields();
-        }
+        // Removed populatePolicyFields() from here to prevent overwriting local edits
+        // populatePolicyFields() will now be called only when adminPanel is explicitly shown
     });
 
     // Listener for Firebase Auth state changes
@@ -1037,7 +1059,7 @@
         } else { // Default is 'alert'
             const okBtn = document.createElement('button');
             okBtn.innerText = 'OK';
-            okOkBtn.onclick = hideMessageBox;
+            okBtn.onclick = hideMessageBox; 
             messageBoxButtons.appendChild(okBtn);
         }
         document.getElementById('customMessageBox').style.display = 'flex';
@@ -1055,7 +1077,7 @@
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('logoutButton').style.display = 'block';
-        populatePolicyFields(); // Populate policy fields when admin logs in (policies object already updated by global listener)
+        populatePolicyFields(); // Populate policy fields when admin logs in
         history.pushState({page: 'adminPanel'}, '', '#adminPanel'); // Add admin panel to history
       } else {
         showMessageBox('Invalid Admin Credentials');
@@ -1586,6 +1608,16 @@
         descriptionContent.style.maxHeight = '0px';
         toggleBtn.textContent = 'Show More';
       }
+    }
+
+    // Toggle Admin Login Fields visibility
+    function toggleAdminLoginFields() {
+        const adminFieldsContainer = document.getElementById('adminLoginFieldsContainer');
+        if (adminFieldsContainer.style.display === 'none' || adminFieldsContainer.style.display === '') {
+            adminFieldsContainer.style.display = 'block';
+        } else {
+            adminFieldsContainer.style.display = 'none';
+        }
     }
 
     // Handle browser back/forward buttons
