@@ -627,77 +627,77 @@
       <button class="search-icon" onclick="toggleSearch()">
         <i class="fas fa-search"></i>
       </button>
-      <input type="text" id="searchInput" placeholder="सामग्री खोजें..." oninput="filterMaterials()" /> <!-- Changed placeholder and function -->
-      <button onclick="viewLibraryPage()"> <!-- Changed function -->
-        <i class="fas fa-book"></i> मेरी लाइब्रेरी <!-- Changed text and icon -->
+      <input type="text" id="searchInput" placeholder="Search Material..." oninput="filterMaterials()" />
+      <button onclick="viewLibraryPage()">
+        <i class="fas fa-book"></i> My Library
       </button>
       <button id="logoutButton" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> लॉगआउट करें
+        <i class="fas fa-sign-out-alt"></i> Logout
       </button>
     </div>
   </header>
 
   <div id="loginPanel">
-    <h2>एडमिन लॉगिन</h2>
-    <input type="text" id="adminId" placeholder="एडमिन आईडी" />
-    <input type="password" id="adminPass" placeholder="पासवर्ड" />
-    <button onclick="adminLogin()">लॉगिन करें</button>
+    <h2>Admin Login</h2>
+    <input type="text" id="adminId" placeholder="Admin ID" />
+    <input type="password" id="adminPass" placeholder="Password" />
+    <button onclick="adminLogin()">Login</button>
     <hr />
-    <h2>यूज़र लॉगिन / साइन अप</h2>
-    <input type="email" id="userEmail" placeholder="ईमेल" />
-    <input type="password" id="userPassword" placeholder="पासवर्ड" />
-    <button onclick="userLogin()">लॉगिन करें</button>
-    <button onclick="userSignUp()" style="background:#28a745;">साइन अप करें</button> <!-- Green for Sign Up -->
+    <h2>User Login / Sign Up</h2>
+    <input type="email" id="userEmail" placeholder="Email" />
+    <input type="password" id="userPassword" placeholder="Password" />
+    <button onclick="userLogin()">Login</button>
+    <button onclick="userSignUp()" style="background:#28a745;">Sign Up</button>
 
-    <div class="auth-separator">या</div>
+    <div class="auth-separator">OR</div>
 
     <div class="user-auth-section">
         <button onclick="signInWithGoogle()">
-            <i class="fab fa-google"></i> गूगल से लॉगिन करें
+            <i class="fab fa-google"></i> Login with Google
         </button>
         <button onclick="signInWithApple()" class="apple-btn">
-            <i class="fab fa-apple"></i> एप्पल से लॉगिन करें
+            <i class="fab fa-apple"></i> Login with Apple
         </button>
         <button onclick="signInAnonymouslyUser()" class="anonymous-btn">
-            <i class="fas fa-user-secret"></i> गुमनाम रूप से जारी रखें
+            <i class="fas fa-user-secret"></i> Continue Anonymously
         </button>
     </div>
   </div>
 
   <div id="adminPanel">
-    <h2>एडमिन पैनल</h2>
-    <input type="text" id="materialTitle" placeholder="अध्ययन सामग्री शीर्षक" /><br /> <!-- Changed ID and placeholder -->
-    <textarea id="materialDescription" placeholder="विवरण"></textarea><br /> <!-- Changed ID and placeholder -->
-    <input type="text" id="pdfLink" placeholder="फ्री पीडीएफ लिंक (वैकल्पिक)" /><br /> <!-- Changed ID and placeholder -->
-    <input type="text" id="paidPdfLink" placeholder="भुगतान वाला पीडीएफ लिंक" /><br /> <!-- Changed to mandatory -->
-    <input type="file" id="materialImages" multiple accept="image/*" /><br /> <!-- Changed ID -->
-    <button onclick="addMaterial()">अध्ययन सामग्री जोड़ें</button> <!-- Changed function and text -->
-    <div id="adminMaterialList"></div> <!-- Changed ID -->
-    <button onclick="logout()">लॉगआउट करें</button>
+    <h2>Admin Panel</h2>
+    <input type="text" id="materialTitle" placeholder="Study Material Title" /><br />
+    <textarea id="materialDescription" placeholder="Description"></textarea><br />
+    <input type="text" id="pdfLink" placeholder="Free PDF Link (Optional)" /><br />
+    <input type="text" id="paidPdfLink" placeholder="Paid PDF Link" /><br />
+    <input type="file" id="materialImages" multiple accept="image/*" /><br />
+    <button onclick="addMaterial()">Add Study Material</button>
+    <div id="adminMaterialList"></div>
+    <button onclick="logout()">Logout</button>
   </div>
 
   <div id="userPanel">
-    <h2>सभी अध्ययन सामग्री</h2> <!-- Changed text -->
-    <div id="materialList"></div> <!-- Changed ID -->
+    <h2>All Study Materials</h2>
+    <div id="materialList"></div>
   </div>
 
-  <div id="materialDetail"> <!-- Changed ID -->
-    <h2 id="materialDetailTitle"></h2> <!-- Changed ID -->
+  <div id="materialDetail">
+    <h2 id="materialDetailTitle"></h2>
     <!-- <p class="price" id="detailPrice"></p> Removed price display -->
-    <div class="slider" id="materialDetailImages"></div> <!-- Changed ID -->
+    <div class="slider" id="materialDetailImages"></div>
     <div class="buttons">
-      <button onclick="addToLibrary()">लाइब्रेरी में जोड़ें</button> <!-- Changed function and text -->
-      <button id="openFreePdfBtn" style="display:none;" onclick="openFreePdf()">फ्री पीडीएफ खोलें</button> <!-- Changed ID, function and text -->
-      <button id="openPaidPdfBtn" onclick="openPaidPdf()">भुगतान वाला पीडीएफ खरीदें</button> <!-- New button for paid PDF, always visible -->
-      <button id="backButtonDetail" onclick="history.back()">वापस जाएं</button> <!-- Changed function -->
+      <button onclick="addToLibrary()">Add to Library</button>
+      <button id="openFreePdfBtn" style="display:none;" onclick="openFreePdf()">Open Free PDF</button>
+      <button id="openPaidPdfBtn" onclick="openPaidPdf()">Buy Paid PDF</button>
+      <button id="backButtonDetail" onclick="history.back()">Back</button>
     </div>
-    <div id="materialDetailDescription"></div> <!-- Changed ID -->
+    <div id="materialDetailDescription"></div>
   </div>
 
-  <div id="libraryPage"> <!-- Changed ID -->
-    <h2>मेरी लाइब्रेरी</h2> <!-- Changed text -->
-    <div id="libraryItems"></div> <!-- Changed ID -->
-    <button onclick="history.back()">स्टडी हब पर वापस जाएं</button> <!-- Changed function and text -->
+  <div id="libraryPage">
+    <h2>My Library</h2>
+    <div id="libraryItems"></div>
+    <button onclick="history.back()">Back to Study Hub</button>
   </div>
 
   <!-- Custom Message Box HTML -->
@@ -705,7 +705,7 @@
       <div>
           <p id="messageBoxText"></p>
           <div id="messageBoxButtons">
-            <button onclick="hideMessageBox()">ठीक है</button>
+            <button onclick="hideMessageBox()">OK</button>
           </div>
       </div>
   </div>
@@ -725,14 +725,13 @@
     const db = firebase.database();
     const auth = firebase.auth(); // Initialize Firebase Authentication
 
-    let materials = []; // Changed from products
-    let selectedMaterial = null; // Changed from selectedProduct
-    let library = []; // Changed from cart
-    let currentUser = null; // To store the currently authenticated user
-    let userLibraryRef = null; // Changed from userCartRef - Reference to the user-specific library in Firebase Realtime Database
+    let materials = [];
+    let selectedMaterial = null;
+    let library = [];
+    let currentUser = null;
+    let userLibraryRef = null;
 
     // Custom Message Box Functions
-    // Modified to accept a callback for confirmation and custom buttons
     function showMessageBox(message, type = 'alert', callback = null) {
         document.getElementById('messageBoxText').innerText = message;
         const messageBoxButtons = document.getElementById('messageBoxButtons');
@@ -740,7 +739,7 @@
 
         if (type === 'confirm') {
             const confirmBtn = document.createElement('button');
-            confirmBtn.innerText = 'हाँ';
+            confirmBtn.innerText = 'Yes';
             confirmBtn.classList.add('confirm-btn');
             confirmBtn.onclick = () => {
                 hideMessageBox();
@@ -749,7 +748,7 @@
             messageBoxButtons.appendChild(confirmBtn);
 
             const cancelBtn = document.createElement('button');
-            cancelBtn.innerText = 'नहीं';
+            cancelBtn.innerText = 'No';
             cancelBtn.classList.add('cancel-btn');
             cancelBtn.onclick = () => {
                 hideMessageBox();
@@ -758,7 +757,7 @@
             messageBoxButtons.appendChild(cancelBtn);
         } else { // Default is 'alert'
             const okBtn = document.createElement('button');
-            okBtn.innerText = 'ठीक है';
+            okBtn.innerText = 'OK';
             okBtn.onclick = hideMessageBox;
             messageBoxButtons.appendChild(okBtn);
         }
@@ -772,65 +771,56 @@
     // Listener for Firebase Auth state changes
     auth.onAuthStateChanged(user => {
       if (user) {
-        // User is signed in.
         currentUser = user;
         console.log("User logged in:", user.uid, user.email || "Anonymous");
 
-        // Set up user-specific library reference in Realtime Database
-        // Data will be stored under /users/<UID>/library
-        userLibraryRef = db.ref('users/' + user.uid + '/library'); // Changed from userCartRef
+        userLibraryRef = db.ref('users/' + user.uid + '/library');
         
-        // Listen for changes to the user's library in Firebase
         userLibraryRef.on('value', (snapshot) => {
-          library = snapshot.val() || []; // Update local library with Firebase data (changed from cart)
+          library = snapshot.val() || [];
           console.log("Library loaded from Firebase:", library);
-          // If the library page is currently displayed, re-render it to show updated items
-          if (document.getElementById('libraryPage').style.display === 'block') { // Changed from cartPage
-              viewLibraryPage(); // Changed function
+          if (document.getElementById('libraryPage').style.display === 'block') {
+              viewLibraryPage();
           }
         });
 
-        // Hide login panel and show user panel automatically on successful login
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('userPanel').style.display = 'block';
-        document.getElementById('logoutButton').style.display = 'block'; // Show logout button
-        document.getElementById('searchInput').classList.add('show'); // Show search input on login
+        document.getElementById('logoutButton').style.display = 'block';
+        document.getElementById('searchInput').classList.add('show');
       } else {
-        // User is signed out.
         currentUser = null;
         console.log("User logged out.");
-        library = []; // Clear local library when user logs out (changed from cart)
+        library = [];
 
-        // Detach the Firebase library listener if it was active
-        if (userLibraryRef) { // Changed from userCartRef
-          userLibraryRef.off(); // Changed from userCartRef
-          userLibraryRef = null; // Changed from userCartRef
+        if (userLibraryRef) {
+          userLibraryRef.off();
+          userLibraryRef = null;
         }
 
-        // Reset UI to show login panel and hide other panels
         document.getElementById('userPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('materialDetail').style.display = 'none'; // Changed from productDetail
-        document.getElementById('libraryPage').style.display = 'none'; // Changed from cartPage
-        document.getElementById('loginPanel').style.display = 'flex'; // Show login panel
-        document.getElementById('logoutButton').style.display = 'none'; // Hide search input on logout
-        document.getElementById('searchInput').classList.remove('show'); // Hide search input on logout
+        document.getElementById('materialDetail').style.display = 'none';
+        document.getElementById('libraryPage').style.display = 'none';
+        document.getElementById('loginPanel').style.display = 'flex';
+        document.getElementById('logoutButton').style.display = 'none';
+        document.getElementById('searchInput').classList.remove('show');
       }
     });
 
     // Listen for material data changes from Firebase Realtime Database
-    firebase.database().ref('materials').on('value', (snapshot) => { // Changed from products
+    firebase.database().ref('materials').on('value', (snapshot) => {
       const fetchedMaterials = [];
       snapshot.forEach((childSnapshot) => {
           const materialData = childSnapshot.val();
           fetchedMaterials.push({
-              firebaseKey: childSnapshot.key, // Store the Firebase key
+              firebaseKey: childSnapshot.key,
               ...materialData
           });
       });
       materials = fetchedMaterials;
-      showUserMaterials(); // Changed function
-      showAdminMaterials(); // Changed function
+      showUserMaterials();
+      showAdminMaterials();
     });
 
     // Admin Login Function (remains local for simplicity as per original code)
@@ -840,9 +830,9 @@
       if (id === 'Sachin' && pass === '802165') {
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
-        document.getElementById('logoutButton').style.display = 'block'; // Show logout button for admin
+        document.getElementById('logoutButton').style.display = 'block';
       } else {
-        showMessageBox('अमान्य एडमिन क्रेडेंशियल'); // Changed from alert
+        showMessageBox('Invalid Admin Credentials');
       }
     }
 
@@ -851,16 +841,15 @@
       const email = document.getElementById('userEmail').value;
       const password = document.getElementById('userPassword').value;
       if (!email || !password) { 
-        showMessageBox('साइन अप के लिए कृपया ईमेल और पासवर्ड दोनों दर्ज करें।'); // Changed from alert
+        showMessageBox('Please enter both email and password for sign up.');
         return; 
       }
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          showMessageBox('यूज़र सफलतापूर्वक साइन अप हो गया! आप अब लॉगिन हैं।'); // Changed from alert
-          // onAuthStateChanged will handle UI update automatically
+          showMessageBox('User signed up successfully! You are now logged in.');
         })
         .catch((error) => {
-          showMessageBox('साइन अप करने में त्रुटि: ' + error.message); // Changed from alert
+          showMessageBox('Error signing up: ' + error.message);
         });
     }
 
@@ -869,16 +858,15 @@
       const email = document.getElementById('userEmail').value;
       const password = document.getElementById('userPassword').value;
       if (!email || !password) { 
-        showMessageBox('लॉगिन के लिए कृपया ईमेल और पासवर्ड दोनों दर्ज करें।'); // Changed from alert
+        showMessageBox('Please enter both email and password for login.');
         return; 
       }
       auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          showMessageBox('यूज़र सफलतापूर्वक लॉगिन हो गया!'); // Changed from alert
-          // onAuthStateChanged will handle UI update automatically
+          showMessageBox('User logged in successfully!');
         })
         .catch((error) => {
-          showMessageBox('लॉगिन करने में त्रुटि: ' + error.message); // Changed from alert
+          showMessageBox('Error logging in: ' + error.message);
         });
     }
 
@@ -887,43 +875,35 @@
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider)
         .then((result) => {
-          showMessageBox('गूगल से साइन इन किया गया!'); // Changed from alert
-          // onAuthStateChanged will handle UI update automatically
+          showMessageBox('Signed in with Google!');
         })
         .catch((error) => {
-          showMessageBox('गूगल से साइन इन करने में त्रुटि: ' + error.message); // Changed from alert
+          showMessageBox('Error signing in with Google: ' + error.message);
         });
     }
 
     // Sign In with Apple (Placeholder - requires specific Apple Developer setup)
     function signInWithApple() {
-        showMessageBox('एप्पल साइन-इन इस डेमो में पूरी तरह से लागू नहीं है। कृपया कोई अन्य तरीका उपयोग करें।');
-        // In a real application, you would set up Firebase Apple authentication:
-        // const provider = new firebase.auth.OAuthProvider('apple.com');
-        // auth.signInWithPopup(provider)
-        // .then((result) => { /* ... */ })
-        // .catch((error) => { /* ... */ });
+        showMessageBox('Apple Sign-In is not fully implemented in this demo. Please use another method.');
     }
 
     // Sign In Anonymously
     function signInAnonymouslyUser() {
         auth.signInAnonymously()
         .then(() => {
-            showMessageBox('गुमनाम रूप से साइन इन किया गया!');
-            // onAuthStateChanged will handle UI update automatically
+            showMessageBox('Signed in anonymously!');
         })
         .catch((error) => {
-            showMessageBox('गुमनाम रूप से साइन इन करने में त्रुटि: ' + error.message);
+            showMessageBox('Error signing in anonymously: ' + error.message);
         });
     }
 
     // Logout Function
     function logout() {
       auth.signOut().then(() => {
-        showMessageBox('सफलतापूर्वक लॉगआउट किया गया!'); // Changed from alert
-        // onAuthStateChanged will handle UI update and panel display
+        showMessageBox('Logged out successfully!');
       }).catch((error) => {
-        showMessageBox('लॉगआउट करने में त्रुटि: ' + error.message); // Changed from alert
+        showMessageBox('Error logging out: ' + error.message);
       });
     }
 
@@ -931,68 +911,60 @@
     function openUserPanel() {
       document.getElementById('loginPanel').style.display = 'none';
       document.getElementById('userPanel').style.display = 'block';
-      document.getElementById('searchInput').classList.add('show'); // Show search input when user panel opens
+      document.getElementById('searchInput').classList.add('show');
     }
 
     // Add Study Material (Admin Function)
     function addMaterial() {
       const title = document.getElementById('materialTitle').value;
       const description = document.getElementById('materialDescription').value;
-      const pdfLink = document.getElementById('pdfLink').value; // Free PDF Link (optional)
-      const paidPdfLink = document.getElementById('paidPdfLink').value; // Paid PDF Link (mandatory)
+      const pdfLink = document.getElementById('pdfLink').value;
+      const paidPdfLink = document.getElementById('paidPdfLink').value;
       const imageFiles = document.getElementById('materialImages').files;
 
-      // Validation: paidPdfLink is now mandatory
       if (!title || !description || !paidPdfLink) {
-        showMessageBox('कृपया शीर्षक, विवरण और भुगतान वाला पीडीएफ लिंक भरें।'); // Updated validation message
+        showMessageBox('Please fill in title, description, and paid PDF link.');
         return;
       }
 
       const imageUrls = [];
-      // In a real app, you'd upload images to Firebase Storage and get their URLs.
-      // For this demo, we'll use placeholder images or assume direct URLs if provided.
-      // If no files are selected, we'll use a generic placeholder.
       if (imageFiles.length > 0) {
           for (let i = 0; i < imageFiles.length; i++) {
-              // Simulate image upload by creating a temporary URL
               imageUrls.push(URL.createObjectURL(imageFiles[i]));
           }
       } else {
-          // Placeholder image if no image is uploaded
           imageUrls.push('https://placehold.co/300x200/cccccc/000000?text=No+Image');
       }
 
       const newMaterial = {
-        id: Date.now(), // Simple unique ID
+        id: Date.now(),
         title,
         description,
-        pdfLink: pdfLink || null, // Free PDF link is optional
-        paidPdfLink: paidPdfLink, // Paid PDF link is mandatory
+        pdfLink: pdfLink || null,
+        paidPdfLink: paidPdfLink,
         images: imageUrls
       };
 
-      // Push to Firebase Realtime Database
       db.ref('materials').push(newMaterial)
         .then(() => {
-          showMessageBox('अध्ययन सामग्री सफलतापूर्वक जोड़ी गई!'); // Changed from alert
-          // Clear form
+          showMessageBox('Study material added successfully!');
           document.getElementById('materialTitle').value = '';
           document.getElementById('materialDescription').value = '';
           document.getElementById('pdfLink').value = '';
-          document.getElementById('paidPdfLink').value = ''; // Clear paid PDF link field
+          document.getElementById('paidPdfLink').value = '';
           document.getElementById('materialImages').value = '';
         })
         .catch((error) => {
-          showMessageBox('सामग्री जोड़ने में त्रुटि: ' + error.message); // Changed from alert
+          showMessageBox('Error adding material: ' + error.message);
         });
     }
 
     // Display Materials in Admin Panel
     function showAdminMaterials() {
       const adminMaterialList = document.getElementById('adminMaterialList');
-      adminMaterialList.innerHTML = '<h3>सामग्री प्रबंधित करें</h3>';
+      adminMaterialList.innerHTML = '<h3>Manage Materials</h3>';
       if (materials.length === 0) {
-        adminMaterialList.innerHTML += '<p>अभी तक कोई सामग्री नहीं जोड़ी गई है।</p>';
+        adminMaterialList.innerHTML += '<p>No materials added yet.</p>';
         return;
       }
 
@@ -1001,11 +973,11 @@
         materialDiv.classList.add('material');
         materialDiv.innerHTML = `
           <h4>${material.title}</h4>
-          ${material.pdfLink ? `<p>फ्री पीडीएफ: <a href="${material.pdfLink}" target="_blank">लिंक</a></p>` : '<p>फ्री पीडीएफ: उपलब्ध नहीं</p>'}
-          <p>भुगतान वाला पीडीएफ: <a href="${material.paidPdfLink}" target="_blank">लिंक</a></p>
+          ${material.pdfLink ? `<p>Free PDF: <a href="${material.pdfLink}" target="_blank">Link</a></p>` : '<p>Free PDF: Not Available</p>'}
+          <p>Paid PDF: <a href="${material.paidPdfLink}" target="_blank">Link</a></p>
           <div class="buttons">
-            <button onclick="editMaterial(${index})">संपादित करें</button>
-            <button onclick="deleteMaterial(${index})" style="background:#e74c3c;">हटाएं</button>
+            <button onclick="editMaterial(${index})">Edit</button>
+            <button onclick="deleteMaterial(${index})" style="background:#e74c3c;">Delete</button>
           </div>
         `;
         adminMaterialList.appendChild(materialDiv);
@@ -1015,29 +987,28 @@
     // Edit Material (Admin Function)
     function editMaterial(index) {
       const material = materials[index];
-      const newTitle = prompt('नया शीर्षक दर्ज करें:', material.title); // Changed from alert/confirm
-      const newDescription = prompt('नया विवरण दर्ज करें:', material.description); // Changed from alert/confirm
-      const newPdfLink = prompt('नया फ्री पीडीएफ लिंक दर्ज करें (वैकल्पिक):', material.pdfLink || ''); // Free PDF link is optional
-      const newPaidPdfLink = prompt('नया भुगतान वाला पीडीएफ लिंक दर्ज करें:', material.paidPdfLink); // Paid PDF link is mandatory
+      const newTitle = prompt('Enter new title:', material.title);
+      const newDescription = prompt('Enter new description:', material.description);
+      const newPdfLink = prompt('Enter new Free PDF Link (Optional):', material.pdfLink || '');
+      const newPaidPdfLink = prompt('Enter new Paid PDF Link:', material.paidPdfLink);
 
-      if (newTitle !== null && newDescription !== null && newPaidPdfLink !== null) { // Validate mandatory fields
-        // Use the stored firebaseKey directly
+      if (newTitle !== null && newDescription !== null && newPaidPdfLink !== null) {
         const materialKey = material.firebaseKey;
 
         if (materialKey) {
           db.ref('materials/' + materialKey).update({
             title: newTitle,
             description: newDescription,
-            pdfLink: newPdfLink || null, // Update free PDF link, null if empty
-            paidPdfLink: newPaidPdfLink // Update paid PDF link
+            pdfLink: newPdfLink || null,
+            paidPdfLink: newPaidPdfLink
           })
-          .then(() => showMessageBox('सामग्री सफलतापूर्वक अपडेट की गई!')) // Changed from alert
-          .catch(error => showMessageBox('सामग्री अपडेट करने में त्रुटि: ' + error.message)); // Changed from alert
+          .then(() => showMessageBox('Material updated successfully!'))
+          .catch(error => showMessageBox('Error updating material: ' + error.message));
         } else {
-          showMessageBox('सामग्री डेटाबेस में नहीं मिली।'); // Changed from alert
+          showMessageBox('Material not found in database.');
         }
       } else {
-          showMessageBox('शीर्षक, विवरण और भुगतान वाला पीडीएफ लिंक अनिवार्य हैं।');
+          showMessageBox('Title, description, and paid PDF link are mandatory.');
       }
     }
 
@@ -1045,17 +1016,17 @@
     function deleteMaterial(index) {
       const materialToDelete = materials[index];
       showMessageBox(
-        `क्या आप "${materialToDelete.title}" को हटाना चाहते हैं?`,
+        `Are you sure you want to delete "${materialToDelete.title}"?`,
         'confirm',
         (confirmed) => {
           if (confirmed) {
             const materialKey = materialToDelete.firebaseKey;
             if (materialKey) {
               db.ref('materials/' + materialKey).remove()
-                .then(() => showMessageBox('सामग्री सफलतापूर्वक हटाई गई!'))
-                .catch(error => showMessageBox('सामग्री हटाने में त्रुटि: ' + error.message));
+                .then(() => showMessageBox('Material deleted successfully!'))
+                .catch(error => showMessageBox('Error deleting material: ' + error.message));
             } else {
-              showMessageBox('सामग्री डेटाबेस में नहीं मिली।');
+              showMessageBox('Material not found in database.');
             }
           }
         }
@@ -1065,34 +1036,33 @@
     // Display Materials for Users
     function showUserMaterials() {
       const materialList = document.getElementById('materialList');
-      materialList.innerHTML = ''; // Clear previous materials
+      materialList.innerHTML = '';
 
       if (materials.length === 0) {
-        materialList.innerHTML = '<p style="text-align: center; width: 100%;">अभी तक कोई अध्ययन सामग्री उपलब्ध नहीं है।</p>';
+        materialList.innerHTML = '<p style="text-align: center; width: 100%;">No study materials available yet.</p>';
         return;
       }
 
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
       materials.forEach((material, index) => {
-        // Filter by search term
         if (searchTerm && !material.title.toLowerCase().includes(searchTerm) && !material.description.toLowerCase().includes(searchTerm)) {
-          return; // Skip if no match
+          return;
         }
 
         const materialDiv = document.createElement('div');
         materialDiv.classList.add('material');
-        materialDiv.onclick = () => showMaterialDetail(index); // Click to view details
+        materialDiv.onclick = () => showMaterialDetail(index);
 
         materialDiv.innerHTML = `
           <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
           <h4>${material.title}</h4>
           <p class="description-content">${material.description}</p>
-          <p class="show-more-toggle" onclick="event.stopPropagation(); toggleDescription(this);">और दिखाएं</p>
+          <p class="show-more-toggle" onclick="event.stopPropagation(); toggleDescription(this);">Show More</p>
           <div class="buttons">
-            <button onclick="event.stopPropagation(); addToLibrary(${index})">लाइब्रेरी में जोड़ें</button>
-            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="event.stopPropagation(); openFreePdfFromList(${index})">फ्री पीडीएफ खोलें</button>` : ''}
-            <button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${index})">भुगतान वाला पीडीएफ खरीदें</button>
+            <button onclick="event.stopPropagation(); addToLibrary(${index})">Add to Library</button>
+            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="event.stopPropagation(); openFreePdfFromList(${index})">Open Free PDF</button>` : ''}
+            <button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${index})">Buy Paid PDF</button>
           </div>
         `;
         materialList.appendChild(materialDiv);
@@ -1104,10 +1074,10 @@
       const descriptionContent = toggleBtn.previousElementSibling;
       if (descriptionContent.style.maxHeight === '0px' || descriptionContent.style.maxHeight === '') {
         descriptionContent.style.maxHeight = descriptionContent.scrollHeight + 'px';
-        toggleBtn.textContent = 'कम दिखाएं';
+        toggleBtn.textContent = 'Show Less';
       } else {
         descriptionContent.style.maxHeight = '0px';
-        toggleBtn.textContent = 'और दिखाएं';
+        toggleBtn.textContent = 'Show More';
       }
     }
 
@@ -1115,12 +1085,12 @@
     function showMaterialDetail(index) {
       selectedMaterial = materials[index];
       document.getElementById('userPanel').style.display = 'none';
-      document.getElementById('materialDetail').style.display = 'block'; // Changed ID
+      document.getElementById('materialDetail').style.display = 'block';
 
-      document.getElementById('materialDetailTitle').innerText = selectedMaterial.title; // Changed ID
+      document.getElementById('materialDetailTitle').innerText = selectedMaterial.title;
       
-      const detailImagesContainer = document.getElementById('materialDetailImages'); // Changed ID
-      detailImagesContainer.innerHTML = ''; // Clear previous images
+      const detailImagesContainer = document.getElementById('materialDetailImages');
+      detailImagesContainer.innerHTML = '';
       if (selectedMaterial.images && selectedMaterial.images.length > 0) {
         selectedMaterial.images.forEach(imgSrc => {
           const img = document.createElement('img');
@@ -1131,7 +1101,7 @@
       } else {
         const img = document.createElement('img');
         img.src = 'https://placehold.co/300x200/cccccc/000000?text=No+Image';
-        img.alt = 'कोई छवि उपलब्ध नहीं';
+        img.alt = 'No Image Available';
         detailImagesContainer.appendChild(img);
       }
 
@@ -1140,7 +1110,6 @@
         <p>${selectedMaterial.description}</p>
       `;
 
-      // Update PDF buttons visibility based on links
       const openFreePdfBtn = document.getElementById('openFreePdfBtn');
       const openPaidPdfBtn = document.getElementById('openPaidPdfBtn');
 
@@ -1150,7 +1119,6 @@
           openFreePdfBtn.style.display = 'none';
       }
 
-      // Paid PDF button is always visible as it's a mandatory field now
       openPaidPdfBtn.style.display = 'inline-block';
     }
 
@@ -1159,7 +1127,7 @@
         if (selectedMaterial && selectedMaterial.pdfLink) {
             window.open(selectedMaterial.pdfLink, '_blank');
         } else {
-            showMessageBox('इस सामग्री के लिए कोई फ्री पीडीएफ लिंक उपलब्ध नहीं है।');
+            showMessageBox('No free PDF link available for this material.');
         }
     }
 
@@ -1168,7 +1136,7 @@
         if (selectedMaterial && selectedMaterial.paidPdfLink) {
             window.open(selectedMaterial.paidPdfLink, '_blank');
         } else {
-            showMessageBox('इस सामग्री के लिए कोई भुगतान वाला पीडीएफ लिंक उपलब्ध नहीं है।');
+            showMessageBox('No paid PDF link available for this material.');
         }
     }
 
@@ -1178,7 +1146,7 @@
         if (material && material.pdfLink) {
             window.open(material.pdfLink, '_blank');
         } else {
-            showMessageBox('इस सामग्री के लिए कोई फ्री पीडीएफ लिंक उपलब्ध नहीं है।');
+            showMessageBox('No free PDF link available for this material.');
         }
     }
 
@@ -1188,52 +1156,49 @@
         if (material && material.paidPdfLink) {
             window.open(material.paidPdfLink, '_blank');
         } else {
-            showMessageBox('इस सामग्री के लिए कोई भुगतान वाला पीडीएफ लिंक उपलब्ध नहीं है।');
+            showMessageBox('No paid PDF link available for this material.');
         }
     }
 
     // Add Material to User's Library
     function addToLibrary(index) {
       if (!currentUser) {
-        showMessageBox('अपनी लाइब्रेरी में सामग्री जोड़ने के लिए कृपया लॉगिन करें।'); // Changed from alert
+        showMessageBox('Please log in to add materials to your library.');
         return;
       }
 
       const materialToAdd = materials[index];
-      // Check if material is already in library
       const isAlreadyInLibrary = library.some(item => item.id === materialToAdd.id);
 
       if (isAlreadyInLibrary) {
-        showMessageBox('यह सामग्री पहले से ही आपकी लाइब्रेरी में है!'); // Changed from alert
+        showMessageBox('This material is already in your library!');
         return;
       }
 
-      // Add to local library array
       library.push(materialToAdd);
-      // Update Firebase Realtime Database
       userLibraryRef.set(library)
-        .then(() => showMessageBox('सामग्री आपकी लाइब्रेरी में जोड़ी गई!')) // Changed from alert
-        .catch(error => showMessageBox('लाइब्रेरी में जोड़ने में त्रुटि: ' + error.message)); // Changed from alert
+        .then(() => showMessageBox('Material added to your library!'))
+        .catch(error => showMessageBox('Error adding to library: ' + error.message));
     }
 
     // View Library Page
     function viewLibraryPage() {
       if (!currentUser) {
-        showMessageBox('अपनी लाइब्रेरी देखने के लिए कृपया लॉगिन करें।'); // Changed from alert
+        showMessageBox('Please log in to view your library.');
         return;
       }
 
       document.getElementById('userPanel').style.display = 'none';
       document.getElementById('adminPanel').style.display = 'none';
-      document.getElementById('materialDetail').style.display = 'none'; // Changed ID
+      document.getElementById('materialDetail').style.display = 'none';
       document.getElementById('loginPanel').style.display = 'none';
-      document.getElementById('libraryPage').style.display = 'block'; // Changed ID
+      document.getElementById('libraryPage').style.display = 'block';
 
-      const libraryItemsDiv = document.getElementById('libraryItems'); // Changed ID
-      libraryItemsDiv.innerHTML = ''; // Clear previous items
+      const libraryItemsDiv = document.getElementById('libraryItems');
+      libraryItemsDiv.innerHTML = '';
 
       if (library.length === 0) {
-        libraryItemsDiv.innerHTML = '<p style="text-align: center; width: 100%;">आपकी लाइब्रेरी खाली है।</p>';
+        libraryItemsDiv.innerHTML = '<p style="text-align: center; width: 100%;">Your library is empty.</p>';
         return;
       }
 
@@ -1244,9 +1209,9 @@
           <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
           <h4>${material.title}</h4>
           <div class="buttons">
-            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="openFreePdfFromLibrary(${index})">फ्री पीडीएफ खोलें</button>` : ''}
-            <button class="buy-pdf-btn" onclick="openPaidPdfFromLibrary(${index})">भुगतान वाला पीडीएफ खरीदें</button>
-            <button onclick="removeFromLibrary(${index})" style="background:#e74c3c;">लाइब्रेरी से हटाएँ</button>
+            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="openFreePdfFromLibrary(${index})">Open Free PDF</button>` : ''}
+            <button class="buy-pdf-btn" onclick="openPaidPdfFromLibrary(${index})">Buy Paid PDF</button>
+            <button onclick="removeFromLibrary(${index})" style="background:#e74c3c;">Remove from Library</button>
           </div>
         `;
         libraryItemsDiv.appendChild(materialDiv);
@@ -1259,7 +1224,7 @@
         if (material && material.pdfLink) {
             window.open(material.pdfLink, '_blank');
         } else {
-            showMessageBox('इस सामग्री के लिए कोई फ्री पीडीएफ लिंक उपलब्ध नहीं है।');
+            showMessageBox('No free PDF link available for this material.');
         }
     }
 
@@ -1269,7 +1234,7 @@
         if (material && material.paidPdfLink) {
             window.open(material.paidPdfLink, '_blank');
         } else {
-            showMessageBox('इस सामग्री के लिए कोई भुगतान वाला पीडीएफ लिंक उपलब्ध नहीं है।');
+            showMessageBox('No paid PDF link available for this material.');
         }
     }
 
@@ -1277,15 +1242,14 @@
     function removeFromLibrary(index) {
       const materialToRemove = library[index];
       showMessageBox(
-        `क्या आप "${materialToRemove.title}" को अपनी लाइब्रेरी से हटाना चाहते हैं?`,
+        `Are you sure you want to remove "${materialToRemove.title}" from your library?`,
         'confirm',
         (confirmed) => {
           if (confirmed) {
-            library.splice(index, 1); // Remove from local array
-            // Update Firebase Realtime Database
+            library.splice(index, 1);
             userLibraryRef.set(library)
-              .then(() => showMessageBox('सामग्री लाइब्रेरी से हटाई गई!'))
-              .catch(error => showMessageBox('लाइब्रेरी से हटाने में त्रुटि: ' + error.message));
+              .then(() => showMessageBox('Material removed from library!'))
+              .catch(error => showMessageBox('Error removing from library: ' + error.message));
           }
         }
       );
@@ -1293,7 +1257,7 @@
 
     // Filter Materials based on search input
     function filterMaterials() {
-      showUserMaterials(); // Re-render user materials with current filter
+      showUserMaterials();
     }
 
     // Toggle search input visibility
@@ -1303,8 +1267,8 @@
       if (searchInput.classList.contains('show')) {
         searchInput.focus();
       } else {
-        searchInput.value = ''; // Clear search when hidden
-        filterMaterials(); // Reset filter
+        searchInput.value = '';
+        filterMaterials();
       }
     }
 
