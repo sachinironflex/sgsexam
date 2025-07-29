@@ -27,21 +27,21 @@
     header {
       background-color: #2c3e50; /* Darker, more premium header */
       color: white;
-      padding: 20px 30px; /* More padding */
+      padding: 10px 30px 20px 30px; /* Adjusted padding-top to move text down */
       text-align: center;
       font-size: 28px; /* Slightly larger title */
       font-weight: 700; /* Bolder */
       position: relative;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow */
       display: flex;
+      flex-direction: column; /* Stack title and controls */
       justify-content: center;
       align-items: center;
     }
     .top-right-controls {
-      position: absolute;
-      right: 30px; /* More spacing from edge */
-      top: 50%;
-      transform: translateY(-50%);
+      position: absolute; /* Keep controls at top right */
+      right: 30px;
+      top: 10px; /* Aligned with the very top of the header */
       display: flex;
       gap: 15px; /* Increased gap */
       align-items: center;
@@ -75,7 +75,7 @@
       background: #2980b9; /* Darker blue on hover */
       transform: translateY(-1px); /* Slight lift */
     }
-    .search-icon {
+    .search-icon, .menu-icon {
       background: none;
       border: none;
       color: white;
@@ -83,7 +83,7 @@
       cursor: pointer;
       transition: color 0.3s ease;
     }
-    .search-icon:hover {
+    .search-icon:hover, .menu-icon:hover {
       color: #f0c14b; /* Highlight on hover */
     }
     /* Logout button specific style */
@@ -95,9 +95,13 @@
     #logoutButton:hover {
         background-color: #c0392b; /* Darker red on hover */
     }
+    /* Menu icon initially hidden */
+    #menuButton {
+        display: none;
+    }
 
     /* General Panel Styling */
-    #adminPanel, #materialDetail, #libraryPage {
+    #adminPanel, #materialDetail, #libraryPage, #policyContentDisplay {
       display: none;
       padding: 30px; /* More generous padding */
       max-width: 1200px; /* Max width for content */
@@ -557,15 +561,129 @@
         background: #229954;
     }
 
+    /* Side Drawer Styles */
+    .side-drawer {
+        height: 100%;
+        width: 0; /* Hidden by default */
+        position: fixed;
+        z-index: 1001; /* Above overlay */
+        top: 0;
+        right: 0;
+        background-color: #f8f9fa;
+        overflow-x: hidden;
+        transition: 0.5s; /* Smooth transition */
+        padding-top: 60px;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+    }
+
+    .side-drawer.open {
+        width: 250px; /* Open width */
+    }
+
+    .side-drawer .close-drawer-btn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+        background: none;
+        border: none;
+        color: #333;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .side-drawer .close-drawer-btn:hover {
+        color: #e74c3c;
+    }
+
+    .drawer-links {
+        padding: 8px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .drawer-links button {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 1.1em;
+        color: #333;
+        display: block;
+        transition: 0.3s;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .drawer-links button:hover {
+        background-color: #ddd;
+        color: #2c3e50;
+    }
+
+    .drawer-overlay {
+        position: fixed;
+        display: none; /* Hidden by default */
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.4);
+        z-index: 1000; /* Below drawer */
+        transition: opacity 0.5s;
+        opacity: 0;
+    }
+
+    .drawer-overlay.open {
+        display: block;
+        opacity: 1;
+    }
+
+    #policyContentDisplay {
+        padding: 30px;
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        animation: fadeIn 0.6s ease-out;
+        text-align: left; /* Align text left for readability */
+    }
+    #policyContentDisplay h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #policyContentDisplay button {
+        margin-top: 20px;
+        background: #95a5a6;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 1em;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #policyContentDisplay button:hover {
+        background: #7f8c8d;
+    }
+
 
     /* Responsive Adjustments */
     @media (max-width: 1024px) {
-        #materialList, #adminMaterialList, #libraryItems { /* Changed from #productList, #adminProductList, #cartItems */
+        #materialList, #adminMaterialList, #libraryItems {
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 25px;
         }
-        .material { /* Changed from .product */
+        .material {
             max-width: 250px;
+        }
+        .side-drawer.open {
+            width: 200px;
         }
     }
 
@@ -575,43 +693,46 @@
         padding: 15px 10px;
       }
       .top-right-controls {
-        position: static; /* Stack controls on smaller screens */
+        position: static;
         transform: none;
         margin-top: 10px;
         justify-content: center;
         width: 100%;
       }
       .top-right-controls input.show {
-        width: 100%; /* Full width search on mobile */
+        width: 100%;
       }
-      #adminPanel, #userPanel, #materialDetail, #libraryPage, #loginPanel { /* Changed from #productDetail, #cartPage */
+      #adminPanel, #userPanel, #materialDetail, #libraryPage, #loginPanel, #policyContentDisplay {
         padding: 15px;
         margin: 10px auto;
       }
-      #loginPanel button { /* Adjust button size for mobile login panel */
+      #loginPanel button {
         padding: 12px 15px;
         font-size: 1em;
       }
-      #materialList, #adminMaterialList, #libraryItems { /* Changed from #productList, #adminProductList, #cartItems */
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Smaller cards on mobile */
+      #materialList, #adminMaterialList, #libraryItems {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 15px;
       }
-      .material { /* Changed from .product */
+      .material {
         padding: 10px;
-        max-width: none; /* Allow materials to fill available width */
+        max-width: none;
       }
-      .material img { /* Changed from .product img */
+      .material img {
         height: 100px;
       }
-      #materialDetail #materialDetailImages img { /* Changed from #productDetail #detailImages img */
+      #materialDetail #materialDetailImages img {
         min-width: 250px;
         max-height: 300px;
       }
       h2 {
         font-size: 1.8em;
       }
-      #materialDetailTitle { /* Changed from #detailTitle */
+      #materialDetailTitle {
         font-size: 2em;
+      }
+      .side-drawer.open {
+          width: 180px; /* Smaller width on mobile */
       }
     }
   </style>
@@ -634,8 +755,29 @@
       <button id="logoutButton" onclick="logout()">
         <i class="fas fa-sign-out-alt"></i> Logout
       </button>
+      <button id="menuButton" class="menu-icon" onclick="toggleDrawer()">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
   </header>
+
+  <!-- Side Drawer -->
+  <div id="sideDrawer" class="side-drawer">
+    <button class="close-drawer-btn" onclick="toggleDrawer()">&times;</button>
+    <div class="drawer-links">
+      <button onclick="showHomePage()">Home</button> <!-- Added Home button -->
+      <button onclick="showPolicyContent('about')">About</button>
+      <button onclick="showPolicyContent('privacyPolicy')">Privacy Policy</button>
+      <button onclick="showPolicyContent('termsCondition')">Terms & Condition</button>
+      <button onclick="showPolicyContent('refundCancellation')">Refund & Cancellation</button>
+      <button onclick="showPolicyContent('shipping')">Shipping</button>
+      <button onclick="showPolicyContent('pricing')">Pricing</button>
+      <button onclick="showPolicyContent('contact')">Contact</button>
+      <button onclick="showPolicyContent('disclaimer')">Disclaimer</button>
+      <button onclick="showPolicyContent('faq')">FAQ</button>
+    </div>
+  </div>
+  <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
 
   <div id="loginPanel">
     <h2>Admin Login</h2>
@@ -673,6 +815,29 @@
     <input type="file" id="materialImages" multiple accept="image/*" /><br />
     <button onclick="addMaterial()">Add Study Material</button>
     <div id="adminMaterialList"></div>
+    
+    <hr />
+    <h2>Manage Policy Pages</h2>
+    <label for="aboutContent">About Content:</label><br>
+    <textarea id="aboutContent" placeholder="Enter About Us content"></textarea><br>
+    <label for="privacyPolicyContent">Privacy Policy Content:</label><br>
+    <textarea id="privacyPolicyContent" placeholder="Enter Privacy Policy content"></textarea><br>
+    <label for="termsConditionContent">Terms & Condition Content:</label><br>
+    <textarea id="termsConditionContent" placeholder="Enter Terms & Condition content"></textarea><br>
+    <label for="refundCancellationContent">Refund & Cancellation Content:</label><br>
+    <textarea id="refundCancellationContent" placeholder="Enter Refund & Cancellation content"></textarea><br>
+    <label for="shippingContent">Shipping Content:</label><br>
+    <textarea id="shippingContent" placeholder="Enter Shipping Policy content"></textarea><br>
+    <label for="pricingContent">Pricing Content:</label><br>
+    <textarea id="pricingContent" placeholder="Enter Pricing information"></textarea><br>
+    <label for="contactContent">Contact Content:</label><br>
+    <textarea id="contactContent" placeholder="Enter Contact information"></textarea><br>
+    <label for="disclaimerContent">Disclaimer Content:</label><br>
+    <textarea id="disclaimerContent" placeholder="Enter Disclaimer content"></textarea><br>
+    <label for="faqContent">FAQ Content:</label><br>
+    <textarea id="faqContent" placeholder="Enter FAQ content"></textarea><br>
+    <button onclick="savePolicyContent()">Save Policy Content</button>
+
     <button onclick="logout()">Logout</button>
   </div>
 
@@ -699,6 +864,14 @@
     <div id="libraryItems"></div>
     <button onclick="history.back()">Back to Study Hub</button>
   </div>
+
+  <!-- Policy Content Display Page -->
+  <div id="policyContentDisplay">
+      <h2 id="policyContentTitle"></h2>
+      <div id="policyContentText"></div>
+      <button onclick="history.back()">Back</button>
+  </div>
+
 
   <!-- Custom Message Box HTML -->
   <div id="customMessageBox">
@@ -730,6 +903,8 @@
     let library = [];
     let currentUser = null;
     let userLibraryRef = null;
+    let policies = {}; // To store policy content
+    let policiesRef = null; // Firebase ref for policies
 
     // Custom Message Box Functions
     function showMessageBox(message, type = 'alert', callback = null) {
@@ -780,14 +955,27 @@
           library = snapshot.val() || [];
           console.log("Library loaded from Firebase:", library);
           if (document.getElementById('libraryPage').style.display === 'block') {
-              viewLibraryPage();
+              _renderLibraryPage(); // Use internal render function
           }
         });
+
+        // Initialize policiesRef and listen for changes
+        policiesRef = db.ref('policies');
+        policiesRef.on('value', (snapshot) => {
+            policies = snapshot.val() || {};
+            console.log("Policies loaded from Firebase:", policies);
+            // Populate admin panel policy fields if admin is logged in
+            if (document.getElementById('adminPanel').style.display === 'block') {
+                populatePolicyFields();
+            }
+        });
+
 
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('userPanel').style.display = 'block';
         document.getElementById('logoutButton').style.display = 'block';
         document.getElementById('searchInput').classList.add('show');
+        document.getElementById('menuButton').style.display = 'block'; // Show menu button on login
       } else {
         currentUser = null;
         console.log("User logged out.");
@@ -797,14 +985,21 @@
           userLibraryRef.off();
           userLibraryRef = null;
         }
+        if (policiesRef) { // Detach policies listener on logout
+            policiesRef.off();
+            policiesRef = null;
+        }
 
         document.getElementById('userPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'none';
         document.getElementById('materialDetail').style.display = 'none';
         document.getElementById('libraryPage').style.display = 'none';
+        document.getElementById('policyContentDisplay').style.display = 'none'; // Hide policy content
         document.getElementById('loginPanel').style.display = 'flex';
         document.getElementById('logoutButton').style.display = 'none';
         document.getElementById('searchInput').classList.remove('show');
+        document.getElementById('menuButton').style.display = 'none'; // Hide menu button on logout
+        toggleDrawer(false); // Ensure drawer is closed and hidden on logout
       }
     });
 
@@ -819,7 +1014,7 @@
           });
       });
       materials = fetchedMaterials;
-      showUserMaterials();
+      showUserMaterials(); // This will call _renderUserPanel internally if user is logged in
       showAdminMaterials();
     });
 
@@ -831,6 +1026,8 @@
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('logoutButton').style.display = 'block';
+        populatePolicyFields(); // Populate policy fields when admin logs in
+        history.pushState({page: 'adminPanel'}, '', '#adminPanel'); // Add admin panel to history
       } else {
         showMessageBox('Invalid Admin Credentials');
       }
@@ -907,219 +1104,122 @@
       });
     }
 
-    // Open User Panel (Study Hub)
-    function openUserPanel() {
-      document.getElementById('loginPanel').style.display = 'none';
-      document.getElementById('userPanel').style.display = 'block';
-      document.getElementById('searchInput').classList.add('show');
-    }
-
-    // Add Study Material (Admin Function)
-    function addMaterial() {
-      const title = document.getElementById('materialTitle').value;
-      const description = document.getElementById('materialDescription').value;
-      const pdfLink = document.getElementById('pdfLink').value;
-      const paidPdfLink = document.getElementById('paidPdfLink').value;
-      const imageFiles = document.getElementById('materialImages').files;
-
-      if (!title || !description || !paidPdfLink) {
-        showMessageBox('Please fill in title, description, and paid PDF link.');
-        return;
-      }
-
-      const imageUrls = [];
-      if (imageFiles.length > 0) {
-          for (let i = 0; i < imageFiles.length; i++) {
-              imageUrls.push(URL.createObjectURL(imageFiles[i]));
-          }
-      } else {
-          imageUrls.push('https://placehold.co/300x200/cccccc/000000?text=No+Image');
-      }
-
-      const newMaterial = {
-        id: Date.now(),
-        title,
-        description,
-        pdfLink: pdfLink || null,
-        paidPdfLink: paidPdfLink,
-        images: imageUrls
-      };
-
-      db.ref('materials').push(newMaterial)
-        .then(() => {
-          showMessageBox('Study material added successfully!');
-          document.getElementById('materialTitle').value = '';
-          document.getElementById('materialDescription').value = '';
-          document.getElementById('pdfLink').value = '';
-          document.getElementById('paidPdfLink').value = '';
-          document.getElementById('materialImages').value = '';
-        })
-        .catch((error) => {
-          showMessageBox('Error adding material: ' + error.message);
-        });
-    }
-
-    // Display Materials in Admin Panel
-    function showAdminMaterials() {
-      const adminMaterialList = document.getElementById('adminMaterialList');
-      adminMaterialList.innerHTML = '<h3>Manage Materials</h3>';
-      if (materials.length === 0) {
-        adminMaterialList.innerHTML += '<p>No materials added yet.</p>';
-        return;
-      }
-
-      materials.forEach((material, index) => {
-        const materialDiv = document.createElement('div');
-        materialDiv.classList.add('material');
-        materialDiv.innerHTML = `
-          <h4>${material.title}</h4>
-          ${material.pdfLink ? `<p>Free PDF: <a href="${material.pdfLink}" target="_blank">Link</a></p>` : '<p>Free PDF: Not Available</p>'}
-          <p>Paid PDF: <a href="${material.paidPdfLink}" target="_blank">Link</a></p>
-          <div class="buttons">
-            <button onclick="editMaterial(${index})">Edit</button>
-            <button onclick="deleteMaterial(${index})" style="background:#e74c3c;">Delete</button>
-          </div>
-        `;
-        adminMaterialList.appendChild(materialDiv);
-      });
-    }
-
-    // Edit Material (Admin Function)
-    function editMaterial(index) {
-      const material = materials[index];
-      const newTitle = prompt('Enter new title:', material.title);
-      const newDescription = prompt('Enter new description:', material.description);
-      const newPdfLink = prompt('Enter new Free PDF Link (Optional):', material.pdfLink || '');
-      const newPaidPdfLink = prompt('Enter new Paid PDF Link:', material.paidPdfLink);
-
-      if (newTitle !== null && newDescription !== null && newPaidPdfLink !== null) {
-        const materialKey = material.firebaseKey;
-
-        if (materialKey) {
-          db.ref('materials/' + materialKey).update({
-            title: newTitle,
-            description: newDescription,
-            pdfLink: newPdfLink || null,
-            paidPdfLink: newPaidPdfLink
-          })
-          .then(() => showMessageBox('Material updated successfully!'))
-          .catch(error => showMessageBox('Error updating material: ' + error.message));
+    // --- Internal Render Functions (Do NOT push history state) ---
+    function _renderMaterialDetail(index) {
+        selectedMaterial = materials[index]; // Ensure selectedMaterial is set
+        document.getElementById('materialDetailTitle').innerText = selectedMaterial.title;
+        const detailImagesContainer = document.getElementById('materialDetailImages');
+        detailImagesContainer.innerHTML = '';
+        if (selectedMaterial.images && selectedMaterial.images.length > 0) {
+            selectedMaterial.images.forEach(imgSrc => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = selectedMaterial.title;
+                detailImagesContainer.appendChild(img);
+            });
         } else {
-          showMessageBox('Material not found in database.');
+            const img = document.createElement('img');
+            img.src = 'https://placehold.co/300x200/cccccc/000000?text=No+Image';
+            img.alt = 'No Image Available';
+            detailImagesContainer.appendChild(img);
         }
-      } else {
-          showMessageBox('Title, description, and paid PDF link are mandatory.');
-      }
+        document.getElementById('materialDetailDescription').innerHTML = `<p>${selectedMaterial.description}</p>`;
+        const openFreePdfBtn = document.getElementById('openFreePdfBtn');
+        const openPaidPdfBtn = document.getElementById('openPaidPdfBtn');
+        if (selectedMaterial.pdfLink) {
+            openFreePdfBtn.style.display = 'inline-block';
+        } else {
+            openFreePdfBtn.style.display = 'none';
+        }
+        openPaidPdfBtn.style.display = 'inline-block';
+        document.getElementById('materialDetail').style.display = 'block';
     }
 
-    // Delete Material (Admin Function)
-    function deleteMaterial(index) {
-      const materialToDelete = materials[index];
-      showMessageBox(
-        `Are you sure you want to delete "${materialToDelete.title}"?`,
-        'confirm',
-        (confirmed) => {
-          if (confirmed) {
-            const materialKey = materialToDelete.firebaseKey;
-            if (materialKey) {
-              db.ref('materials/' + materialKey).remove()
-                .then(() => showMessageBox('Material deleted successfully!'))
-                .catch(error => showMessageBox('Error deleting material: ' + error.message));
-            } else {
-              showMessageBox('Material not found in database.');
-            }
-          }
+    function _renderLibraryPage() {
+        const libraryItemsDiv = document.getElementById('libraryItems');
+        libraryItemsDiv.innerHTML = '';
+        if (library.length === 0) {
+            libraryItemsDiv.innerHTML = '<p style="text-align: center; width: 100%;">Your library is empty.</p>';
+            return;
         }
-      );
+        library.forEach((material, index) => {
+            const materialDiv = document.createElement('div');
+            materialDiv.classList.add('material');
+            materialDiv.innerHTML = `
+                <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
+                <h4>${material.title}</h4>
+                <div class="buttons">
+                    ${material.pdfLink ? `<button class="open-pdf-btn" onclick="openFreePdfFromLibrary(${index})">Open Free PDF</button>` : ''}
+                    <button class="buy-pdf-btn" onclick="openPaidPdfFromLibrary(${index})">Buy Paid PDF</button>
+                    <button onclick="removeFromLibrary(${index})" style="background:#e74c3c;">Remove from Library</button>
+                </div>
+            `;
+            libraryItemsDiv.appendChild(materialDiv);
+        });
+        document.getElementById('libraryPage').style.display = 'block';
     }
 
-    // Display Materials for Users
-    function showUserMaterials() {
-      const materialList = document.getElementById('materialList');
-      materialList.innerHTML = '';
+    function _renderPolicyContent(policyKey) {
+        const titleMap = {
+            about: 'About Us',
+            privacyPolicy: 'Privacy Policy',
+            termsCondition: 'Terms & Conditions',
+            refundCancellation: 'Refund & Cancellation',
+            shipping: 'Shipping Policy',
+            pricing: 'Pricing',
+            contact: 'Contact Us',
+            disclaimer: 'Disclaimer',
+            faq: 'FAQ'
+        };
+        document.getElementById('policyContentTitle').innerText = titleMap[policyKey] || 'Content';
+        document.getElementById('policyContentText').innerHTML = policies[policyKey] || '<p>Content not available yet.</p>';
+        document.getElementById('policyContentDisplay').style.display = 'block';
+    }
 
-      if (materials.length === 0) {
-        materialList.innerHTML = '<p style="text-align: center; width: 100%;">No study materials available yet.</p>';
+    function _renderUserPanel() {
+        document.getElementById('userPanel').style.display = 'block';
+        showUserMaterials(); // Ensure materials are re-rendered
+    }
+
+    function _renderLoginPanel() {
+        document.getElementById('loginPanel').style.display = 'flex';
+    }
+
+    // --- Public Navigation Functions (Push history state) ---
+    function openUserPanel() { // Called on successful login or "Enter Study Hub"
+      hideAllPanels();
+      _renderUserPanel();
+      history.pushState({page: 'userPanel'}, '', '#userPanel');
+    }
+
+    function showMaterialDetail(index) {
+      hideAllPanels();
+      _renderMaterialDetail(index);
+      history.pushState({page: 'materialDetail', index: index}, '', `#materialDetail-${index}`);
+    }
+
+    function viewLibraryPage() {
+      if (!currentUser) {
+        showMessageBox('Please log in to view your library.');
         return;
       }
-
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-      materials.forEach((material, index) => {
-        if (searchTerm && !material.title.toLowerCase().includes(searchTerm) && !material.description.toLowerCase().includes(searchTerm)) {
-          return;
-        }
-
-        const materialDiv = document.createElement('div');
-        materialDiv.classList.add('material');
-        materialDiv.onclick = () => showMaterialDetail(index);
-
-        materialDiv.innerHTML = `
-          <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
-          <h4>${material.title}</h4>
-          <p class="description-content">${material.description}</p>
-          <p class="show-more-toggle" onclick="event.stopPropagation(); toggleDescription(this);">Show More</p>
-          <div class="buttons">
-            <button onclick="event.stopPropagation(); addToLibrary(${index})">Add to Library</button>
-            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="event.stopPropagation(); openFreePdfFromList(${index})">Open Free PDF</button>` : ''}
-            <button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${index})">Buy Paid PDF</button>
-          </div>
-        `;
-        materialList.appendChild(materialDiv);
-      });
+      hideAllPanels();
+      _renderLibraryPage();
+      history.pushState({page: 'libraryPage'}, '', '#libraryPage');
     }
 
-    // Toggle description visibility in material cards
-    function toggleDescription(toggleBtn) {
-      const descriptionContent = toggleBtn.previousElementSibling;
-      if (descriptionContent.style.maxHeight === '0px' || descriptionContent.style.maxHeight === '') {
-        descriptionContent.style.maxHeight = descriptionContent.scrollHeight + 'px';
-        toggleBtn.textContent = 'Show Less';
-      } else {
-        descriptionContent.style.maxHeight = '0px';
-        toggleBtn.textContent = 'Show More';
-      }
+    function showPolicyContent(policyKey) {
+        toggleDrawer(true); // Close drawer
+        hideAllPanels();
+        _renderPolicyContent(policyKey);
+        history.pushState({page: 'policyContent', key: policyKey}, '', `#${policyKey}`);
     }
 
-    // Show Material Detail Page
-    function showMaterialDetail(index) {
-      selectedMaterial = materials[index];
-      document.getElementById('userPanel').style.display = 'none';
-      document.getElementById('materialDetail').style.display = 'block';
-
-      document.getElementById('materialDetailTitle').innerText = selectedMaterial.title;
-      
-      const detailImagesContainer = document.getElementById('materialDetailImages');
-      detailImagesContainer.innerHTML = '';
-      if (selectedMaterial.images && selectedMaterial.images.length > 0) {
-        selectedMaterial.images.forEach(imgSrc => {
-          const img = document.createElement('img');
-          img.src = imgSrc;
-          img.alt = selectedMaterial.title;
-          detailImagesContainer.appendChild(img);
-        });
-      } else {
-        const img = document.createElement('img');
-        img.src = 'https://placehold.co/300x200/cccccc/000000?text=No+Image';
-        img.alt = 'No Image Available';
-        detailImagesContainer.appendChild(img);
-      }
-
-      const materialDetailDescription = document.getElementById('materialDetailDescription');
-      materialDetailDescription.innerHTML = `
-        <p>${selectedMaterial.description}</p>
-      `;
-
-      const openFreePdfBtn = document.getElementById('openFreePdfBtn');
-      const openPaidPdfBtn = document.getElementById('openPaidPdfBtn');
-
-      if (selectedMaterial.pdfLink) {
-          openFreePdfBtn.style.display = 'inline-block';
-      } else {
-          openFreePdfBtn.style.display = 'none';
-      }
-
-      openPaidPdfBtn.style.display = 'inline-block';
+    function showHomePage() {
+        toggleDrawer(true); // Close drawer
+        hideAllPanels();
+        _renderUserPanel();
+        history.pushState({page: 'userPanel'}, '', '#userPanel');
     }
 
     // Open Free PDF from Material Detail Page
@@ -1181,43 +1281,6 @@
         .catch(error => showMessageBox('Error adding to library: ' + error.message));
     }
 
-    // View Library Page
-    function viewLibraryPage() {
-      if (!currentUser) {
-        showMessageBox('Please log in to view your library.');
-        return;
-      }
-
-      document.getElementById('userPanel').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'none';
-      document.getElementById('materialDetail').style.display = 'none';
-      document.getElementById('loginPanel').style.display = 'none';
-      document.getElementById('libraryPage').style.display = 'block';
-
-      const libraryItemsDiv = document.getElementById('libraryItems');
-      libraryItemsDiv.innerHTML = '';
-
-      if (library.length === 0) {
-        libraryItemsDiv.innerHTML = '<p style="text-align: center; width: 100%;">Your library is empty.</p>';
-        return;
-      }
-
-      library.forEach((material, index) => {
-        const materialDiv = document.createElement('div');
-        materialDiv.classList.add('material');
-        materialDiv.innerHTML = `
-          <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
-          <h4>${material.title}</h4>
-          <div class="buttons">
-            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="openFreePdfFromLibrary(${index})">Open Free PDF</button>` : ''}
-            <button class="buy-pdf-btn" onclick="openPaidPdfFromLibrary(${index})">Buy Paid PDF</button>
-            <button onclick="removeFromLibrary(${index})" style="background:#e74c3c;">Remove from Library</button>
-          </div>
-        `;
-        libraryItemsDiv.appendChild(materialDiv);
-      });
-    }
-
     // Open Free PDF from Library
     function openFreePdfFromLibrary(index) {
         const material = library[index];
@@ -1272,13 +1335,95 @@
       }
     }
 
-    // Function to go back to the Study Hub (user panel)
-    // This function is still here for explicit navigation, but history.back() is used for general back button.
-    function backToStudyHub() {
-      document.getElementById('materialDetail').style.display = 'none';
-      document.getElementById('libraryPage').style.display = 'none';
-      document.getElementById('userPanel').style.display = 'block';
+    // Drawer Functions
+    function toggleDrawer(forceClose = false) {
+        const drawer = document.getElementById('sideDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+
+        if (forceClose || drawer.classList.contains('open')) {
+            drawer.classList.remove('open');
+            overlay.classList.remove('open');
+        } else if (currentUser) { // Only open if user is logged in
+            drawer.classList.add('open');
+            overlay.classList.add('open');
+        }
     }
+
+    // Save Policy Content (Admin Function)
+    function savePolicyContent() {
+        const policyData = {
+            about: document.getElementById('aboutContent').value,
+            privacyPolicy: document.getElementById('privacyPolicyContent').value,
+            termsCondition: document.getElementById('termsConditionContent').value,
+            refundCancellation: document.getElementById('refundCancellationContent').value,
+            shipping: document.getElementById('shippingContent').value,
+            pricing: document.getElementById('pricingContent').value,
+            contact: document.getElementById('contactContent').value,
+            disclaimer: document.getElementById('disclaimerContent').value,
+            faq: document.getElementById('faqContent').value
+        };
+
+        policiesRef.set(policyData)
+            .then(() => showMessageBox('Policy content saved successfully!'))
+            .catch(error => showMessageBox('Error saving policy content: ' + error.message));
+    }
+
+    // Populate Policy Fields (Admin Panel)
+    function populatePolicyFields() {
+        if (policies.about) document.getElementById('aboutContent').value = policies.about;
+        if (policies.privacyPolicy) document.getElementById('privacyPolicyContent').value = policies.privacyPolicy;
+        if (policies.termsCondition) document.getElementById('termsConditionContent').value = policies.termsCondition;
+        if (policies.refundCancellation) document.getElementById('refundCancellationContent').value = policies.refundCancellation;
+        if (policies.shipping) document.getElementById('shippingContent').value = policies.shipping;
+        if (policies.pricing) document.getElementById('pricingContent').value = policies.pricing;
+        if (policies.contact) document.getElementById('contactContent').value = policies.contact;
+        if (policies.disclaimer) document.getElementById('disclaimerContent').value = policies.disclaimer;
+        if (policies.faq) document.getElementById('faqContent').value = policies.faq;
+    }
+
+    // Handle browser back/forward buttons
+    window.onpopstate = function(event) {
+        hideAllPanels(); // Always hide all panels first
+
+        if (currentUser) {
+            // User is logged in, determine which page to show based on history state
+            if (event.state && event.state.page) {
+                const page = event.state.page;
+                if (page === 'materialDetail') {
+                    _renderMaterialDetail(event.state.index);
+                } else if (page === 'libraryPage') {
+                    _renderLibraryPage();
+                } else if (page === 'policyContent') {
+                    _renderPolicyContent(event.state.key);
+                } else if (page === 'adminPanel') { // Admin panel state
+                    document.getElementById('adminPanel').style.display = 'block';
+                } else { // Default to user panel if state is unknown or 'userPanel'
+                    _renderUserPanel();
+                }
+            } else {
+                // If no specific state, and user is logged in, default to user panel
+                _renderUserPanel();
+            }
+        } else {
+            // User is NOT logged in, always show login panel
+            _renderLoginPanel();
+        }
+    };
+
+    function hideAllPanels() {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('userPanel').style.display = 'none';
+        document.getElementById('materialDetail').style.display = 'none';
+        document.getElementById('libraryPage').style.display = 'none';
+        document.getElementById('policyContentDisplay').style.display = 'none';
+    }
+
+    // Initial state for history
+    window.onload = function() {
+        // Push initial state for user panel if user is already logged in
+        // This is handled by onAuthStateChanged now for robustness
+    };
 
   </script>
 </body>
