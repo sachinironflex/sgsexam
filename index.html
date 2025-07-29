@@ -898,13 +898,117 @@
     const db = firebase.database();
     const auth = firebase.auth(); // Initialize Firebase Authentication
 
+    // Global Firebase references for policies (moved outside onAuthStateChanged)
+    let policiesRef = db.ref('policies');
+
+    // Global data variables
     let materials = [];
     let selectedMaterial = null;
     let library = [];
     let currentUser = null;
     let userLibraryRef = null;
     let policies = {}; // To store policy content
-    let policiesRef = null; // Firebase ref for policies
+
+    /*
+     * IMPORTANT FIREBASE REALTIME DATABASE SECURITY RULES:
+     * For the admin panel to save policy content and study materials, especially if the admin login
+     * is local (not using Firebase Authentication), your Firebase Realtime Database
+     * rules for the '/policies' and '/materials' paths must allow write access.
+     *
+     * Example rules for testing (NOT recommended for production without proper authentication):
+     * {
+     * "rules": {
+     * "policies": {
+     * ".read": true,
+     * ".write": true // Allows anyone to write to /policies
+     * },
+     * "materials": {
+     * ".read": true,
+     * ".write": true // Allows anyone to write to /materials
+     * },
+     * "users": {
+     * "$uid": {
+     * "library": {
+     * ".read": "$uid === auth.uid",
+     * ".write": "$uid === auth.uid"
+     * }
+     * }
+     * }
+     * }
+     * }
+     *
+     * For a production environment, it's highly recommended to secure your admin panel
+     * using Firebase Authentication and adjust the rules accordingly (e.g., ".write": "auth.uid != null && auth.token.admin === true").
+     */
+
+    // Attach policies listener once at the start
+    policiesRef.on('value', (snapshot) => {
+        policies = snapshot.val() || {};
+        console.log("Policies loaded from Firebase:", policies);
+        // If admin panel is currently visible, populate fields
+        if (document.getElementById('adminPanel').style.display === 'block') {
+            populatePolicyFields();
+        }
+    });
+
+    // Listener for Firebase Auth state changes
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        console.log("User logged in:", user.uid, user.email || "Anonymous");
+
+        userLibraryRef = db.ref('users/' + user.uid + '/library');
+        userLibraryRef.on('value', (snapshot) => {
+          library = snapshot.val() || [];
+          console.log("Library loaded from Firebase:", library);
+          if (document.getElementById('libraryPage').style.display === 'block') {
+              _renderLibraryPage(); // Use internal render function
+          }
+        });
+
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('userPanel').style.display = 'block';
+        document.getElementById('logoutButton').style.display = 'block';
+        document.getElementById('searchInput').classList.add('show');
+        document.getElementById('menuButton').style.display = 'block'; // Show menu button on login
+      } else {
+        currentUser = null;
+        console.log("User logged out.");
+        library = [];
+
+        if (userLibraryRef) {
+          userLibraryRef.off(); // Detach user-specific listener
+          userLibraryRef = null;
+        }
+        // policiesRef listener remains active as it's global
+
+        document.getElementById('userPanel').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('materialDetail').style.display = 'none';
+        document.getElementById('libraryPage').style.display = 'none';
+        document.getElementById('policyContentDisplay').style.display = 'none'; // Hide policy content
+        document.getElementById('loginPanel').style.display = 'flex';
+        document.getElementById('logoutButton').style.display = 'none';
+        document.getElementById('searchInput').classList.remove('show');
+        document.getElementById('menuButton').style.display = 'none'; // Hide menu button on logout
+        toggleDrawer(true); // Ensure drawer is closed and hidden on logout
+      }
+    });
+
+    // Listen for material data changes from Firebase Realtime Database
+    firebase.database().ref('materials').on('value', (snapshot) => {
+      const fetchedMaterials = [];
+      snapshot.forEach((childSnapshot) => {
+          const materialData = childSnapshot.val();
+          fetchedMaterials.push({
+              firebaseKey: childSnapshot.key,
+              ...materialData
+          });
+      });
+      materials = fetchedMaterials;
+      showUserMaterials(); // This will call _renderUserPanel internally if user is logged in
+      showAdminMaterials();
+    });
 
     // Custom Message Box Functions
     function showMessageBox(message, type = 'alert', callback = null) {
@@ -933,7 +1037,7 @@
         } else { // Default is 'alert'
             const okBtn = document.createElement('button');
             okBtn.innerText = 'OK';
-            okBtn.onclick = hideMessageBox;
+            okOkBtn.onclick = hideMessageBox;
             messageBoxButtons.appendChild(okBtn);
         }
         document.getElementById('customMessageBox').style.display = 'flex';
@@ -943,81 +1047,6 @@
         document.getElementById('customMessageBox').style.display = 'none';
     }
 
-    // Listener for Firebase Auth state changes
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        currentUser = user;
-        console.log("User logged in:", user.uid, user.email || "Anonymous");
-
-        userLibraryRef = db.ref('users/' + user.uid + '/library');
-        
-        userLibraryRef.on('value', (snapshot) => {
-          library = snapshot.val() || [];
-          console.log("Library loaded from Firebase:", library);
-          if (document.getElementById('libraryPage').style.display === 'block') {
-              _renderLibraryPage(); // Use internal render function
-          }
-        });
-
-        // Initialize policiesRef and listen for changes
-        policiesRef = db.ref('policies');
-        policiesRef.on('value', (snapshot) => {
-            policies = snapshot.val() || {};
-            console.log("Policies loaded from Firebase:", policies);
-            // Populate admin panel policy fields if admin is logged in
-            if (document.getElementById('adminPanel').style.display === 'block') {
-                populatePolicyFields();
-            }
-        });
-
-
-        document.getElementById('loginPanel').style.display = 'none';
-        document.getElementById('userPanel').style.display = 'block';
-        document.getElementById('logoutButton').style.display = 'block';
-        document.getElementById('searchInput').classList.add('show');
-        document.getElementById('menuButton').style.display = 'block'; // Show menu button on login
-      } else {
-        currentUser = null;
-        console.log("User logged out.");
-        library = [];
-
-        if (userLibraryRef) {
-          userLibraryRef.off();
-          userLibraryRef = null;
-        }
-        if (policiesRef) { // Detach policies listener on logout
-            policiesRef.off();
-            policiesRef = null;
-        }
-
-        document.getElementById('userPanel').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('materialDetail').style.display = 'none';
-        document.getElementById('libraryPage').style.display = 'none';
-        document.getElementById('policyContentDisplay').style.display = 'none'; // Hide policy content
-        document.getElementById('loginPanel').style.display = 'flex';
-        document.getElementById('logoutButton').style.display = 'none';
-        document.getElementById('searchInput').classList.remove('show');
-        document.getElementById('menuButton').style.display = 'none'; // Hide menu button on logout
-        toggleDrawer(false); // Ensure drawer is closed and hidden on logout
-      }
-    });
-
-    // Listen for material data changes from Firebase Realtime Database
-    firebase.database().ref('materials').on('value', (snapshot) => {
-      const fetchedMaterials = [];
-      snapshot.forEach((childSnapshot) => {
-          const materialData = childSnapshot.val();
-          fetchedMaterials.push({
-              firebaseKey: childSnapshot.key,
-              ...materialData
-          });
-      });
-      materials = fetchedMaterials;
-      showUserMaterials(); // This will call _renderUserPanel internally if user is logged in
-      showAdminMaterials();
-    });
-
     // Admin Login Function (remains local for simplicity as per original code)
     function adminLogin() {
       const id = document.getElementById('adminId').value;
@@ -1026,7 +1055,7 @@
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('logoutButton').style.display = 'block';
-        populatePolicyFields(); // Populate policy fields when admin logs in
+        populatePolicyFields(); // Populate policy fields when admin logs in (policies object already updated by global listener)
         history.pushState({page: 'adminPanel'}, '', '#adminPanel'); // Add admin panel to history
       } else {
         showMessageBox('Invalid Admin Credentials');
@@ -1349,6 +1378,58 @@
         }
     }
 
+    // Add Study Material (Admin Function)
+    function addMaterial() {
+      const title = document.getElementById('materialTitle').value;
+      const description = document.getElementById('materialDescription').value;
+      const pdfLink = document.getElementById('pdfLink').value;
+      const paidPdfLink = document.getElementById('paidPdfLink').value;
+      const imageFiles = document.getElementById('materialImages').files;
+
+      if (!title || !description || !paidPdfLink) {
+        showMessageBox('Please fill in title, description, and paid PDF link.');
+        return;
+      }
+
+      const imageUrls = [];
+      if (imageFiles.length > 0) {
+          for (let i = 0; i < imageFiles.length; i++) {
+              imageUrls.push(URL.createObjectURL(imageFiles[i]));
+          }
+      } else {
+          imageUrls.push('https://placehold.co/300x200/cccccc/000000?text=No+Image');
+      }
+
+      const newMaterial = {
+        id: Date.now(),
+        title,
+        description,
+        pdfLink: pdfLink || null,
+        paidPdfLink: paidPdfLink,
+        images: imageUrls
+      };
+
+      // Use try-catch for better error reporting during Firebase write
+      try {
+        db.ref('materials').push(newMaterial)
+          .then(() => {
+            showMessageBox('Study material added successfully!');
+            document.getElementById('materialTitle').value = '';
+            document.getElementById('materialDescription').value = '';
+            document.getElementById('pdfLink').value = '';
+            document.getElementById('paidPdfLink').value = '';
+            document.getElementById('materialImages').value = '';
+          })
+          .catch((error) => {
+            console.error("Error adding material to Firebase:", error); // Log the actual error
+            showMessageBox('Error adding material: ' + error.message + '. कृपया Firebase नियमों या नेटवर्क की जाँच करें।');
+          });
+      } catch (e) {
+        console.error("Unexpected error before Firebase push:", e);
+        showMessageBox('An unexpected error occurred. Please try again.');
+      }
+    }
+
     // Save Policy Content (Admin Function)
     function savePolicyContent() {
         const policyData = {
@@ -1363,9 +1444,13 @@
             faq: document.getElementById('faqContent').value
         };
 
+        // policiesRef is now globally initialized and available
         policiesRef.set(policyData)
             .then(() => showMessageBox('Policy content saved successfully!'))
-            .catch(error => showMessageBox('Error saving policy content: ' + error.message));
+            .catch(error => {
+                console.error("Error saving policy content:", error); // Log the actual error
+                showMessageBox('Error saving policy content: ' + error.message + '. कृपया Firebase नियमों या नेटवर्क की जाँच करें।');
+            });
     }
 
     // Populate Policy Fields (Admin Panel)
@@ -1379,6 +1464,128 @@
         if (policies.contact) document.getElementById('contactContent').value = policies.contact;
         if (policies.disclaimer) document.getElementById('disclaimerContent').value = policies.disclaimer;
         if (policies.faq) document.getElementById('faqContent').value = policies.faq;
+    }
+
+    // Display Materials in Admin Panel
+    function showAdminMaterials() {
+      const adminMaterialList = document.getElementById('adminMaterialList');
+      adminMaterialList.innerHTML = '<h3>Manage Materials</h3>';
+      if (materials.length === 0) {
+        adminMaterialList.innerHTML += '<p>No materials added yet.</p>';
+        return;
+      }
+
+      materials.forEach((material, index) => {
+        const materialDiv = document.createElement('div');
+        materialDiv.classList.add('material');
+        materialDiv.innerHTML = `
+          <h4>${material.title}</h4>
+          ${material.pdfLink ? `<p>Free PDF: <a href="${material.pdfLink}" target="_blank">Link</a></p>` : '<p>Free PDF: Not Available</p>'}
+          <p>Paid PDF: <a href="${material.paidPdfLink}" target="_blank">Link</a></p>
+          <div class="buttons">
+            <button onclick="editMaterial(${index})">Edit</button>
+            <button onclick="deleteMaterial(${index})" style="background:#e74c3c;">Delete</button>
+          </div>
+        `;
+        adminMaterialList.appendChild(materialDiv);
+      });
+    }
+
+    // Edit Material (Admin Function)
+    function editMaterial(index) {
+      const material = materials[index];
+      const newTitle = prompt('Enter new title:', material.title);
+      const newDescription = prompt('Enter new description:', material.description);
+      const newPdfLink = prompt('Enter new Free PDF Link (Optional):', material.pdfLink || '');
+      const newPaidPdfLink = prompt('Enter new Paid PDF Link:', material.paidPdfLink);
+
+      if (newTitle !== null && newDescription !== null && newPaidPdfLink !== null) {
+        const materialKey = material.firebaseKey;
+
+        if (materialKey) {
+          db.ref('materials/' + materialKey).update({
+            title: newTitle,
+            description: newDescription,
+            pdfLink: newPdfLink || null,
+            paidPdfLink: newPaidPdfLink
+          })
+          .then(() => showMessageBox('Material updated successfully!'))
+          .catch(error => showMessageBox('Error updating material: ' + error.message));
+        } else {
+          showMessageBox('Material not found in database.');
+        }
+      } else {
+          showMessageBox('Title, description, and paid PDF link are mandatory.');
+      }
+    }
+
+    // Delete Material (Admin Function)
+    function deleteMaterial(index) {
+      const materialToDelete = materials[index];
+      showMessageBox(
+        `Are you sure you want to delete "${materialToDelete.title}"?`,
+        'confirm',
+        (confirmed) => {
+          if (confirmed) {
+            const materialKey = materialToDelete.firebaseKey;
+            if (materialKey) {
+              db.ref('materials/' + materialKey).remove()
+                .then(() => showMessageBox('Material deleted successfully!'))
+                .catch(error => showMessageBox('Error deleting material: ' + error.message));
+            } else {
+              showMessageBox('Material not found in database.');
+            }
+          }
+        }
+      );
+    }
+
+    // Display Materials for Users
+    function showUserMaterials() {
+      const materialList = document.getElementById('materialList');
+      materialList.innerHTML = '';
+
+      if (materials.length === 0) {
+        materialList.innerHTML = '<p style="text-align: center; width: 100%;">No study materials available yet.</p>';
+        return;
+      }
+
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+      materials.forEach((material, index) => {
+        if (searchTerm && !material.title.toLowerCase().includes(searchTerm) && !material.description.toLowerCase().includes(searchTerm)) {
+          return;
+        }
+
+        const materialDiv = document.createElement('div');
+        materialDiv.classList.add('material');
+        materialDiv.onclick = () => showMaterialDetail(index);
+
+        materialDiv.innerHTML = `
+          <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
+          <h4>${material.title}</h4>
+          <p class="description-content">${material.description}</p>
+          <p class="show-more-toggle" onclick="event.stopPropagation(); toggleDescription(this);">Show More</p>
+          <div class="buttons">
+            <button onclick="event.stopPropagation(); addToLibrary(${index})">Add to Library</button>
+            ${material.pdfLink ? `<button class="open-pdf-btn" onclick="event.stopPropagation(); openFreePdfFromList(${index})">Open Free PDF</button>` : ''}
+            <button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${index})">Buy Paid PDF</button>
+          </div>
+        `;
+        materialList.appendChild(materialDiv);
+      });
+    }
+
+    // Toggle description visibility in material cards
+    function toggleDescription(toggleBtn) {
+      const descriptionContent = toggleBtn.previousElementSibling;
+      if (descriptionContent.style.maxHeight === '0px' || descriptionContent.style.maxHeight === '') {
+        descriptionContent.style.maxHeight = descriptionContent.scrollHeight + 'px';
+        toggleBtn.textContent = 'Show Less';
+      } else {
+        descriptionContent.style.maxHeight = '0px';
+        toggleBtn.textContent = 'Show More';
+      }
     }
 
     // Handle browser back/forward buttons
@@ -1397,6 +1604,7 @@
                     _renderPolicyContent(event.state.key);
                 } else if (page === 'adminPanel') { // Admin panel state
                     document.getElementById('adminPanel').style.display = 'block';
+                    populatePolicyFields(); // Ensure fields are populated on back to admin panel
                 } else { // Default to user panel if state is unknown or 'userPanel'
                     _renderUserPanel();
                 }
@@ -1419,11 +1627,9 @@
         document.getElementById('policyContentDisplay').style.display = 'none';
     }
 
-    // Initial state for history
-    window.onload = function() {
-        // Push initial state for user panel if user is already logged in
-        // This is handled by onAuthStateChanged now for robustness
-    };
+    // Initial state for history (handled by onAuthStateChanged for robustness)
+    // No specific window.onload logic needed here for history.replaceState, as auth.onAuthStateChanged
+    // will correctly set the initial display and history state based on login status.
 
   </script>
 </body>
