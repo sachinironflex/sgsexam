@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,17 +74,6 @@
     .top-right-controls button:hover {
       background: #2980b9; /* Darker blue on hover */
       transform: translateY(-1px); /* Slight lift */
-    }
-    .search-icon, .menu-icon {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 22px; /* Slightly larger icon */
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-    .search-icon:hover, .menu-icon:hover {
-      color: #f0c14b; /* Highlight on hover */
     }
     /* Logout button specific style */
     #logoutButton {
@@ -1000,6 +988,7 @@
      * For the admin panel to save policy content and study materials, especially if the admin login
      * is local (not using Firebase Authentication), your Firebase Realtime Database
      * rules for the '/policies' and '/materials' paths must allow write access.
+     * For user libraries, ensure rules allow authenticated users to write to their own library path.
      *
      * Example rules for testing (NOT recommended for production without proper authentication):
      * {
@@ -1015,8 +1004,8 @@
      * "users": {
      * "$uid": {
      * "library": {
-     * ".read": "$uid === auth.uid",
-     * ".write": "$uid === auth.uid"
+     * ".read": "auth.uid != null && auth.uid === $uid",
+     * ".write": "auth.uid != null && auth.uid === $uid"
      * }
      * }
      * }
@@ -1026,6 +1015,11 @@
      * For a production environment, it's highly recommended to secure your admin panel
      * using Firebase Authentication and adjust the rules accordingly (e.g., ".write": "auth.uid != null && auth.token.admin === true").
      */
+
+    // IMPORTANT: Images added via file input are stored as temporary browser URLs (URL.createObjectURL).
+    // These URLs are NOT persistent and will break if the page is refreshed or closed.
+    // For persistent image storage, you would need to implement Firebase Storage
+    // to upload image files and store their permanent download URLs in your database.
 
     // Attach policies listener once at the start
     policiesRef.on('value', (snapshot) => {
@@ -1437,6 +1431,7 @@
         return;
       }
 
+      // Check if the material is already in the library using its unique ID
       const isAlreadyInLibrary = library.some(item => item.id === materialToAdd.id);
 
       if (isAlreadyInLibrary) {
@@ -1545,7 +1540,7 @@
       }
 
       const newMaterial = {
-        id: Date.now(),
+        id: Date.now(), // Unique ID for each material
         title,
         description,
         pdfLink: pdfLink || null,
@@ -1713,7 +1708,7 @@
         return;
       }
 
-      filteredAndCategorizedMaterials.forEach((material, index) => {
+      filteredAndCategorizedMaterials.forEach((material) => { // Removed index from here, as we'll find originalIndex
         // Find the original index in the 'materials' array to ensure correct data access for detail/library functions
         const originalIndex = materials.findIndex(m => m.id === material.id);
         if (originalIndex === -1) {
@@ -1831,9 +1826,12 @@
         document.getElementById('categoryContentPage').style.display = 'none'; // Hide the new content page
     }
 
-    // Initial state for history (handled by onAuthStateChanged for robustness)
-    // No specific window.onload logic needed here for history.replaceState, as auth.onAuthStateChanged
-    // will correctly set the initial display and history state based on login status.
+    // Ensure initial UI state is set correctly after all scripts load and Firebase auth state is known.
+    // The onAuthStateChanged listener handles the initial display logic.
+    window.onload = function() {
+        console.log("Window loaded. Firebase authentication state will determine the initial UI.");
+        // No explicit panel showing here, as onAuthStateChanged handles it.
+    };
 
   </script>
 </body>
