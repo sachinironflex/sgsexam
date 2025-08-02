@@ -505,6 +505,13 @@
         .material .buttons button.buy-pdf-btn:hover {
             background: #e68a00;
         }
+        /* ADDED: View course button style */
+        .material .buttons button.view-course-btn {
+            background: #27ae60; /* Green for view button */
+        }
+        .material .buttons button.view-course-btn:hover {
+            background: #229954;
+        }
 
         /* Material Detail Page */
         #materialDetail {
@@ -553,12 +560,20 @@
         #materialDetail #openFreePdfBtn:hover {
             background: #229954;
         }
-        #materialDetail #openPaidPdfBtn {
+        #materialDetail #buyPaidPdfBtn { /* MODIFIED: Changed ID for clarity */
             background: #ff9900;
             color: white;
         }
-        #materialDetail #openPaidPdfBtn:hover {
+        #materialDetail #buyPaidPdfBtn:hover {
             background: #e68a00;
+        }
+        /* ADDED: View paid course button in detail page */
+        #materialDetail #viewPaidCourseBtn {
+            background: #27ae60;
+            color: white;
+        }
+        #materialDetail #viewPaidCourseBtn:hover {
+            background: #229954;
         }
         #materialDetail #backButtonDetail {
             background: #95a5a6;
@@ -889,12 +904,10 @@
             }
         }
     </style>
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script> <!-- Added Firebase Storage SDK -->
-</head>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script> </head>
 <body>
     <header>
         SGS STUDY HUB
@@ -915,17 +928,14 @@
         </div>
     </header>
 
-    <!-- Admin-only Home Thumbnail Upload Section -->
     <div id="adminHomeThumbnailSection" style="display: none;">
         <h2>Upload Home Page Thumbnails (16:9 Ratio, Max 4 images)</h2>
         <div class="thumbnail-upload-area">
-            <!-- Preview images will be dynamically added here -->
-        </div>
+            </div>
         <input type="file" id="homeThumbnailInput" accept="image/*" multiple>
         <button onclick="uploadHomeThumbnails()">Upload Thumbnails</button>
     </div>
 
-    <!-- Side Drawer -->
     <div id="sideDrawer" class="side-drawer">
         <button class="close-drawer-btn" onclick="toggleDrawer()">&times;</button>
         <div class="drawer-links">
@@ -1011,12 +1021,11 @@
     </div>
 
     <div id="userPanel">
-        <!-- User-facing Home Thumbnail Display (Slider Container) -->
         <div id="userHomeThumbnailDisplay" style="display: none;">
-            <!-- Images will be dynamically added here -->
-        </div>
+            </div>
         <div id="categoryButtons">
             <button class="category-btn" data-category="All" onclick="showCategoryPage('All')">All Materials</button>
+            <button class="category-btn" data-category="My Course" onclick="showCategoryPage('My Course')">My Course</button>
             <button class="category-btn" data-category="Paid Course" onclick="showCategoryPage('Paid Course')">Paid Course</button>
             <button class="category-btn" data-category="Free Course" onclick="showCategoryPage('Free Course')">Free Course</button>
             <button class="category-btn" data-category="Test Series" onclick="showCategoryPage('Test Series')">Test Series</button>
@@ -1024,7 +1033,6 @@
         </div>
     </div>
 
-    <!-- New Page for Category Content -->
     <div id="categoryContentPage">
         <h2 id="userPanelTitle"></h2>
         <div id="materialList"></div>
@@ -1037,8 +1045,7 @@
         <div class="buttons">
             <button onclick="addToLibrary()">Add to Library</button>
             <button id="openFreePdfBtn" style="display:none;" onclick="openFreePdf()">Open Free PDF</button>
-            <button id="openPaidPdfBtn" onclick="openPaidPdf()">Buy Paid PDF</button>
-            <button id="backButtonDetail" onclick="history.back()">Back</button>
+            <button id="buyPaidPdfBtn" onclick="openPaidPdf()">Buy Paid PDF</button> <button id="viewPaidCourseBtn" style="display:none;" onclick="viewCourse()">View Course</button> <button id="backButtonDetail" onclick="history.back()">Back</button>
         </div>
         <div id="materialDetailDescription"></div>
     </div>
@@ -1049,14 +1056,12 @@
         <button onclick="history.back()">Back to Study Hub</button>
     </div>
 
-    <!-- Policy Content Display Page -->
     <div id="policyContentDisplay">
         <h2 id="policyContentTitle"></h2>
         <div id="policyContentText"></div>
         <button onclick="history.back()">Back</button>
     </div>
 
-    <!-- Custom Message Box HTML -->
     <div id="customMessageBox">
         <div>
             <p id="messageBoxText"></p>
@@ -1086,6 +1091,7 @@
         let policiesRef = db.ref('policies');
         let homeThumbnailsRef = db.ref('homeThumbnails'); // Changed to store multiple URLs
         let homeSliderInterval; // To store the interval ID for auto-sliding
+        let materialsRef = db.ref('materials'); // MODIFIED: Store reference to materials
 
         // Global data variables
         let materials = [];
@@ -1169,6 +1175,9 @@
                     if (document.getElementById('libraryPage').style.display === 'block') {
                         _renderLibraryPage();
                     }
+                    if (document.getElementById('categoryContentPage').style.display === 'block') {
+                        showUserMaterials();
+                    }
                 });
                 document.getElementById('loginPanel').style.display = 'none';
                 document.getElementById('userPanel').style.display = 'block';
@@ -1223,7 +1232,7 @@
         });
 
         // Listen for material data changes from Firebase Realtime Database
-        firebase.database().ref('materials').on('value', (snapshot) => {
+        materialsRef.on('value', (snapshot) => {
             const fetchedMaterials = [];
             snapshot.forEach((childSnapshot) => {
                 const materialData = childSnapshot.val();
@@ -1579,13 +1588,30 @@
             }
 
             const openFreePdfBtn = document.getElementById('openFreePdfBtn');
-            const openPaidPdfBtn = document.getElementById('openPaidPdfBtn');
+            const buyPaidPdfBtn = document.getElementById('buyPaidPdfBtn');
+            const viewPaidCourseBtn = document.getElementById('viewPaidCourseBtn');
+
+            // Check if the material is already in the user's library (My Course)
+            const isCourseBought = library.some(item => item.id === selectedMaterial.id);
+
             if (selectedMaterial.pdfLink) {
                 openFreePdfBtn.style.display = 'inline-block';
             } else {
                 openFreePdfBtn.style.display = 'none';
             }
-            openPaidPdfBtn.style.display = 'inline-block';
+            
+            if (isCourseBought) {
+                buyPaidPdfBtn.style.display = 'none';
+                viewPaidCourseBtn.style.display = 'inline-block';
+                // Update the onclick event for the view button to view the paid course
+                viewPaidCourseBtn.onclick = () => viewCourse(index);
+            } else {
+                buyPaidPdfBtn.style.display = 'inline-block';
+                viewPaidCourseBtn.style.display = 'none';
+                // Update the onclick event for the buy button
+                buyPaidPdfBtn.onclick = () => handlePaidCoursePurchase(index);
+            }
+
             document.getElementById('materialDetail').style.display = 'block';
         }
 
@@ -1678,16 +1704,15 @@
             history.pushState({page: 'materialDetail', index: index}, '', `#materialDetail-${index}`);
         }
 
+        // MODIFIED: viewLibraryPage ab My Course button ke through hi call hoga.
         function viewLibraryPage() {
             if (!currentUser) {
-                showMessageBox('Please log in to view your library.');
+                showMessageBox('Please log in to view your courses.');
                 return;
             }
-            hideAllPanels();
-            _renderLibraryPage();
-            history.pushState({page: 'libraryPage'}, '', '#libraryPage');
+            showCategoryPage('My Course');
         }
-
+        
         function showPolicyContent(policyKey) {
             toggleDrawer(true);
             hideAllPanels();
@@ -1718,13 +1743,91 @@
                 showMessageBox('No free PDF link available for this material.');
             }
         }
+        
+        // ADDED: New function to handle paid course purchase
+        function handlePaidCoursePurchase(index) {
+            const materialToBuy = materials[index];
+            if (!currentUser) {
+                showMessageBox('Please log in to buy this course.');
+                return;
+            }
+            if (!materialToBuy || !materialToBuy.paidPdfLink) {
+                showMessageBox('Error: Paid course link not available.');
+                return;
+            }
+        
+            // ADDED: Open the real payment page in a new tab
+            const paymentPageUrl = materialToBuy.paidPdfLink;
+            // IMPORTANT: The payment gateway URL needs to be the actual link provided by the user.
+            const paymentWindow = window.open(paymentPageUrl, '_blank');
+        
+            // Simulating payment success after 5 seconds
+            // In a real application, you would listen for a webhook or a redirect from the payment gateway.
+            showMessageBox('Redirecting to payment gateway. Please complete the payment.');
+        
+            // This is a placeholder for real payment success logic
+            setTimeout(() => {
+                if (paymentWindow && !paymentWindow.closed) {
+                    showMessageBox('Payment successful! The course has been added to My Course.', 'alert', () => {
+                        // After payment, add the course to the user's library and refresh the view
+                        addCourseToMyCourse(materialToBuy);
+                        // Redirect to my course page after successful purchase
+                        showCategoryPage('My Course');
+                    });
+                } else {
+                    // This block might not be necessary in a real scenario with proper redirects/webhooks
+                    // but it's good practice for this demo.
+                    showMessageBox('Payment process may not have been completed. Please check your payment history.', 'alert');
+                }
+            }, 5000); // Simulate 5-second payment process
+        }
+        
+        // ADDED: New function to add a course to My Course (user's library)
+        function addCourseToMyCourse(material) {
+            if (!currentUser) return;
+        
+            const isAlreadyInLibrary = library.some(item => item.id === material.id);
+            if (!isAlreadyInLibrary) {
+                library.push(material);
+                userLibraryRef.set(library)
+                    .then(() => {
+                        console.log('Course added to My Course successfully!');
+                    })
+                    .catch(error => {
+                        console.error('Error adding course to My Course:', error);
+                        showMessageBox('Error adding course to My Course: ' + error.message);
+                    });
+            }
+        }
 
-        // Open Paid PDF from Material Detail Page
-        function openPaidPdf() {
-            if (selectedMaterial && selectedMaterial.paidPdfLink) {
-                window.open(selectedMaterial.paidPdfLink, '_blank');
+        // Open Free PDF from Material Detail Page
+        function openFreePdf() {
+            if (selectedMaterial && selectedMaterial.pdfLink) {
+                window.open(selectedMaterial.pdfLink, '_blank');
             } else {
-                showMessageBox('No paid PDF link available for this material.');
+                showMessageBox('No free PDF link available for this material.');
+            }
+        }
+        
+        // MODIFIED: openPaidPdf ab paid course purchase handle karta hai
+        function openPaidPdf() {
+            if (selectedMaterial) {
+                const originalIndex = materials.findIndex(m => m.id === selectedMaterial.id);
+                if (originalIndex !== -1) {
+                    handlePaidCoursePurchase(originalIndex);
+                }
+            } else {
+                showMessageBox('No paid course link available for this material.');
+            }
+        }
+        
+        // ADDED: New function to view a purchased course
+        function viewCourse(index) {
+            const material = materials[index];
+            if (material && material.paidPdfLink) {
+                window.open(material.paidPdfLink, '_blank');
+            } else {
+                showMessageBox('Paid course link not available for this material.');
             }
         }
 
@@ -1742,7 +1845,7 @@
         function openPaidPdfFromList(index) {
             const material = materials[index];
             if (material && material.paidPdfLink) {
-                window.open(material.paidPdfLink, '_blank');
+                handlePaidCoursePurchase(index);
             } else {
                 showMessageBox('No paid PDF link available for this material.');
             }
@@ -1875,7 +1978,6 @@
                 descriptionType, // Save description type
                 pdfLink: pdfLink || null,
                 paidPdfLink: paidPdfLink,
-                images: imageUrls,
                 category: category
             };
 
@@ -1950,8 +2052,7 @@
                 materialDiv.innerHTML = `
                     <h4>${material.title}</h4>
                     <p>Category: ${material.category || 'N/A'}</p>
-                    <p>Description Type: ${material.descriptionType || 'Plain Text'}</p> <!-- Display description type -->
-                    ${material.pdfLink ? `<p>Free PDF: <a href="${material.pdfLink}" target="_blank">Link</a></p>` : '<p>Free PDF: Not Available</p>'}
+                    <p>Description Type: ${material.descriptionType || 'Plain Text'}</p> ${material.pdfLink ? `<p>Free PDF: <a href="${material.pdfLink}" target="_blank">Link</a></p>` : '<p>Free PDF: Not Available</p>'}
                     <p>Paid PDF: <a href="${material.paidPdfLink}" target="_blank">Link</a></p>
                     <div class="buttons">
                         <button onclick="editMaterial(${index})">Edit</button>
@@ -2020,40 +2121,54 @@
             materialList.innerHTML = '';
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-            const filteredAndCategorizedMaterials = materials.filter(material => {
-                const matchesSearch = (searchTerm && (material.title.toLowerCase().includes(searchTerm) || material.description.toLowerCase().includes(searchTerm)));
-                const matchesCategory = (currentCategory === 'All' || (material.category && material.category.toLowerCase() === currentCategory.toLowerCase()));
-                if (searchTerm) {
-                    return matchesSearch && matchesCategory;
-                } else {
-                    return matchesCategory;
-                }
+            let materialsToDisplay = materials;
+            if (currentCategory === 'My Course') {
+                materialsToDisplay = library;
+            } else {
+                materialsToDisplay = materials.filter(material => {
+                    return currentCategory === 'All' || (material.category && material.category.toLowerCase() === currentCategory.toLowerCase());
+                });
+            }
+
+            const filteredMaterials = materialsToDisplay.filter(material => {
+                return !searchTerm || (material.title.toLowerCase().includes(searchTerm) || (material.description && material.description.toLowerCase().includes(searchTerm)));
             });
 
-            if (filteredAndCategorizedMaterials.length === 0) {
+            if (filteredMaterials.length === 0) {
                 materialList.innerHTML = '<p style="text-align: center; width: 100%;">No study materials available yet for this category.</p>';
                 return;
             }
 
-            filteredAndCategorizedMaterials.forEach((material) => {
+            filteredMaterials.forEach((material) => {
                 const originalIndex = materials.findIndex(m => m.id === material.id);
                 if (originalIndex === -1) {
                     console.warn("Material not found in original materials array:", material);
-                    return;
+                    // For My Course, the material may not be in the main materials list, so we'll handle it directly
+                    if (currentCategory !== 'My Course') {
+                        return;
+                    }
                 }
+
+                const isCourseBought = library.some(item => item.id === material.id);
 
                 const materialDiv = document.createElement('div');
                 materialDiv.classList.add('material');
-                materialDiv.onclick = () => showMaterialDetail(originalIndex);
+                materialDiv.onclick = () => showMaterialDetail(originalIndex !== -1 ? originalIndex : materials.length - 1); // Fallback for my course
                 materialDiv.innerHTML = `
                     <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
                     <h4>${material.title}</h4>
                     <p class="description-content">${material.description}</p>
                     <p class="show-more-toggle" onclick="event.stopPropagation(); toggleDescription(this);">Show More</p>
                     <div class="buttons">
-                        <button onclick="event.stopPropagation(); addToLibrary(${originalIndex})">Add to Library</button>
                         ${material.pdfLink ? `<button class="open-pdf-btn" onclick="event.stopPropagation(); openFreePdfFromList(${originalIndex})">Open Free PDF</button>` : ''}
-                        <button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${originalIndex})">Buy Paid PDF</button>
+                        ${currentCategory !== 'My Course' ? `
+                            ${isCourseBought ? 
+                                `<button class="buy-pdf-btn view-course-btn" onclick="event.stopPropagation(); viewCourse(${originalIndex})">View Course</button>` :
+                                `<button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${originalIndex})">Buy Paid PDF</button>`
+                            }
+                        ` : 
+                            `<button class="buy-pdf-btn view-course-btn" onclick="event.stopPropagation(); viewCourse(${originalIndex})">View Course</button>`
+                        }
                     </div>
                 `;
                 materialList.appendChild(materialDiv);
@@ -2157,3 +2272,4 @@
     </script>
 </body>
 </html>
+
