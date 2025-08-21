@@ -1,2275 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta name="google-site-verification" content="iPJ9gvz-pcq0qMUyfYB6cbjm11o3cwUVpMwtqDtXbVo" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SGS Study Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Global Styles & Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Poppins', sans-serif; /* Modern font */
-            margin: 0;
-            padding: 0;
-            background: #eef2f6; /* Lighter, professional background */
-            color: #333; /* Darker text for readability */
-            line-height: 1.6;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SGS EXAM CRACKER – App</title>
+  <style>
+    :root{
+      --bg:#0b0b0b; --card:#121212; --muted:#9aa3ae; --text:#ffffff;
+      --accent:#2dd4bf; --danger:#ef4444; --ok:#22c55e;
+      --shadow:0 8px 24px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      background:linear-gradient(180deg,#000,#0a0a0a 40%,#111);
+      color:var(--text);
+    }
+    /* Header */
+    .header{position:sticky; top:0; z-index:50; background:#000; border-bottom:1px solid #1f1f1f;}
+    .header-inner{max-width:1100px; margin:0 auto; padding:14px 16px; display:flex; align-items:center; justify-content:center; position:relative;}
+    .title{font-weight:800; letter-spacing:.5px; color:#fff; text-align:center; font-size:22px;}
+    .avatar{position:absolute; right:16px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:10px}
+    .avatar img{width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid #1f2937; box-shadow:var(--shadow)}
+    .avatar .fallback{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:#222; border:2px solid #1f2937; font-weight:700; box-shadow:var(--shadow)}
+    .avatar .logout{margin-left:8px; background:#1f2937; border:1px solid #2b2b2b; color:#e5e7eb; padding:6px 10px; border-radius:12px; cursor:pointer}
+    .avatar .logout:hover{background:#2b3440}
 
-        /* Header Styling */
-        header {
-            background-color: #2c3e50; /* Darker, more premium header */
-            color: white;
-            padding: 10px 30px 20px 30px; /* Adjusted padding-top to move text down */
-            text-align: center;
-            font-size: 28px; /* Slightly larger title */
-            font-weight: 700; /* Bolder */
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow */
-            display: flex;
-            flex-direction: column; /* Stack title and controls */
-            justify-content: center;
-            align-items: center;
-        }
-        .top-right-controls {
-            position: absolute; /* Keep controls at top right */
-            right: 30px;
-            top: 10px; /* Aligned with the very top of the header */
-            display: flex;
-            gap: 15px; /* Increased gap */
-            align-items: center;
-        }
-        .top-right-controls input {
-            padding: 8px 15px; /* More padding */
-            border-radius: 25px; /* Pill-shaped search bar */
-            border: 1px solid #556c8a; /* Subtle border */
-            font-size: 15px;
-            display: none;
-            background-color: #f9f9f9; /* Light background for input */
-            color: #333;
-            transition: all 0.3s ease; /* Smooth transition */
-        }
-        .top-right-controls input.show {
-            display: inline-block;
-            width: 200px; /* Defined width when shown */
-        }
-        .top-right-controls button {
-            background: #3498db; /* Professional blue button */
-            color: white; /* White text for contrast */
-            padding: 8px 18px; /* More padding */
-            font-weight: 600; /* Semi-bold */
-            border: none;
-            border-radius: 25px; /* Pill-shaped buttons */
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .top-right-controls button:hover {
-            background: #2980b9; /* Darker blue on hover */
-            transform: translateY(-1px); /* Slight lift */
-        }
-        /* Logout button specific style */
-        #logoutButton {
-            background-color: #e74c3c; /* Red for logout */
-            margin-left: 10px; /* Space from other buttons */
-            display: none; /* Hidden by default */
-        }
-        #logoutButton:hover {
-            background-color: #c0392b; /* Darker red on hover */
-        }
-        /* Menu icon initially hidden */
-        #menuButton {
-            display: none;
-        }
+    /* Greet line */
+    .greet-wrap{max-width:1100px; margin:4px auto 0; padding:6px 16px 0}
+    .greet{font-size:14px; color:#cbd5e1}
+    .greet strong{color:#fff}
 
-        /* Admin-only Home Thumbnail Upload Section Styles */
-        #adminHomeThumbnailSection {
-            display: none; /* Hidden by default */
-            padding: 20px;
-            max-width: 900px; /* Adjust as needed */
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            text-align: center;
-            margin-bottom: 30px; /* Space it from other admin elements */
-        }
-        #adminHomeThumbnailSection h2 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            color: #2c3e50;
-        }
-        .thumbnail-upload-area {
-            width: 100%;
-            /* padding-top and height will be set by JS based on content */
-            position: relative;
-            background-color: #f0f0f0;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            display: flex; /* Use flex for preview images */
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-height: 150px; /* Minimum height for placeholder */
-        }
-        .thumbnail-upload-area .preview-image-wrapper {
-            position: relative;
-            height: 0; /* Important for padding-top to define height */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            border-radius: 6px;
-            /* width and padding-top will be set by JS based on number of images */
-        }
-        .thumbnail-upload-area img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cover the area, cropping if necessary */
-            border-radius: 6px;
-        }
-        #homeThumbnailInput {
-            display: block; /* Make it block for better layout */
-            margin: 15px auto;
-            width: auto; /* Allow natural width */
-            max-width: 300px; /* Limit width */
-        }
-        #adminHomeThumbnailSection button {
-            background: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        #adminHomeThumbnailSection button:hover {
-            background: #2980b9;
-        }
+    /* Shayari card */
+    .shayari{
+      max-width:1100px; margin:14px auto; padding:18px; border-radius:18px;
+      background:
+        radial-gradient(1200px 400px at -10% -50%, #dc2626 0%, rgba(220,38,38,.2) 15%, transparent 40%),
+        radial-gradient(1200px 400px at 110% 150%, #f59e0b 0%, rgba(245,158,11,.15) 18%, transparent 40%),
+        linear-gradient(180deg, #121212, #0f0f0f);
+      border:1px solid #1f1f1f; box-shadow:var(--shadow);
+    }
+    .shayari h2{margin:0 0 8px; font-size:18px; color:#fff; letter-spacing:.4px}
+    .shayari p{margin:6px 0; line-height:1.6; font-weight:600; font-size:16px}
+    .shayari small{color:#cbd5e1}
 
-        /* User-facing Home Thumbnail Display Styles (Slider) */
-        #userHomeThumbnailDisplay {
-            width: 100%;
-            max-width: 900px; /* Match admin section width */
-            margin: 0 auto 30px auto; /* Center and add space below */
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            position: relative;
-            background-color: #f0f0f0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            display: none; /* Hidden by default, shown when images are loaded */
-        }
-        .slider-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-            opacity: 0; /* Hidden by default */
-            transition: opacity 1s ease-in-out; /* Fade transition */
-        }
-        .slider-image.active {
-            opacity: 1; /* Active image is visible */
-        }
+    /* Grid */
+    .grid{max-width:1100px; margin:12px auto 60px; padding:0 16px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+    @media (max-width:640px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    .tile{
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+      padding:18px 12px; background:var(--card); border:1px solid #1f1f1f; border-radius:18px;
+      text-decoration:none; color:#fff; box-shadow:var(--shadow);
+      transition:transform .15s ease, background .2s ease, border-color .2s ease;
+      aspect-ratio:1/1; /* square */
+    }
+    .tile:hover{transform:translateY(-2px); border-color:#334155; background:#141414}
+    .tile .emoji{font-size:34px; line-height:1}
+    .tile .name{font-weight:700; text-align:center; font-size:14px; color:#e5e7eb}
+    .tile .hint{font-size:12px; color:var(--muted)}
 
-        /* General Panel Styling */
-        #adminPanel, #materialDetail, #libraryPage, #policyContentDisplay, #categoryContentPage {
-            display: none;
-            padding: 30px;
-            max-width: 1200px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 2em;
-        }
-        hr {
-            border: 0;
-            height: 1px;
-            background: #eee;
-            margin: 30px 0;
-        }
+    /* Auth gate (first time login) */
+    .gate{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.72); backdrop-filter: blur(6px); z-index:60;}
+    .gate.show{display:grid}
+    .card{width:min(92vw, 440px); background:#0f1115; border:1px solid #1f1f1f; border-radius:18px; padding:18px; box-shadow:var(--shadow);}
+    .card h3{margin:0 0 10px; font-size:20px}
+    .tabs{display:flex; gap:8px; margin:10px 0 16px}
+    .tab{flex:1; text-align:center; padding:10px 12px; border-radius:12px; border:1px solid #1f1f1f; background:#16181d; color:#d1d5db; cursor:pointer; font-weight:700}
+    .tab.active{border-color:#334155; background:#0b0c10; color:#fff}
+    .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
+    .field label{font-size:12px; color:#aab2be}
+    .field input{background:#0b0c10; border:1px solid #1f1f1f; color:#fff; border-radius:12px; padding:10px 12px; outline:none}
+    .btn{width:100%; padding:12px 14px; border-radius:12px; border:1px solid #2c2c2c; background:#1f2937; color:#e5e7eb; font-weight:800; cursor:pointer}
+    .btn:hover{background:#2b3440}
+    .btn-google{display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; width:100%; border-radius:12px; padding:12px 14px; background:#111827; border:1px solid #334155; color:#e5e7eb; cursor:pointer; margin-top:8px}
+    .btn-google:hover{background:#0f172a}
+    .error{color:var(--danger); font-size:12px; min-height:18px}
+    .success{color:var(--ok); font-size:12px; min-height:18px}
+    .sep{display:flex; align-items:center; gap:12px; color:#9aa3ae; margin:12px 0}
+    .sep:before,.sep:after{content:""; flex:1; height:1px; background:#1f2937}
 
-        /* Login Panel Styling */
-        #loginPanel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            padding: 30px;
-            max-width: 500px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-        }
-        #loginPanel h2 {
-            margin-bottom: 20px;
-            font-size: 2.2em;
-            color: #2c3e50;
-        }
-        #loginPanel input {
-            width: 100%;
-            max-width: 350px;
-            margin-bottom: 15px;
-            padding: 12px 15px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-        #loginPanel button {
-            width: 100%;
-            max-width: 350px;
-            padding: 15px 20px;
-            font-size: 1.2em;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            letter-spacing: 0.5px;
-        }
-        #loginPanel button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
-        /* Specific style for Admin Login button */
-        #loginPanel .admin-login-fields button {
-            background: #f0c14b;
-            color: #111;
-            margin-bottom: 0;
-        }
-        #loginPanel .admin-login-fields button:hover {
-            background: #ddb347;
-        }
-        /* Specific style for ENTER STUDY HUB button */
-        #loginPanel button[onclick="openUserPanel()"] {
-            background: #ff9900;
-            color: white;
-            margin-top: 25px;
-        }
-        #loginPanel button[onclick="openUserPanel()"]:hover {
-            background: #e68a00;
-        }
-        /* Styles for new user login buttons */
-        #loginPanel .user-auth-section {
-            width: 100%;
-            max-width: 350px;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        #loginPanel .user-auth-section button {
-            background-color: #4285F4;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px 20px;
-            font-size: 1em;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        #loginPanel .user-auth-section button:hover {
-            background-color: #357ae8;
-            transform: translateY(-1px);
-        }
-        #loginPanel .user-auth-section button.apple-btn {
-            background-color: #000;
-            color: white;
-        }
-        #loginPanel .user-auth-section button.apple-btn:hover {
-            background-color: #333;
-        }
-        #loginPanel .user-auth-section button.anonymous-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        #loginPanel .user-auth-section button.anonymous-btn:hover {
-            background-color: #5a6268;
-        }
-        #loginPanel .auth-separator {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-            max-width: 350px;
-            margin: 20px 0;
-            color: #888;
-        }
-        #loginPanel .auth-separator::before, #loginPanel .auth-separator::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-        #loginPanel .auth-separator:not(:empty)::before {
-            margin-right: .25em;
-        }
-        #loginPanel .auth-separator:not(:empty)::after {
-            margin-left: .25em;
-        }
-        /* Admin Login Fields Container */
-        #adminLoginFieldsContainer {
-            display: none;
-            width: 100%;
-            max-width: 350px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            text-align: center;
-        }
-        #adminLoginFieldsContainer h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-        }
-        #adminLoginFieldsContainer input {
-            margin-bottom: 10px;
-        }
-
-        /* User Panel (Home Page) Styling */
-        #userPanel {
-            display: none;
-            padding: 30px;
-            max-width: 1400px;
-            margin: 20px auto;
-            background: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            animation: fadeIn 0.6s ease-out;
-            min-height: 300px;
-        }
-        /* Category Buttons Styling */
-        #categoryButtons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        .category-btn {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            width: 180px;
-            height: 120px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.2em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .category-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        .category-btn.active-category-btn {
-            background-color: #2c3e50;
-            border: 2px solid #f0c14b;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-        }
-
-        /* Material List & Card Styling */
-        #materialList, #adminMaterialList, #libraryItems {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            justify-items: center;
-        }
-        .material {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
-            width: 100%;
-            max-width: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
-            border: 1px solid #e0e0e0;
-            cursor: pointer;
-        }
-        .material:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-            border-color: #3498db;
-        }
-        .material img {
-            width: 100%;
-            height: 180px;
-            object-fit: contain;
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            background-color: #fff;
-        }
-        .material h4 {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            color: #2c3e50;
-            text-align: center;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-        .material p {
-            font-size: 0.95em;
-            color: #555;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-        .material p.show-more-toggle {
-            color: #007bff;
-            cursor: pointer;
-            font-size: 0.9em;
-            text-decoration: underline;
-            margin-top: 5px;
-            text-align: center;
-        }
-        .material p.description-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-            text-align: left;
-            padding: 5px 0;
-            font-size: 0.9em;
-            color: #666;
-        }
-        .material .buttons {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .material .buttons button {
-            width: 100%;
-            padding: 10px 15px;
-            font-size: 1em;
-            border-radius: 8px;
-            background: #3498db;
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        .material .buttons button:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
-        }
-        .material .buttons button.open-pdf-btn {
-            background: #27ae60;
-        }
-        .material .buttons button.open-pdf-btn:hover {
-            background: #229954;
-        }
-        .material .buttons button.buy-pdf-btn {
-            background: #ff9900;
-        }
-        .material .buttons button.buy-pdf-btn:hover {
-            background: #e68a00;
-        }
-        /* ADDED: View course button style */
-        .material .buttons button.view-course-btn {
-            background: #27ae60; /* Green for view button */
-        }
-        .material .buttons button.view-course-btn:hover {
-            background: #229954;
-        }
-
-        /* Material Detail Page */
-        #materialDetail {
-            text-align: center;
-        }
-        #materialDetailTitle {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-        #materialDetailImages {
-            display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            padding-bottom: 15px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 25px;
-        }
-        #materialDetailImages img {
-            width: 100%;
-            min-width: 300px;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            scroll-snap-align: start;
-        }
-        #materialDetail .buttons {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        #materialDetail .buttons button {
-            min-width: 150px;
-            padding: 12px 25px;
-            font-size: 1.1em;
-            border-radius: 8px;
-        }
-        #materialDetail #openFreePdfBtn {
-            background: #27ae60;
-            color: white;
-        }
-        #materialDetail #openFreePdfBtn:hover {
-            background: #229954;
-        }
-        #materialDetail #buyPaidPdfBtn { /* MODIFIED: Changed ID for clarity */
-            background: #ff9900;
-            color: white;
-        }
-        #materialDetail #buyPaidPdfBtn:hover {
-            background: #e68a00;
-        }
-        /* ADDED: View paid course button in detail page */
-        #materialDetail #viewPaidCourseBtn {
-            background: #27ae60;
-            color: white;
-        }
-        #materialDetail #viewPaidCourseBtn:hover {
-            background: #229954;
-        }
-        #materialDetail #backButtonDetail {
-            background: #95a5a6;
-        }
-        #materialDetail #backButtonDetail:hover {
-            background: #7f8c8d;
-        }
-        #materialDetailDescription {
-            text-align: left;
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 20px;
-        }
-        #materialDetailDescription p {
-            margin-bottom: 10px;
-        }
-        #materialDetailDescription #toggleDescBtn {
-            background: #007bff;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin-top: 10px;
-        }
-        #materialDetailDescription #toggleDescBtn:hover {
-            background: #0056b3;
-        }
-        /* Style for preformatted code */
-        #materialDetailDescription pre {
-            background-color: #f4f4f4;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.95em;
-            border: 1px solid #ddd;
-            margin-top: 10px;
-        }
-        #materialDetailDescription code {
-            display: block; /* Ensures code block wraps */
-            white-space: pre-wrap; /* Preserves whitespace and wraps */
-        }
-
-
-        /* Form Elements */
-        input, textarea, select { /* Added select */
-            width: calc(100% - 20px);
-            max-width: 500px;
-            margin-bottom: 15px;
-            padding: 12px 15px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            background-color: #fcfcfc;
-        }
-        input:focus, textarea:focus, select:focus { /* Added select */
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-            outline: none;
-        }
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        /* Admin Panel Specific */
-        #adminPanel button {
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-
-        /* Library Page Specific */
-        #libraryPage .material {
-            margin-bottom: 20px;
-        }
-        #libraryPage .material .buttons {
-            margin-top: 10px;
-        }
-        #libraryPage > button, #categoryContentPage > button {
-            margin-top: 30px;
-            background: #6c757d;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #libraryPage > button:hover, #categoryContentPage > button:hover {
-            background: #5a6268;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Custom Message Box Styles */
-        #customMessageBox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        #customMessageBox > div {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-        #messageBoxText {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        #customMessageBox button {
-            background: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            margin: 5px;
-        }
-        #customMessageBox button.cancel-btn {
-            background: #e74c3c;
-        }
-        #customMessageBox button.cancel-btn:hover {
-            background: #c0392b;
-        }
-        #customMessageBox button.confirm-btn {
-            background: #27ae60;
-        }
-        #customMessageBox button.confirm-btn:hover {
-            background: #229954;
-        }
-
-        /* Side Drawer Styles */
-        .side-drawer {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1001;
-            top: 0;
-            right: 0;
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
-        }
-        .side-drawer.open {
-            width: 250px;
-        }
-        .side-drawer .close-drawer-btn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
-            background: none;
-            border: none;
-            color: #333;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .side-drawer .close-drawer-btn:hover {
-            color: #e74c3c;
-        }
-        .drawer-links {
-            padding: 8px 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .drawer-links button {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 1.1em;
-            color: #333;
-            display: block;
-            transition: 0.3s;
-            background: none;
-            border: none;
-            text-align: left;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .drawer-links button:hover {
-            background-color: #ddd;
-            color: #2c3e50;
-        }
-        .drawer-overlay {
-            position: fixed;
-            display: none;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.4);
-            z-index: 1000;
-            transition: opacity 0.5s;
-            opacity: 0;
-        }
-        .drawer-overlay.open {
-            display: block;
-            opacity: 1;
-        }
-        #policyContentDisplay {
-            padding: 30px;
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-            text-align: left;
-        }
-        #policyContentDisplay h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #policyContentDisplay button {
-            margin-top: 20px;
-            background: #95a5a6;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 1em;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #policyContentDisplay button:hover {
-            background: #7f8c8d;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            #materialList, #adminMaterialList, #libraryItems {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 25px;
-            }
-            .material {
-                max-width: 250px;
-            }
-            .side-drawer.open {
-                width: 200px;
-            }
-        }
-        @media (max-width: 768px) {
-            header {
-                font-size: 22px;
-                padding: 15px 10px;
-            }
-            .top-right-controls {
-                position: static;
-                transform: none;
-                margin-top: 10px;
-                justify-content: center;
-                width: 100%;
-            }
-            .top-right-controls input.show {
-                width: 100%;
-            }
-            #adminPanel, #userPanel, #materialDetail, #libraryPage, #loginPanel, #policyContentDisplay, #categoryContentPage {
-                padding: 15px;
-                margin: 10px auto;
-            }
-            #loginPanel button {
-                padding: 12px 15px;
-                font-size: 1em;
-            }
-            #materialList, #adminMaterialList, #libraryItems {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 15px;
-            }
-            .material {
-                padding: 10px;
-                max-width: none;
-            }
-            .material img {
-                height: 100px;
-            }
-            #materialDetail #materialDetailImages img {
-                min-width: 250px;
-                max-height: 300px;
-            }
-            h2 {
-                font-size: 1.8em;
-            }
-            #materialDetailTitle {
-                font-size: 2em;
-            }
-            .side-drawer.open {
-                width: 180px;
-            }
-            .category-btn {
-                width: 140px;
-                height: 100px;
-                font-size: 1em;
-                padding: 15px;
-            }
-            #categoryButtons {
-                gap: 15px;
-                margin-bottom: 25px;
-            }
-            /* Responsive adjustments for thumbnail section */
-            #adminHomeThumbnailSection, #userHomeThumbnailDisplay {
-                padding: 15px;
-                margin: 10px auto 20px auto;
-            }
-        }
-    </style>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script> </head>
+    /* Toast */
+    .toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#0b0c10; border:1px solid #1f1f1f; padding:10px 14px; border-radius:12px; display:none; z-index:70}
+    .toast.show{display:block}
+  </style>
+</head>
 <body>
-    <header>
-        SGS STUDY HUB
-        <div class="top-right-controls">
-            <button class="search-icon" onclick="toggleSearch()">
-                <i class="fas fa-search"></i>
-            </button>
-            <input type="text" id="searchInput" placeholder="Search Material..." oninput="filterMaterials()" />
-            <button onclick="viewLibraryPage()">
-                <i class="fas fa-book"></i> My Library
-            </button>
-            <button id="logoutButton" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-            <button id="menuButton" class="menu-icon" onclick="toggleDrawer()">
-                <i class="fas fa-bars"></i>
-            </button>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="title">SGS EXAM CRACKER</div>
+      <div class="avatar" id="avatarWrap" style="display:none">
+        <span id="userEmail" style="font-size:12px;color:#cbd5e1;display:none"></span>
+        <img id="userPhoto" alt="user" style="display:none"/>
+        <div class="fallback" id="userFallback" style="display:none">U</div>
+        <button class="logout" id="logoutBtn" title="Logout">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- GREET LINE (left-aligned under header) -->
+  <div class="greet-wrap">
+    <div class="greet">Hello, <strong id="helloName">User</strong> 👋</div>
+  </div>
+
+  <!-- SHAYARI (🔥 study motivation) -->
+  <section class="shayari" aria-label="Study Motivation">
+    <h2>🔥 Study के लिए आग — आज नहीं तो कभी नहीं</h2>
+    <p>किताबों की राख नहीं उड़ानी, <br> पन्ने पलट कर किस्मत पलटनी है।</p>
+    <p>घड़ी की टिक-टिक याद दिलाए—<br> आज का आलस, कल की नियुक्ति खा जाएगा।</p>
+    <p>जो रातों को जलते हैं वही सुबह अख़बारों में छपते हैं।</p>
+    <small>— Focus • Discipline • Repeat</small>
+  </section>
+
+  <!-- GRID: 3 per row, square tiles -->
+  <main class="grid" id="btnGrid">
+    <a class="tile" href="https://drive.google.com/drive/folders/1kuiMOHnkRewT9nN4RBaJyrGIjJJBDLtk" target="_blank" rel="noopener" aria-label="SSC GD">
+      <div class="emoji">🛡️</div>
+      <div class="name">SSC GD</div>
+      <div class="hint">Important PDFs</div>
+    </a>
+    <a class="tile" href="https://drive.google.com/drive/folders/1CqVZz4A2JqrqMYambXq7QfkYPborLiIP" target="_blank" rel="noopener" aria-label="SSC MTS">
+      <div class="emoji">🧰</div>
+      <div class="name">SSC MTS</div>
+      <div class="hint">All Sections</div>
+    </a>
+    <a class="tile" href="https://drive.google.com/drive/folders/1mXVIzRNVTBIoLjDCAT-7Jome1AZ7n6SY" target="_blank" rel="noopener" aria-label="LUCENT">
+      <div class="emoji">📘</div>
+      <div class="name">LUCENT</div>
+      <div class="hint">General Knowledge</div>
+    </a>
+    <a class="tile" href="https://drive.google.com/drive/folders/1aVAB7eZK3wEEyCDc_l4EkDfQ3BgNq4JI" target="_blank" rel="noopener" aria-label="ALL PDF">
+      <div class="emoji">📚</div>
+      <div class="name">ALL PDF</div>
+      <div class="hint">One Place Library</div>
+    </a>
+    <a class="tile" href="https://drive.google.com/drive/folders/1eAjiWefAZdNdE-bK1nwvUlP92_7WIGat" target="_blank" rel="noopener" aria-label="Notice Board">
+      <div class="emoji">📢</div>
+      <div class="name">Notice Board</div>
+      <div class="hint">Updates & Info</div>
+    </a>
+    <a class="tile" href="https://drive.google.com/drive/folders/1eF9tbYetogTi6QekaVLVKcw-1VbSSnV4" target="_blank" rel="noopener" aria-label="New Vacancy">
+      <div class="emoji">🆕</div>
+      <div class="name">New Vacancy</div>
+      <div class="hint">Latest Jobs</div>
+    </a>
+  </main>
+
+  <!-- AUTH GATE (first time login) -->
+  <div class="gate" id="authGate" aria-modal="true" role="dialog">
+    <div class="card">
+      <h3>Login / Signup to continue</h3>
+      <div class="tabs">
+        <button class="tab active" id="tabSignIn">Sign In</button>
+        <button class="tab" id="tabSignUp">Sign Up</button>
+      </div>
+
+      <!-- Sign In -->
+      <div id="signinForm">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="inEmail" placeholder="you@example.com" autocomplete="username"/>
         </div>
-    </header>
-
-    <div id="adminHomeThumbnailSection" style="display: none;">
-        <h2>Upload Home Page Thumbnails (16:9 Ratio, Max 4 images)</h2>
-        <div class="thumbnail-upload-area">
-            </div>
-        <input type="file" id="homeThumbnailInput" accept="image/*" multiple>
-        <button onclick="uploadHomeThumbnails()">Upload Thumbnails</button>
-    </div>
-
-    <div id="sideDrawer" class="side-drawer">
-        <button class="close-drawer-btn" onclick="toggleDrawer()">&times;</button>
-        <div class="drawer-links">
-            <button onclick="showHomePage()">Home</button>
-            <button onclick="showPolicyContent('about')">About Us</button>
-            <button onclick="showPolicyContent('privacyPolicy')">Privacy Policy</button>
-            <button onclick="showPolicyContent('termsCondition')">Terms & Conditions</button>
-            <button onclick="showPolicyContent('refundCancellation')">Refund & Cancellation</button>
-            <button onclick="showPolicyContent('shipping')">Shipping Policy</button>
-            <button onclick="showPolicyContent('pricing')">Pricing</button>
-            <button onclick="showPolicyContent('contact')">Contact Us</button>
-            <button onclick="showPolicyContent('disclaimer')">Disclaimer</button>
-            <button onclick="showPolicyContent('faq')">FAQ</button>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="inPass" placeholder="••••••••" autocomplete="current-password"/>
         </div>
-    </div>
-    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
+        <button class="btn" id="btnSignInEmail">Sign In with Email</button>
+        <div class="sep">or</div>
+        <button class="btn-google" id="btnGoogle">
+          <span>🟦</span> Continue with Google
+        </button>
+        <div class="error" id="inErr"></div>
+      </div>
 
-    <div id="loginPanel">
-        <h2>User Login / Sign Up</h2>
-        <input type="email" id="userEmail" placeholder="Email" />
-        <input type="password" id="userPassword" placeholder="Password" />
-        <button onclick="userLogin()">Login</button>
-        <button onclick="userSignUp()" style="background:#28a745;">Sign Up</button>
-        <div class="auth-separator">OR</div>
-        <div class="user-auth-section">
-            <button onclick="signInWithGoogle()">
-                <i class="fab fa-google"></i> Login with Google
-            </button>
-            <button onclick="signInWithApple()" class="apple-btn">
-                <i class="fab fa-apple"></i> Login with Apple
-            </button>
-            <button onclick="signInAnonymouslyUser()" class="anonymous-btn">
-                <i class="fas fa-user-secret"></i> Continue Anonymously
-            </button>
+      <!-- Sign Up -->
+      <div id="signupForm" style="display:none">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="upName" placeholder="Your Name" autocomplete="name"/>
         </div>
-        <button onclick="toggleAdminLoginFields()" style="margin-top: 30px; background: #555; color: white;"> Admin Login </button>
-        <div id="adminLoginFieldsContainer">
-            <h2>Admin Panel Login</h2>
-            <input type="text" id="adminId" placeholder="Admin ID" />
-            <input type="password" id="adminPass" placeholder="Password" />
-            <button onclick="adminLogin()">Login</button>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="upEmail" placeholder="you@example.com" autocomplete="email"/>
         </div>
-    </div>
-
-    <div id="adminPanel">
-        <h2>Admin Panel</h2>
-        <input type="text" id="materialTitle" placeholder="Study Material Title" /><br />
-        <label for="materialDescriptionType">Description Type:</label>
-        <select id="materialDescriptionType">
-            <option value="text">Plain Text</option>
-            <option value="html">HTML</option>
-            <option value="javascript">JavaScript Code (Display Only)</option>
-        </select><br />
-        <textarea id="materialDescription" placeholder="Description"></textarea><br />
-        <input type="text" id="pdfLink" placeholder="Free PDF Link (Optional)" /><br />
-        <input type="text" id="paidPdfLink" placeholder="Paid PDF Link" /><br />
-        <input type="text" id="materialCategory" placeholder="Category (e.g., Paid Course, Free Course)" /><br />
-        <input type="file" id="materialImages" multiple accept="image/*" /><br />
-        <button onclick="addMaterial()">Add Study Material</button>
-        <div id="adminMaterialList"></div>
-        <hr />
-        <h2>Manage Policy Pages</h2>
-        <label for="aboutContent">About Content:</label><br>
-        <textarea id="aboutContent" placeholder="Enter About Us content"></textarea><br>
-        <label for="privacyPolicyContent">Privacy Policy Content:</label><br>
-        <textarea id="privacyPolicyContent" placeholder="Enter Privacy Policy content"></textarea><br>
-        <label for="termsConditionContent">Terms & Condition Content:</label><br>
-        <textarea id="termsConditionContent" placeholder="Enter Terms & Condition content"></textarea><br>
-        <label for="refundCancellationContent">Refund & Cancellation Content:</label><br>
-        <textarea id="refundCancellationContent" placeholder="Enter Refund & Cancellation content"></textarea><br>
-        <label for="shippingContent">Shipping Content:</label><br>
-        <textarea id="shippingContent" placeholder="Enter Shipping Policy content"></textarea><br>
-        <label for="pricingContent">Pricing Content:</label><br>
-        <textarea id="pricingContent" placeholder="Enter Pricing information"></textarea><br>
-        <label for="contactContent">Contact Content:</label><br>
-        <textarea id="contactContent" placeholder="Enter Contact information"></textarea><br>
-        <label for="disclaimerContent">Disclaimer Content:</label><br>
-        <textarea id="disclaimerContent" placeholder="Enter Disclaimer content"></textarea><br>
-        <label for="faqContent">FAQ Content:</label><br>
-        <textarea id="faqContent" placeholder="Enter FAQ content"></textarea><br>
-        <button onclick="savePolicyContent()">Save Policy Content</button>
-        <button onclick="logout()">Logout</button>
-    </div>
-
-    <div id="userPanel">
-        <div id="userHomeThumbnailDisplay" style="display: none;">
-            </div>
-        <div id="categoryButtons">
-            <button class="category-btn" data-category="All" onclick="showCategoryPage('All')">All Materials</button>
-            <button class="category-btn" data-category="My Course" onclick="showCategoryPage('My Course')">My Course</button>
-            <button class="category-btn" data-category="Paid Course" onclick="showCategoryPage('Paid Course')">Paid Course</button>
-            <button class="category-btn" data-category="Free Course" onclick="showCategoryPage('Free Course')">Free Course</button>
-            <button class="category-btn" data-category="Test Series" onclick="showCategoryPage('Test Series')">Test Series</button>
-            <button class="category-btn" data-category="Quiz" onclick="showCategoryPage('Quiz')">Quiz</button>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="upPass" placeholder="Create a strong password" autocomplete="new-password"/>
         </div>
+        <button class="btn" id="btnSignUpEmail">Create Account</button>
+        <div class="sep">or</div>
+        <button class="btn-google" id="btnGoogle2">
+          <span>🟦</span> Continue with Google
+        </button>
+        <div class="error" id="upErr"></div>
+      </div>
+
+      <div class="success" id="authMsg"></div>
     </div>
+  </div>
 
-    <div id="categoryContentPage">
-        <h2 id="userPanelTitle"></h2>
-        <div id="materialList"></div>
-        <button onclick="history.back()">Back to Categories</button>
-    </div>
+  <div class="toast" id="toast">Logged out successfully.</div>
 
-    <div id="materialDetail">
-        <h2 id="materialDetailTitle"></h2>
-        <div class="slider" id="materialDetailImages"></div>
-        <div class="buttons">
-            <button onclick="addToLibrary()">Add to Library</button>
-            <button id="openFreePdfBtn" style="display:none;" onclick="openFreePdf()">Open Free PDF</button>
-            <button id="buyPaidPdfBtn" onclick="openPaidPdf()">Buy Paid PDF</button> <button id="viewPaidCourseBtn" style="display:none;" onclick="viewCourse()">View Course</button> <button id="backButtonDetail" onclick="history.back()">Back</button>
-        </div>
-        <div id="materialDetailDescription"></div>
-    </div>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+      GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword,
+      createUserWithEmailAndPassword, updateProfile, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    <div id="libraryPage">
-        <h2>My Library</h2>
-        <div id="libraryItems"></div>
-        <button onclick="history.back()">Back to Study Hub</button>
-    </div>
+    // ---- Your Firebase Config (Given) ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyC1py6IHfC6Chf99xvv8T5K3ISAO_cpmk4",
+      authDomain: "sgs-exam-cracker-420.firebaseapp.com",
+      projectId: "sgs-exam-cracker-420",
+      storageBucket: "sgs-exam-cracker-420.firebasestorage.app",
+      messagingSenderId: "209121129127",
+      appId: "1:209121129127:web:69587a45aa492c2e24a182"
+    };
 
-    <div id="policyContentDisplay">
-        <h2 id="policyContentTitle"></h2>
-        <div id="policyContentText"></div>
-        <button onclick="history.back()">Back</button>
-    </div>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    setPersistence(auth, browserLocalPersistence);
 
-    <div id="customMessageBox">
-        <div>
-            <p id="messageBoxText"></p>
-            <div id="messageBoxButtons">
-                <button onclick="hideMessageBox()">OK</button>
-            </div>
-        </div>
-    </div>
+    // UI Refs
+    const gate = document.getElementById('authGate');
+    const avatarWrap = document.getElementById('avatarWrap');
+    const userPhoto = document.getElementById('userPhoto');
+    const userFallback = document.getElementById('userFallback');
+    const helloName = document.getElementById('helloName');
+    const userEmail = document.getElementById('userEmail');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const toastEl = document.getElementById('toast');
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAKp7o0HzRioOELQZwRU7WKkdmWFLtwyuY",
-            authDomain: "sachin-bda88.firebaseapp.com",
-            databaseURL: "https://sachin-bda88-default-rtdb.firebaseio.com",
-            projectId: "sachin-bda88",
-            storageBucket: "sachin-bda88.appspot.com",
-            messagingSenderId: "371431713702",
-            appId: "1:371431713702:web:8ccbc31a741dae58433d67"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        const storage = firebase.storage(); // Initialize Firebase Storage
+    // Tabs & Forms
+    const tabSignIn = document.getElementById('tabSignIn');
+    const tabSignUp = document.getElementById('tabSignUp');
+    const signinForm = document.getElementById('signinForm');
+    const signupForm = document.getElementById('signupForm');
 
-        // Global Firebase references
-        let policiesRef = db.ref('policies');
-        let homeThumbnailsRef = db.ref('homeThumbnails'); // Changed to store multiple URLs
-        let homeSliderInterval; // To store the interval ID for auto-sliding
-        let materialsRef = db.ref('materials'); // MODIFIED: Store reference to materials
+    const inEmail = document.getElementById('inEmail');
+    const inPass  = document.getElementById('inPass');
+    const btnSignInEmail = document.getElementById('btnSignInEmail');
+    const inErr = document.getElementById('inErr');
 
-        // Global data variables
-        let materials = [];
-        let selectedMaterial = null;
-        let library = [];
-        let currentUser = null;
-        let userLibraryRef = null;
-        let policies = {};
-        let currentCategory = 'All';
+    const upName = document.getElementById('upName');
+    const upEmail = document.getElementById('upEmail');
+    const upPass = document.getElementById('upPass');
+    const btnSignUpEmail = document.getElementById('btnSignUpEmail');
+    const upErr = document.getElementById('upErr');
 
-        /*
-         * IMPORTANT FIREBASE REALTIME DATABASE SECURITY RULES:
-         * For the admin panel to save policy content and study materials, especially if the admin login
-         * is local (not using Firebase Authentication), your Firebase Realtime Database
-         * rules for the '/policies' and '/materials' paths must allow write access.
-         * For user libraries, ensure rules allow authenticated users to write to their own library path.
-         * For the home thumbnails, ensure rules allow admin to write.
-         *
-         * Example rules for testing (NOT recommended for production without proper authentication):
-         * {
-         * "rules": {
-         * "policies": {
-         * ".read": true,
-         * ".write": true
-         * },
-         * "materials": {
-         * ".read": true,
-         * ".write": true
-         * },
-         * "homeThumbnails": { // New rule for home thumbnails (array of URLs)
-         * ".read": true,
-         * ".write": true
-         * },
-         * "users": {
-         * "$uid": {
-         * "library": {
-         * ".read": "auth.uid != null && auth.uid === $uid",
-         * ".write": "auth.uid != null && auth.uid === $uid"
-         * }
-         * }
-         * }
-         * }
-         * }
-         *
-         * For Firebase Storage, you'll also need rules. Example for public read, authenticated write:
-         * service firebase.storage {
-         * match /b/{bucket}/o {
-         * match /{allPaths=**} {
-         * allow read;
-         * allow write: if request.auth != null; // Or more restrictive for admin
-         * }
-         * }
-         * }
-         */
+    const btnGoogle = document.getElementById('btnGoogle');
+    const btnGoogle2 = document.getElementById('btnGoogle2');
+    const authMsg = document.getElementById('authMsg');
 
-        // Attach policies listener once at the start
-        policiesRef.on('value', (snapshot) => {
-            policies = snapshot.val() || {};
-            console.log("Policies loaded from Firebase:", policies);
-        });
+    // Helpers
+    const showGate = () => gate.classList.add('show');
+    const hideGate = () => gate.classList.remove('show');
+    const showToast = (msg="Done") => {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      setTimeout(()=>toastEl.classList.remove('show'), 1800);
+    };
+    const initialFromName = (name="User") => (name.trim()[0] || "U").toUpperCase();
+    const nameFromEmail = (email="") => email.split("@")[0];
 
-        // Attach home thumbnails listener once at the start
-        homeThumbnailsRef.on('value', (snapshot) => {
-            const thumbnailUrls = snapshot.val() || [];
-            console.log("Home thumbnails loaded from Firebase:", thumbnailUrls);
-            _updateAdminThumbnailPreview(thumbnailUrls); // Update admin preview
-            if (currentUser && document.getElementById('userPanel').style.display === 'block') {
-                initHomeSlider(thumbnailUrls); // Initialize slider for users
-            }
-        });
+    // Switch Tabs
+    tabSignIn.addEventListener('click', ()=>{
+      tabSignIn.classList.add('active'); tabSignUp.classList.remove('active');
+      signinForm.style.display='block'; signupForm.style.display='none';
+      inErr.textContent=""; upErr.textContent=""; authMsg.textContent="";
+    });
+    tabSignUp.addEventListener('click', ()=>{
+      tabSignUp.classList.add('active'); tabSignIn.classList.remove('active');
+      signupForm.style.display='block'; signinForm.style.display='none';
+      inErr.textContent=""; upErr.textContent=""; authMsg.textContent="";
+    });
 
-        // Listener for Firebase Auth state changes
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                console.log("User logged in:", user.uid, user.email || "Anonymous");
-                userLibraryRef = db.ref('users/' + user.uid + '/library');
-                userLibraryRef.on('value', (snapshot) => {
-                    library = snapshot.val() || [];
-                    console.log("Library loaded from Firebase:", library);
-                    if (document.getElementById('libraryPage').style.display === 'block') {
-                        _renderLibraryPage();
-                    }
-                    if (document.getElementById('categoryContentPage').style.display === 'block') {
-                        showUserMaterials();
-                    }
-                });
-                document.getElementById('loginPanel').style.display = 'none';
-                document.getElementById('userPanel').style.display = 'block';
-                document.getElementById('logoutButton').style.display = 'block';
-                document.getElementById('searchInput').classList.add('show');
-                document.getElementById('menuButton').style.display = 'block';
-                document.getElementById('categoryContentPage').style.display = 'none';
-                document.getElementById('adminHomeThumbnailSection').style.display = 'none'; // Hide admin section for regular users
+    // Auth state
+    onAuthStateChanged(auth, (user)=>{
+      if(user){
+        hideGate();
+        avatarWrap.style.display = 'flex';
 
-                // Initialize home slider for logged-in users
-                homeThumbnailsRef.once('value', (snapshot) => {
-                    const urls = snapshot.val() || [];
-                    initHomeSlider(urls);
-                });
+        const displayName =
+          user.displayName ||
+          localStorage.getItem('sgs_full_name') ||
+          nameFromEmail(user.email || "");
 
-                history.replaceState({page: 'userPanel'}, '', '#userPanel');
-                document.querySelectorAll('.category-btn').forEach(btn => {
-                    if (btn.dataset.category === 'All') {
-                        btn.classList.add('active-category-btn');
-                    } else {
-                        btn.classList.remove('active-category-btn');
-                    }
-                });
-            } else {
-                currentUser = null;
-                console.log("User logged out.");
-                library = [];
-                currentCategory = 'All';
-                if (userLibraryRef) {
-                    userLibraryRef.off();
-                    userLibraryRef = null;
-                }
-                // Clear and stop home slider
-                clearInterval(homeSliderInterval);
-                document.getElementById('userHomeThumbnailDisplay').innerHTML = '';
-                document.getElementById('userHomeThumbnailDisplay').style.display = 'none';
+        helloName.textContent = displayName;
 
-                document.getElementById('userPanel').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'none';
-                document.getElementById('materialDetail').style.display = 'none';
-                document.getElementById('libraryPage').style.display = 'none';
-                document.getElementById('policyContentDisplay').style.display = 'none';
-                document.getElementById('categoryContentPage').style.display = 'none';
-                document.getElementById('adminHomeThumbnailSection').style.display = 'none';
+        if(user.email){ userEmail.textContent = user.email; userEmail.style.display = 'none'; }
 
-                document.getElementById('loginPanel').style.display = 'flex';
-                document.getElementById('logoutButton').style.display = 'none';
-                document.getElementById('searchInput').classList.remove('show');
-                document.getElementById('menuButton').style.display = 'none';
-                toggleDrawer(true);
-            }
-        });
-
-        // Listen for material data changes from Firebase Realtime Database
-        materialsRef.on('value', (snapshot) => {
-            const fetchedMaterials = [];
-            snapshot.forEach((childSnapshot) => {
-                const materialData = childSnapshot.val();
-                fetchedMaterials.push({ firebaseKey: childSnapshot.key, ...materialData });
-            });
-            materials = fetchedMaterials;
-            if (document.getElementById('categoryContentPage').style.display === 'block') {
-                showUserMaterials();
-            }
-            showAdminMaterials();
-        });
-
-        // Custom Message Box Functions
-        function showMessageBox(message, type = 'alert', callback = null) {
-            document.getElementById('messageBoxText').innerText = message;
-            const messageBoxButtons = document.getElementById('messageBoxButtons');
-            messageBoxButtons.innerHTML = '';
-            if (type === 'confirm') {
-                const confirmBtn = document.createElement('button');
-                confirmBtn.innerText = 'Yes';
-                confirmBtn.classList.add('confirm-btn');
-                confirmBtn.onclick = () => {
-                    hideMessageBox();
-                    if (callback) callback(true);
-                };
-                messageBoxButtons.appendChild(confirmBtn);
-                const cancelBtn = document.createElement('button');
-                cancelBtn.innerText = 'No';
-                cancelBtn.classList.add('cancel-btn');
-                cancelBtn.onclick = () => {
-                    hideMessageBox();
-                    if (callback) callback(false);
-                };
-                messageBoxButtons.appendChild(cancelBtn);
-            } else {
-                const okBtn = document.createElement('button');
-                okBtn.innerText = 'OK';
-                okBtn.onclick = hideMessageBox;
-                messageBoxButtons.appendChild(okBtn);
-            }
-            document.getElementById('customMessageBox').style.display = 'flex';
+        if(user.photoURL){
+          userPhoto.src = user.photoURL;
+          userPhoto.style.display='block';
+          userFallback.style.display='none';
+        }else{
+          userFallback.textContent = initialFromName(displayName || "U");
+          userFallback.style.display='grid';
+          userPhoto.style.display='none';
         }
-
-        function hideMessageBox() {
-            document.getElementById('customMessageBox').style.display = 'none';
-        }
-
-        // Admin Login Function
-        function adminLogin() {
-            const id = document.getElementById('adminId').value;
-            const pass = document.getElementById('adminPass').value;
-            if (id === 'Sachin' && pass === '802165') {
-                document.getElementById('loginPanel').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                document.getElementById('adminHomeThumbnailSection').style.display = 'block';
-                document.getElementById('logoutButton').style.display = 'block';
-                populatePolicyFields();
-                history.pushState({page: 'adminPanel'}, '', '#adminPanel');
-            } else {
-                showMessageBox('Invalid Admin Credentials');
-            }
-        }
-
-        // User Sign Up with Email and Password
-        function userSignUp() {
-            const email = document.getElementById('userEmail').value;
-            const password = document.getElementById('userPassword').value;
-            if (!email || !password) {
-                showMessageBox('Please enter both email and password for sign up.');
-                return;
-            }
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    showMessageBox('User signed up successfully! You are now logged in.');
-                })
-                .catch((error) => {
-                    showMessageBox('Error signing up: ' + error.message);
-                });
-        }
-
-        // User Login with Email and Password
-        function userLogin() {
-            const email = document.getElementById('userEmail').value;
-            const password = document.getElementById('userPassword').value;
-            if (!email || !password) {
-                showMessageBox('Please enter both email and password for login.');
-                return;
-            }
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    showMessageBox('User logged in successfully!');
-                })
-                .catch((error) => {
-                    showMessageBox('Error logging in: ' + error.message);
-                });
-        }
-
-        // Sign In with Google
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    showMessageBox('Signed in with Google!');
-                })
-                .catch((error) => {
-                    showMessageBox('Error signing in with Google: ' + error.message);
-                });
-        }
-
-        // Sign In with Apple (Placeholder - requires specific Apple Developer setup)
-        function signInWithApple() {
-            showMessageBox('Apple Sign-In is not fully implemented in this demo. Please use another method.');
-        }
-
-        // Sign In Anonymously
-        function signInAnonymouslyUser() {
-            auth.signInAnonymously()
-                .then(() => {
-                    showMessageBox('Signed in anonymously!');
-                })
-                .catch((error) => {
-                    showMessageBox('Error signing in anonymously: ' + error.message);
-                });
-        }
-
-        // Logout Function
-        function logout() {
-            auth.signOut().then(() => {
-                showMessageBox('Logged out successfully!');
-                document.getElementById('adminHomeThumbnailSection').style.display = 'none';
-            }).catch((error) => {
-                showMessageBox('Error logging out: ' + error.message);
-            });
-        }
-
-        // Function to upload home page thumbnails to Firebase Storage
-        async function uploadHomeThumbnails() {
-            const fileInput = document.getElementById('homeThumbnailInput');
-            const files = fileInput.files;
-            const previewArea = document.querySelector('#adminHomeThumbnailSection .thumbnail-upload-area');
-
-            if (files.length === 0) {
-                showMessageBox('Please select image files to upload.');
-                return;
-            }
-            if (files.length > 4) {
-                showMessageBox('You can upload a maximum of 4 images for the home page thumbnail slider.');
-                return;
-            }
-
-            // Show loading indicator
-            previewArea.innerHTML = '<p style="text-align: center; padding: 20px;">Uploading images...</p>';
-            showMessageBox('Uploading images, please wait...');
-
-            const newThumbnailUrls = [];
-            const storageRef = storage.ref();
-
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    if (!file.type.startsWith('image/')) {
-                        showMessageBox(`Error: File "${file.name}" is not a valid image. Please upload JPG, PNG, or GIF.`);
-                        // Clear loading indicator and show previous previews if any
-                        homeThumbnailsRef.once('value', (snapshot) => {
-                            _updateAdminThumbnailPreview(snapshot.val() || []);
-                        });
-                        return; // Stop processing if a non-image file is found
-                    }
-
-                    const fileName = `home_thumbnail_${Date.now()}_${i}_${file.name}`;
-                    const imageRef = storageRef.child(`thumbnails/${fileName}`);
-
-                    console.log(`Attempting to upload file: ${file.name}`);
-                    const snapshot = await imageRef.put(file);
-                    console.log(`File ${file.name} uploaded successfully.`);
-
-                    const downloadURL = await snapshot.ref.getDownloadURL();
-                    newThumbnailUrls.push(downloadURL);
-                    console.log(`Download URL for ${file.name}: ${downloadURL.substring(0, 50)}...`);
-                }
-
-                // All files uploaded, now save URLs to Realtime Database
-                await homeThumbnailsRef.set(newThumbnailUrls);
-                showMessageBox('Home thumbnails uploaded and saved successfully!');
-                console.log("All thumbnail URLs saved to Firebase Realtime Database:", newThumbnailUrls);
-                _updateAdminThumbnailPreview(newThumbnailUrls); // Update admin preview
-                fileInput.value = ''; // Clear file input
-            } catch (error) {
-                console.error("Overall upload process failed:", error);
-                showMessageBox(`Upload failed: ${error.message}. Please check your Firebase Storage rules and network connection.`);
-                // On error, try to re-render previous previews
-                homeThumbnailsRef.once('value', (snapshot) => {
-                    _updateAdminThumbnailPreview(snapshot.val() || []);
-                });
-            } finally {
-                // The message box is handled by showMessageBox/hideMessageBox calls
-            }
-        }
-
-        // Function to update admin thumbnail preview area
-        function _updateAdminThumbnailPreview(urls) {
-            const previewArea = document.querySelector('#adminHomeThumbnailSection .thumbnail-upload-area');
-            previewArea.innerHTML = ''; // Clear existing previews
-
-            if (urls && urls.length > 0) {
-                // When there are actual images, use flexbox and let content define height
-                previewArea.style.paddingTop = '0';
-                previewArea.style.height = 'auto';
-                previewArea.style.flexDirection = 'row'; // Ensure flex direction is row for wrapping
-                previewArea.style.justifyContent = 'center'; // Center items
-                previewArea.style.alignItems = 'flex-start'; // Align items to top
-                previewArea.style.flexWrap = 'wrap'; // Allow wrapping
-
-                urls.forEach(url => {
-                    const imgWrapper = document.createElement('div');
-                    imgWrapper.classList.add('preview-image-wrapper');
-                    imgWrapper.style.marginBottom = '10px'; // Space below each image
-                    imgWrapper.style.marginRight = '10px'; // Space to the right
-
-                    // Set width and padding-top dynamically based on number of images
-                    if (urls.length === 1) {
-                        imgWrapper.style.width = '100%';
-                        imgWrapper.style.paddingTop = '56.25%'; // 16:9 for full width
-                    } else { // 2, 3, or 4 images
-                        imgWrapper.style.width = 'calc(50% - 5px)'; // Adjust for gap
-                        imgWrapper.style.paddingTop = '28.125%'; // 16:9 for half width
-                    }
-
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = 'Thumbnail Preview';
-                    imgWrapper.appendChild(img);
-                    previewArea.appendChild(imgWrapper);
-                });
-            } else {
-                // Display a default placeholder if no images
-                previewArea.innerHTML = ''; // Ensure it's empty
-                const defaultImg = document.createElement('img');
-                defaultImg.src = 'https://placehold.co/1600x900/cccccc/000000?text=16:9+Thumbnail+Preview';
-                defaultImg.alt = 'Default Thumbnail Preview';
-                defaultImg.style.position = 'absolute';
-                defaultImg.style.top = '0';
-                defaultImg.style.left = '0';
-                defaultImg.style.width = '100%';
-                defaultImg.style.height = '100%';
-                defaultImg.style.objectFit = 'cover';
-                defaultImg.style.borderRadius = '6px';
-
-                // Reset previewArea's styles for the single placeholder
-                previewArea.style.paddingTop = '56.25%'; // Restore full 16:9 padding for placeholder
-                previewArea.style.height = '0'; // Reset height for padding-top to work
-                previewArea.style.flexDirection = 'column'; // Default flex direction
-                previewArea.style.justifyContent = 'center';
-                previewArea.style.alignItems = 'center';
-                previewArea.style.flexWrap = 'nowrap';
-
-                previewArea.appendChild(defaultImg);
-            }
-        }
-
-
-        // Home Page Slider Logic
-        let currentSlide = 0;
-        let sliderImages = [];
-
-        function initHomeSlider(urls) {
-            const sliderContainer = document.getElementById('userHomeThumbnailDisplay');
-            sliderContainer.innerHTML = ''; // Clear existing images
-            clearInterval(homeSliderInterval); // Clear any existing interval
-
-            if (!urls || urls.length === 0) {
-                sliderContainer.style.display = 'none';
-                return;
-            }
-
-            sliderImages = []; // Reset slider images array
-            urls.forEach((url, index) => {
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = `Home Slide ${index + 1}`;
-                img.classList.add('slider-image');
-                if (index === 0) {
-                    img.classList.add('active'); // First image is active
-                }
-                sliderContainer.appendChild(img);
-                sliderImages.push(img);
-            });
-
-            sliderContainer.style.display = 'block'; // Show the slider container
-
-            if (sliderImages.length > 1) {
-                currentSlide = 0;
-                homeSliderInterval = setInterval(nextSlideHome, 5000); // Auto-slide every 5 seconds
-            }
-        }
-
-        function nextSlideHome() {
-            if (sliderImages.length === 0) return;
-
-            sliderImages[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % sliderImages.length;
-            sliderImages[currentSlide].classList.add('active');
-        }
-
-
-        // --- Internal Render Functions (Do NOT push history state) ---
-        // Basic HTML Sanitization function
-        function sanitizeHtml(htmlString) {
-            // This is a basic sanitization to remove script tags.
-            // For production, consider a dedicated and robust sanitization library like DOMPurify.
-            let sanitized = htmlString.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-            // You might want to remove other potentially dangerous attributes/tags as well
-            // e.g., sanitized = sanitized.replace(/onerror\s*=\s*['"][^'"]*['"]/gi, '');
-            return sanitized;
-        }
-
-        function _renderMaterialDetail(index) {
-            selectedMaterial = materials[index];
-            document.getElementById('materialDetailTitle').innerText = selectedMaterial.title;
-            const detailImagesContainer = document.getElementById('materialDetailImages');
-            detailImagesContainer.innerHTML = '';
-            if (selectedMaterial.images && selectedMaterial.images.length > 0) {
-                selectedMaterial.images.forEach(imgSrc => {
-                    const img = document.createElement('img');
-                    img.src = imgSrc;
-                    img.alt = selectedMaterial.title;
-                    detailImagesContainer.appendChild(img);
-                });
-            } else {
-                const img = document.createElement('img');
-                img.src = 'https://placehold.co/300x200/cccccc/000000?text=No+Image';
-                img.alt = 'No Image Available';
-                detailImagesContainer.appendChild(img);
-            }
-
-            const materialDetailDescriptionDiv = document.getElementById('materialDetailDescription');
-            materialDetailDescriptionDiv.innerHTML = ''; // Clear previous content
-
-            if (selectedMaterial.descriptionType === 'html') {
-                // Sanitize HTML content before rendering to prevent XSS
-                materialDetailDescriptionDiv.innerHTML = sanitizeHtml(selectedMaterial.description);
-            } else if (selectedMaterial.descriptionType === 'javascript') {
-                // Display JavaScript code as text, not executable
-                const pre = document.createElement('pre');
-                const code = document.createElement('code');
-                code.textContent = selectedMaterial.description; // Use textContent to prevent execution
-                pre.appendChild(code);
-                materialDetailDescriptionDiv.appendChild(pre);
-            } else { // Default to plain text
-                const p = document.createElement('p');
-                p.textContent = selectedMaterial.description;
-                materialDetailDescriptionDiv.appendChild(p);
-            }
-
-            const openFreePdfBtn = document.getElementById('openFreePdfBtn');
-            const buyPaidPdfBtn = document.getElementById('buyPaidPdfBtn');
-            const viewPaidCourseBtn = document.getElementById('viewPaidCourseBtn');
-
-            // Check if the material is already in the user's library (My Course)
-            const isCourseBought = library.some(item => item.id === selectedMaterial.id);
-
-            if (selectedMaterial.pdfLink) {
-                openFreePdfBtn.style.display = 'inline-block';
-            } else {
-                openFreePdfBtn.style.display = 'none';
-            }
-            
-            if (isCourseBought) {
-                buyPaidPdfBtn.style.display = 'none';
-                viewPaidCourseBtn.style.display = 'inline-block';
-                // Update the onclick event for the view button to view the paid course
-                viewPaidCourseBtn.onclick = () => viewCourse(index);
-            } else {
-                buyPaidPdfBtn.style.display = 'inline-block';
-                viewPaidCourseBtn.style.display = 'none';
-                // Update the onclick event for the buy button
-                buyPaidPdfBtn.onclick = () => handlePaidCoursePurchase(index);
-            }
-
-            document.getElementById('materialDetail').style.display = 'block';
-        }
-
-        function _renderLibraryPage() {
-            const libraryItemsDiv = document.getElementById('libraryItems');
-            libraryItemsDiv.innerHTML = '';
-            if (library.length === 0) {
-                libraryItemsDiv.innerHTML = '<p style="text-align: center; width: 100%;">Your library is empty.</p>';
-                return;
-            }
-            library.forEach((material, index) => {
-                const materialDiv = document.createElement('div');
-                materialDiv.classList.add('material');
-                materialDiv.innerHTML = `
-                    <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
-                    <h4>${material.title}</h4>
-                    <div class="buttons">
-                        ${material.pdfLink ? `<button class="open-pdf-btn" onclick="openFreePdfFromLibrary(${index})">Open Free PDF</button>` : ''}
-                        <button class="buy-pdf-btn" onclick="openPaidPdfFromLibrary(${index})">Buy Paid PDF</button>
-                        <button onclick="removeFromLibrary(${index})" style="background:#e74c3c;">Remove from Library</button>
-                    </div>
-                `;
-                libraryItemsDiv.appendChild(materialDiv);
-            });
-            document.getElementById('libraryPage').style.display = 'block';
-        }
-
-        function _renderPolicyContent(policyKey) {
-            const titleMap = {
-                about: 'About Us',
-                privacyPolicy: 'Privacy Policy',
-                termsCondition: 'Terms & Conditions',
-                refundCancellation: 'Refund & Cancellation',
-                shipping: 'Shipping Policy',
-                pricing: 'Pricing',
-                contact: 'Contact Us',
-                disclaimer: 'Disclaimer',
-                faq: 'FAQ'
-            };
-            document.getElementById('policyContentTitle').innerText = titleMap[policyKey] || 'Content';
-            document.getElementById('policyContentText').innerHTML = policies[policyKey] || '<p>Content not available yet.</p>';
-            document.getElementById('policyContentDisplay').style.display = 'block';
-        }
-
-        function _renderUserPanel() {
-            document.getElementById('userPanel').style.display = 'block';
-            document.getElementById('categoryContentPage').style.display = 'none';
-
-            // Re-initialize home slider when returning to user panel
-            homeThumbnailsRef.once('value', (snapshot) => {
-                const urls = snapshot.val() || [];
-                initHomeSlider(urls);
-            });
-        }
-
-        function _renderLoginPanel() {
-            document.getElementById('loginPanel').style.display = 'flex';
-        }
-
-        // Function to show materials based on category on a new page
-        function showCategoryPage(categoryName) {
-            hideAllPanels(); // Hide all other panels first, including userPanel and its contents
-            currentCategory = categoryName;
-            document.getElementById('userPanelTitle').innerText = `${categoryName} Study Materials`;
-
-            // Highlight active button (on the category buttons panel)
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if (btn.dataset.category === categoryName) {
-                    btn.classList.add('active-category-btn');
-                } else {
-                    btn.classList.remove('active-category-btn');
-                }
-            });
-
-            document.getElementById('categoryContentPage').style.display = 'block';
-            showUserMaterials();
-            history.pushState({page: 'categoryContentPage', category: categoryName}, '', `#categoryContent-${categoryName.replace(/\s/g, '')}`);
-        }
-
-        // --- Public Navigation Functions (Push history state) ---
-        function openUserPanel() {
-            hideAllPanels();
-            _renderUserPanel();
-            history.pushState({page: 'userPanel'}, '', '#userPanel');
-        }
-
-        function showMaterialDetail(index) {
-            hideAllPanels();
-            _renderMaterialDetail(index);
-            history.pushState({page: 'materialDetail', index: index}, '', `#materialDetail-${index}`);
-        }
-
-        // MODIFIED: viewLibraryPage ab My Course button ke through hi call hoga.
-        function viewLibraryPage() {
-            if (!currentUser) {
-                showMessageBox('Please log in to view your courses.');
-                return;
-            }
-            showCategoryPage('My Course');
-        }
-        
-        function showPolicyContent(policyKey) {
-            toggleDrawer(true);
-            hideAllPanels();
-            _renderPolicyContent(policyKey);
-            history.pushState({page: 'policyContent', key: policyKey}, '', `#${policyKey}`);
-        }
-
-        function showHomePage() {
-            toggleDrawer(true);
-            hideAllPanels();
-            currentCategory = 'All';
-            _renderUserPanel();
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if (btn.dataset.category === 'All') {
-                    btn.classList.add('active-category-btn');
-                } else {
-                    btn.classList.remove('active-category-btn');
-                }
-            });
-            history.pushState({page: 'userPanel'}, '', '#userPanel');
-        }
-
-        // Open Free PDF from Material Detail Page
-        function openFreePdf() {
-            if (selectedMaterial && selectedMaterial.pdfLink) {
-                window.open(selectedMaterial.pdfLink, '_blank');
-            } else {
-                showMessageBox('No free PDF link available for this material.');
-            }
-        }
-        
-        // ADDED: New function to handle paid course purchase
-        function handlePaidCoursePurchase(index) {
-            const materialToBuy = materials[index];
-            if (!currentUser) {
-                showMessageBox('Please log in to buy this course.');
-                return;
-            }
-            if (!materialToBuy || !materialToBuy.paidPdfLink) {
-                showMessageBox('Error: Paid course link not available.');
-                return;
-            }
-        
-            // ADDED: Open the real payment page in a new tab
-            const paymentPageUrl = materialToBuy.paidPdfLink;
-            // IMPORTANT: The payment gateway URL needs to be the actual link provided by the user.
-            const paymentWindow = window.open(paymentPageUrl, '_blank');
-        
-            // Simulating payment success after 5 seconds
-            // In a real application, you would listen for a webhook or a redirect from the payment gateway.
-            showMessageBox('Redirecting to payment gateway. Please complete the payment.');
-        
-            // This is a placeholder for real payment success logic
-            setTimeout(() => {
-                if (paymentWindow && !paymentWindow.closed) {
-                    showMessageBox('Payment successful! The course has been added to My Course.', 'alert', () => {
-                        // After payment, add the course to the user's library and refresh the view
-                        addCourseToMyCourse(materialToBuy);
-                        // Redirect to my course page after successful purchase
-                        showCategoryPage('My Course');
-                    });
-                } else {
-                    // This block might not be necessary in a real scenario with proper redirects/webhooks
-                    // but it's good practice for this demo.
-                    showMessageBox('Payment process may not have been completed. Please check your payment history.', 'alert');
-                }
-            }, 5000); // Simulate 5-second payment process
-        }
-        
-        // ADDED: New function to add a course to My Course (user's library)
-        function addCourseToMyCourse(material) {
-            if (!currentUser) return;
-        
-            const isAlreadyInLibrary = library.some(item => item.id === material.id);
-            if (!isAlreadyInLibrary) {
-                library.push(material);
-                userLibraryRef.set(library)
-                    .then(() => {
-                        console.log('Course added to My Course successfully!');
-                    })
-                    .catch(error => {
-                        console.error('Error adding course to My Course:', error);
-                        showMessageBox('Error adding course to My Course: ' + error.message);
-                    });
-            }
-        }
-
-        // Open Free PDF from Material Detail Page
-        function openFreePdf() {
-            if (selectedMaterial && selectedMaterial.pdfLink) {
-                window.open(selectedMaterial.pdfLink, '_blank');
-            } else {
-                showMessageBox('No free PDF link available for this material.');
-            }
-        }
-        
-        // MODIFIED: openPaidPdf ab paid course purchase handle karta hai
-        function openPaidPdf() {
-            if (selectedMaterial) {
-                const originalIndex = materials.findIndex(m => m.id === selectedMaterial.id);
-                if (originalIndex !== -1) {
-                    handlePaidCoursePurchase(originalIndex);
-                }
-            } else {
-                showMessageBox('No paid course link available for this material.');
-            }
-        }
-        
-        // ADDED: New function to view a purchased course
-        function viewCourse(index) {
-            const material = materials[index];
-            if (material && material.paidPdfLink) {
-                window.open(material.paidPdfLink, '_blank');
-            } else {
-                showMessageBox('Paid course link not available for this material.');
-            }
-        }
-
-        // Open Free PDF directly from list
-        function openFreePdfFromList(index) {
-            const material = materials[index];
-            if (material && material.pdfLink) {
-                window.open(material.pdfLink, '_blank');
-            } else {
-                showMessageBox('No free PDF link available for this material.');
-            }
-        }
-
-        // Open Paid PDF directly from list
-        function openPaidPdfFromList(index) {
-            const material = materials[index];
-            if (material && material.paidPdfLink) {
-                handlePaidCoursePurchase(index);
-            } else {
-                showMessageBox('No paid PDF link available for this material.');
-            }
-        }
-
-        // Add Material to User's Library
-        function addToLibrary(index) {
-            if (!currentUser) {
-                showMessageBox('Please log in to add materials to your library.');
-                return;
-            }
-            const materialToAdd = materials[index];
-            if (!materialToAdd) {
-                console.error("Attempted to add undefined material to library at index:", index);
-                showMessageBox('Error: Material not found.');
-                return;
-            }
-            const isAlreadyInLibrary = library.some(item => item.id === materialToAdd.id);
-            if (isAlreadyInLibrary) {
-                showMessageBox('This material is already in your library!');
-                return;
-            }
-            library.push(materialToAdd);
-            userLibraryRef.set(library)
-                .then(() => showMessageBox('Material added to your library!'))
-                .catch(error => showMessageBox('Error adding to library: ' + error.message));
-        }
-
-        // Open Free PDF from Library
-        function openFreePdfFromLibrary(index) {
-            const material = library[index];
-            if (material && material.pdfLink) {
-                window.open(material.pdfLink, '_blank');
-            } else {
-                showMessageBox('No free PDF link available for this material.');
-            }
-        }
-
-        // Open Paid PDF from Library
-        function openPaidPdfFromLibrary(index) {
-            const material = library[index];
-            if (material && material.paidPdfLink) {
-                window.open(material.paidPdfLink, '_blank');
-            } else {
-                showMessageBox('No paid PDF link available for this material.');
-            }
-        }
-
-        // Remove Material from Library
-        function removeFromLibrary(index) {
-            const materialToRemove = library[index];
-            showMessageBox(
-                `Are you sure you want to remove "${materialToRemove.title}" from your library?`,
-                'confirm',
-                (confirmed) => {
-                    if (confirmed) {
-                        library.splice(index, 1);
-                        userLibraryRef.set(library)
-                            .then(() => showMessageBox('Material removed from library!'))
-                            .catch(error => showMessageBox('Error removing from library: ' + error.message));
-                    }
-                }
-            );
-        }
-
-        // Filter Materials based on search input
-        function filterMaterials() {
-            if (document.getElementById('categoryContentPage').style.display === 'block') {
-                showUserMaterials();
-            }
-        }
-
-        // Toggle search input visibility
-        function toggleSearch() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.classList.toggle('show');
-            if (searchInput.classList.contains('show')) {
-                searchInput.focus();
-            } else {
-                searchInput.value = '';
-                filterMaterials();
-            }
-        }
-
-        // Drawer Functions
-        function toggleDrawer(forceClose = false) {
-            const drawer = document.getElementById('sideDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            if (forceClose || drawer.classList.contains('open')) {
-                drawer.classList.remove('open');
-                overlay.classList.remove('open');
-            } else if (currentUser) {
-                drawer.classList.add('open');
-                overlay.classList.add('open');
-            }
-        }
-
-        // Add Study Material (Admin Function)
-        function addMaterial() {
-            const title = document.getElementById('materialTitle').value;
-            const description = document.getElementById('materialDescription').value;
-            const descriptionType = document.getElementById('materialDescriptionType').value; // Get description type
-            const pdfLink = document.getElementById('pdfLink').value;
-            const paidPdfLink = document.getElementById('paidPdfLink').value;
-            const category = document.getElementById('materialCategory').value;
-            const imageFiles = document.getElementById('materialImages').files;
-
-            if (!title || !description || !paidPdfLink || !category) {
-                showMessageBox('Please fill in title, description, paid PDF link, and category.');
-                return;
-            }
-
-            const imageUrls = [];
-            if (imageFiles.length > 0) {
-                for (let i = 0; i < imageFiles.length; i++) {
-                    if (!imageFiles[i].type.startsWith('image/')) {
-                        showMessageBox('Please upload valid image files for study materials (e.g., JPG, PNG, GIF).');
-                        return;
-                    }
-                    imageUrls.push(URL.createObjectURL(imageFiles[i])); // These are temporary URLs
-                }
-            } else {
-                imageUrls.push('https://placehold.co/300x200/cccccc/000000?text=No+Image');
-            }
-
-            const newMaterial = {
-                id: Date.now(),
-                title,
-                description,
-                descriptionType, // Save description type
-                pdfLink: pdfLink || null,
-                paidPdfLink: paidPdfLink,
-                category: category
-            };
-
-            try {
-                db.ref('materials').push(newMaterial)
-                    .then(() => {
-                        showMessageBox('Study material added successfully!');
-                        document.getElementById('materialTitle').value = '';
-                        document.getElementById('materialDescription').value = '';
-                        document.getElementById('materialDescriptionType').value = 'text'; // Reset type
-                        document.getElementById('pdfLink').value = '';
-                        document.getElementById('paidPdfLink').value = '';
-                        document.getElementById('materialCategory').value = '';
-                        document.getElementById('materialImages').value = '';
-                    })
-                    .catch((error) => {
-                        console.error("Error adding material to Firebase:", error);
-                        showMessageBox('Error adding material: ' + error.message + '. Please check Firebase rules or network.');
-                    });
-            } catch (e) {
-                console.error("Unexpected error before Firebase push:", e);
-                showMessageBox('An unexpected error occurred. Please try again.');
-            }
-        }
-
-        // Save Policy Content (Admin Function)
-        function savePolicyContent() {
-            const policyData = {
-                about: document.getElementById('aboutContent').value,
-                privacyPolicy: document.getElementById('privacyPolicyContent').value,
-                termsCondition: document.getElementById('termsConditionContent').value,
-                refundCancellation: document.getElementById('refundCancellationContent').value,
-                shipping: document.getElementById('shippingContent').value,
-                pricing: document.getElementById('pricingContent').value,
-                contact: document.getElementById('contactContent').value,
-                disclaimer: document.getElementById('disclaimerContent').value,
-                faq: document.getElementById('faqContent').value
-            };
-
-            policiesRef.set(policyData)
-                .then(() => showMessageBox('Policy content saved successfully!'))
-                .catch(error => {
-                    console.error("Error saving policy content:", error);
-                    showMessageBox('Error saving policy content: ' + error.message + '. Please check Firebase rules or network.');
-                });
-        }
-
-        // Populate Policy Fields (Admin Panel)
-        function populatePolicyFields() {
-            if (policies.about) document.getElementById('aboutContent').value = policies.about;
-            if (policies.privacyPolicy) document.getElementById('privacyPolicyContent').value = policies.privacyPolicy;
-            if (policies.termsCondition) document.getElementById('termsConditionContent').value = policies.termsCondition;
-            if (policies.refundCancellation) document.getElementById('refundCancellationContent').value = policies.refundCancellation;
-            if (policies.shipping) document.getElementById('shippingContent').value = policies.shipping;
-            if (policies.pricing) document.getElementById('pricingContent').value = policies.pricing;
-            if (policies.contact) document.getElementById('contactContent').value = policies.contact;
-            if (policies.disclaimer) document.getElementById('disclaimerContent').value = policies.disclaimer;
-            if (policies.faq) document.getElementById('faqContent').value = policies.faq;
-        }
-
-        // Display Materials in Admin Panel
-        function showAdminMaterials() {
-            const adminMaterialList = document.getElementById('adminMaterialList');
-            adminMaterialList.innerHTML = '<h3>Manage Materials</h3>';
-            if (materials.length === 0) {
-                adminMaterialList.innerHTML += '<p>No materials added yet.</p>';
-                return;
-            }
-            materials.forEach((material, index) => {
-                const materialDiv = document.createElement('div');
-                materialDiv.classList.add('material');
-                materialDiv.innerHTML = `
-                    <h4>${material.title}</h4>
-                    <p>Category: ${material.category || 'N/A'}</p>
-                    <p>Description Type: ${material.descriptionType || 'Plain Text'}</p> ${material.pdfLink ? `<p>Free PDF: <a href="${material.pdfLink}" target="_blank">Link</a></p>` : '<p>Free PDF: Not Available</p>'}
-                    <p>Paid PDF: <a href="${material.paidPdfLink}" target="_blank">Link</a></p>
-                    <div class="buttons">
-                        <button onclick="editMaterial(${index})">Edit</button>
-                        <button onclick="deleteMaterial(${index})" style="background:#e74c3c;">Delete</button>
-                    </div>
-                `;
-                adminMaterialList.appendChild(materialDiv);
-            });
-        }
-
-        // Edit Material (Admin Function)
-        function editMaterial(index) {
-            const material = materials[index];
-            const newTitle = prompt('Enter new title:', material.title);
-            const newDescription = prompt('Enter new description:', material.description);
-            const newDescriptionType = prompt('Enter new Description Type (text, html, javascript):', material.descriptionType || 'text'); // Prompt for type
-            const newPdfLink = prompt('Enter new Free PDF Link (Optional):', material.pdfLink || '');
-            const newPaidPdfLink = prompt('Enter new Paid PDF Link:', material.paidPdfLink);
-            const newCategory = prompt('Enter new Category (e.g., Paid Course, Free Course):', material.category || '');
-
-            if (newTitle !== null && newDescription !== null && newPaidPdfLink !== null && newCategory !== null && newDescriptionType !== null) {
-                const materialKey = material.firebaseKey;
-                if (materialKey) {
-                    db.ref('materials/' + materialKey).update({
-                        title: newTitle,
-                        description: newDescription,
-                        descriptionType: newDescriptionType, // Update description type
-                        pdfLink: newPdfLink || null,
-                        paidPdfLink: newPaidPdfLink,
-                        category: newCategory
-                    })
-                        .then(() => showMessageBox('Material updated successfully!'))
-                        .catch(error => showMessageBox('Error updating material: ' + error.message));
-                } else {
-                    showMessageBox('Material not found in database.');
-                }
-            } else {
-                showMessageBox('Title, description, description type, paid PDF link, and category are mandatory.');
-            }
-        }
-
-        // Delete Material (Admin Function)
-        function deleteMaterial(index) {
-            const materialToDelete = materials[index];
-            showMessageBox(
-                `Are you sure you want to delete "${materialToDelete.title}"?`,
-                'confirm',
-                (confirmed) => {
-                    if (confirmed) {
-                        const materialKey = materialToDelete.firebaseKey;
-                        if (materialKey) {
-                            db.ref('materials/' + materialKey).remove()
-                                .then(() => showMessageBox('Material deleted successfully!'))
-                                .catch(error => showMessageBox('Error deleting material: ' + error.message));
-                        } else {
-                            showMessageBox('Material not found in database.');
-                        }
-                    }
-                }
-            );
-        }
-
-        // Display Materials for Users
-        function showUserMaterials() {
-            const materialList = document.getElementById('materialList');
-            materialList.innerHTML = '';
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-            let materialsToDisplay = materials;
-            if (currentCategory === 'My Course') {
-                materialsToDisplay = library;
-            } else {
-                materialsToDisplay = materials.filter(material => {
-                    return currentCategory === 'All' || (material.category && material.category.toLowerCase() === currentCategory.toLowerCase());
-                });
-            }
-
-            const filteredMaterials = materialsToDisplay.filter(material => {
-                return !searchTerm || (material.title.toLowerCase().includes(searchTerm) || (material.description && material.description.toLowerCase().includes(searchTerm)));
-            });
-
-            if (filteredMaterials.length === 0) {
-                materialList.innerHTML = '<p style="text-align: center; width: 100%;">No study materials available yet for this category.</p>';
-                return;
-            }
-
-            filteredMaterials.forEach((material) => {
-                const originalIndex = materials.findIndex(m => m.id === material.id);
-                if (originalIndex === -1) {
-                    console.warn("Material not found in original materials array:", material);
-                    // For My Course, the material may not be in the main materials list, so we'll handle it directly
-                    if (currentCategory !== 'My Course') {
-                        return;
-                    }
-                }
-
-                const isCourseBought = library.some(item => item.id === material.id);
-
-                const materialDiv = document.createElement('div');
-                materialDiv.classList.add('material');
-                materialDiv.onclick = () => showMaterialDetail(originalIndex !== -1 ? originalIndex : materials.length - 1); // Fallback for my course
-                materialDiv.innerHTML = `
-                    <img src="${material.images && material.images[0] ? material.images[0] : 'https://placehold.co/300x200/cccccc/000000?text=No+Image'}" alt="${material.title}">
-                    <h4>${material.title}</h4>
-                    <p class="description-content">${material.description}</p>
-                    <p class="show-more-toggle" onclick="event.stopPropagation(); toggleDescription(this);">Show More</p>
-                    <div class="buttons">
-                        ${material.pdfLink ? `<button class="open-pdf-btn" onclick="event.stopPropagation(); openFreePdfFromList(${originalIndex})">Open Free PDF</button>` : ''}
-                        ${currentCategory !== 'My Course' ? `
-                            ${isCourseBought ? 
-                                `<button class="buy-pdf-btn view-course-btn" onclick="event.stopPropagation(); viewCourse(${originalIndex})">View Course</button>` :
-                                `<button class="buy-pdf-btn" onclick="event.stopPropagation(); openPaidPdfFromList(${originalIndex})">Buy Paid PDF</button>`
-                            }
-                        ` : 
-                            `<button class="buy-pdf-btn view-course-btn" onclick="event.stopPropagation(); viewCourse(${originalIndex})">View Course</button>`
-                        }
-                    </div>
-                `;
-                materialList.appendChild(materialDiv);
-            });
-        }
-
-        // Toggle description visibility in material cards
-        function toggleDescription(toggleBtn) {
-            const descriptionContent = toggleBtn.previousElementSibling;
-            if (descriptionContent.style.maxHeight === '0px' || descriptionContent.style.maxHeight === '') {
-                descriptionContent.style.maxHeight = descriptionContent.scrollHeight + 'px';
-                toggleBtn.textContent = 'Show Less';
-            } else {
-                descriptionContent.style.maxHeight = '0px';
-                toggleBtn.textContent = 'Show More';
-            }
-        }
-
-        // Toggle Admin Login Fields visibility
-        function toggleAdminLoginFields() {
-            const adminFieldsContainer = document.getElementById('adminLoginFieldsContainer');
-            if (adminFieldsContainer.style.display === 'none' || adminFieldsContainer.style.display === '') {
-                adminFieldsContainer.style.display = 'block';
-            } else {
-                adminFieldsContainer.style.display = 'none';
-            }
-        }
-
-        // Handle browser back/forward buttons
-        window.onpopstate = function(event) {
-            hideAllPanels();
-            if (currentUser) {
-                if (event.state && event.state.page) {
-                    const page = event.state.page;
-                    if (page === 'materialDetail') {
-                        _renderMaterialDetail(event.state.index);
-                    } else if (page === 'libraryPage') {
-                        _renderLibraryPage();
-                    } else if (page === 'policyContent') {
-                        _renderPolicyContent(event.state.key);
-                    } else if (page === 'adminPanel') {
-                        document.getElementById('adminPanel').style.display = 'block';
-                        document.getElementById('adminHomeThumbnailSection').style.display = 'block';
-                        populatePolicyFields();
-                    } else if (page === 'categoryContentPage') {
-                        currentCategory = event.state.category || 'All';
-                        document.getElementById('categoryContentPage').style.display = 'block';
-                        document.getElementById('userPanelTitle').innerText = `${currentCategory} Study Materials`;
-                        showUserMaterials();
-                    } else if (page === 'userPanel') {
-                        _renderUserPanel();
-                        document.querySelectorAll('.category-btn').forEach(btn => {
-                            if (btn.dataset.category === 'All') {
-                                btn.classList.add('active-category-btn');
-                            } else {
-                                btn.classList.remove('active-category-btn');
-                            }
-                        });
-                    } else {
-                        _renderUserPanel();
-                        document.querySelectorAll('.category-btn').forEach(btn => {
-                            if (btn.dataset.category === 'All') {
-                                btn.classList.add('active-category-btn');
-                            } else {
-                                btn.classList.remove('active-category-btn');
-                            }
-                        });
-                    }
-                } else {
-                    _renderUserPanel();
-                    document.querySelectorAll('.category-btn').forEach(btn => {
-                        if (btn.dataset.category === 'All') {
-                            btn.classList.add('active-category-btn');
-                        } else {
-                            btn.classList.remove('active-category-btn');
-                        }
-                    });
-                }
-            } else {
-                _renderLoginPanel();
-            }
-        };
-
-        function hideAllPanels() {
-            document.getElementById('loginPanel').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('userPanel').style.display = 'none';
-            document.getElementById('materialDetail').style.display = 'none';
-            document.getElementById('libraryPage').style.display = 'none';
-            document.getElementById('policyContentDisplay').style.display = 'none';
-            document.getElementById('categoryContentPage').style.display = 'none';
-            document.getElementById('adminHomeThumbnailSection').style.display = 'none';
-            // Stop the slider when panels are hidden
-            clearInterval(homeSliderInterval);
-            document.getElementById('userHomeThumbnailDisplay').style.display = 'none';
-        }
-
-        window.onload = function() {
-            console.log("Window loaded. Firebase authentication state will determine the initial UI.");
-        };
-    </script>
+      }else{
+        showGate();
+        avatarWrap.style.display = 'none';
+        helloName.textContent = 'User';
+      }
+    });
+
+    // Email Sign In
+    btnSignInEmail.addEventListener('click', async ()=>{
+      inErr.textContent = ""; authMsg.textContent="";
+      try{
+        await signInWithEmailAndPassword(auth, inEmail.value.trim(), inPass.value.trim());
+        authMsg.textContent = "Welcome back!";
+      }catch(e){
+        inErr.textContent = e.message.replace("Firebase:", "").trim();
+      }
+    });
+
+    // Email Sign Up
+    btnSignUpEmail.addEventListener('click', async ()=>{
+      upErr.textContent = ""; authMsg.textContent="";
+      const name = upName.value.trim();
+      if(!name){ upErr.textContent = "Please enter your full name."; return; }
+      try{
+        const cred = await createUserWithEmailAndPassword(auth, upEmail.value.trim(), upPass.value.trim());
+        await updateProfile(cred.user, { displayName: name });
+        localStorage.setItem('sgs_full_name', name);
+        authMsg.textContent = "Account created. You’re in!";
+      }catch(e){
+        upErr.textContent = e.message.replace("Firebase:", "").trim();
+      }
+    });
+
+    // Google Sign In
+    const doGoogle = async ()=>{
+      try{
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        authMsg.textContent = "Signed in with Google.";
+      }catch(e){
+        // Silent for popup closed
+      }
+    };
+    btnGoogle.addEventListener('click', doGoogle);
+    btnGoogle2.addEventListener('click', doGoogle);
+
+    // Logout
+    logoutBtn.addEventListener('click', async ()=>{
+      await signOut(auth);
+      showToast("Logged out.");
+      showGate();
+    });
+
+    // Block background scroll when gate open (nice UX)
+    const observer = new MutationObserver(()=>{
+      if(gate.classList.contains('show')){ document.body.style.overflow='hidden'; }
+      else{ document.body.style.overflow='auto'; }
+    });
+    observer.observe(gate, { attributes:true, attributeFilter:['class'] });
+  </script>
 </body>
 </html>
-
