@@ -1,394 +1,1299 @@
-
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SGS EXAM CRACKER – App</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Custom CSS to handle background and font */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-    :root {
-      --bg-dark: #080808;
-      --card-dark: #121212;
-      --border-dark: #222222;
-    }
-    html, body {
-      height: 100%;
-      font-family: 'Inter', sans-serif;
-    }
-    body {
-      background: var(--bg-dark);
-      color: #e5e7eb;
-    }
-    /* Specific styles for the Gate modal */
-    .gate {
-      animation: fadeIn .3s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .pro-card {
-        /* Glassmorphism effect for the pro-level card */
-        background-color: rgba(18, 18, 18, 0.4);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        animation: card-in .5s ease-out;
-    }
-    @keyframes card-in {
-      from { transform: scale(0.9) translateY(20px); opacity: 0; }
-      to { transform: scale(1) translateY(0); opacity: 1; }
-    }
-    .input-pro:focus {
-        box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.5); /* Teal glow */
-    }
-    .btn-pro {
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-    }
-    .btn-pro::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transition: 0.5s;
-        z-index: -1;
-    }
-    .btn-pro:hover::before {
-        left: 100%;
-    }
-    .gradient-text {
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-  </style>
-</head>
-<body class="bg-zinc-950 text-slate-100">
-
-  <!-- HEADER -->
-  <header class="sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-gray-800">
-    <div class="container mx-auto px-4 py-4 flex items-center justify-center relative">
-      <div class="text-xl sm:text-2xl font-extrabold tracking-wide text-white">SGS EXAM CRACKER</div>
-      <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-4" id="avatarWrap" style="display:none">
-        <img id="userPhoto" alt="user" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-slate-700 shadow-lg" style="display:none"/>
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-slate-700 text-slate-300 font-bold text-lg border-2 border-slate-700 shadow-lg" id="userFallback" style="display:none">U</div>
-        <button class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-1 px-3 sm:py-2 sm:px-4 rounded-full text-xs sm:text-sm transition-colors" id="logoutBtn" title="Logout">
-          Logout
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- GREET LINE -->
-  <div class="container mx-auto px-4 mt-2 sm:mt-4">
-    <div class="text-sm sm:text-base text-slate-400">
-      Hello, <strong id="helloName" class="text-white">User</strong> 👋
-    </div>
-  </div>
-
-  <!-- SHAYARI (STUDY MOTIVATION) -->
-  <section class="container mx-auto px-4 py-6 my-4 sm:my-8 rounded-3xl bg-gradient-to-br from-indigo-900/20 to-zinc-950 border border-slate-800 shadow-2xl overflow-hidden relative">
-    <div class="absolute inset-0 z-0 opacity-10">
-      <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://placehold.co/1200x400/0c0c0d/FFFFFF/png?text=Motivation+Pattern');"></div>
-    </div>
-    <div class="relative z-10 text-white">
-      <h2 class="text-lg sm:text-xl font-bold mb-2 gradient-text bg-gradient-to-r from-teal-400 to-cyan-500">🔥 Study के लिए आग — आज नहीं तो कभी नहीं</h2>
-      <p class="mb-1 text-sm sm:text-base leading-relaxed">किताबों की राख नहीं उड़ानी, <br> पन्ने पलट कर किस्मत पलटनी है।</p>
-      <p class="mb-1 text-sm sm:text-base leading-relaxed">घड़ी की टिक-टिक याद दिलाए—<br> आज का आलस, कल की नियुक्ति खा जाएगा।</p>
-      <p class="mb-4 text-sm sm:text-base leading-relaxed">जो रातों को जलते हैं वही सुबह अख़बारों में छपते हैं।</p>
-      <small class="block text-xs sm:text-sm text-slate-400">— Focus • Discipline • Repeat</small>
-    </div>
-  </section>
-
-  <!-- GRID: 3 per row, square tiles -->
-  <main class="container mx-auto px-4 pb-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="btnGrid" style="display:none">
-    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1kuiMOHnkRewT9nN4RBaJyrGIjJJBDLtk" target="_blank" rel="noopener" aria-label="SSC GD">
-      <div class="text-4xl sm:text-5xl">🛡️</div>
-      <div class="font-bold text-sm sm:text-base text-white">SSC GD</div>
-      <div class="text-xs sm:text-sm text-slate-400">Important PDFs</div>
-    </a>
-    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1CqVZz4A2JqrqMYambXq7QfkYPborLiIP" target="_blank" rel="noopener" aria-label="SSC MTS">
-      <div class="text-4xl sm:text-5xl">🧰</div>
-      <div class="font-bold text-sm sm:text-base text-white">SSC MTS</div>
-      <div class="text-xs sm:text-sm text-slate-400">All Sections</div>
-    </a>
-    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1mXVIzRNVTBIoLjDCAT-7Jome1AZ7n6SY" target="_blank" rel="noopener" aria-label="LUCENT">
-      <div class="text-4xl sm:text-5xl">📘</div>
-      <div class="font-bold text-sm sm:text-base text-white">LUCENT</div>
-      <div class="text-xs sm:text-sm text-slate-400">General Knowledge</div>
-    </a>
-    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1aVAB7eZK3wEEyCDc_l4EkDfQ3BgNq4JI" target="_blank" rel="noopener" aria-label="ALL PDF">
-      <div class="text-4xl sm:text-5xl">📚</div>
-      <div class="font-bold text-sm sm:text-base text-white">ALL PDF</div>
-      <div class="text-xs sm:text-sm text-slate-400">One Place Library</div>
-    </a>
-    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1eAjiWefAZdNdE-bK1nwvUlP92_7WIGat" target="_blank" rel="noopener" aria-label="Notice Board">
-      <div class="text-4xl sm:text-5xl">📢</div>
-      <div class="font-bold text-sm sm:text-base text-white">Notice Board</div>
-      <div class="text-xs sm:text-sm text-slate-400">Updates & Info</div>
-    </a>
-    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1eF9tbYetogTi6QekaVLVKcw-1VbSSnV4" target="_blank" rel="noopener" aria-label="New Vacancy">
-      <div class="text-4xl sm:text-5xl">🆕</div>
-      <div class="font-bold text-sm sm:text-base text-white">New Vacancy</div>
-      <div class="text-xs sm:text-sm text-slate-400">Latest Jobs</div>
-    </a>
-  </main>
-
-  <!-- AUTH GATE (login/signup modal) -->
-  <div class="gate fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-opacity duration-300" id="authGate" aria-modal="true" role="dialog">
-    <div class="w-[min(92vw,440px)] rounded-3xl p-6 sm:p-8 shadow-2xl pro-card">
-      <div class="mb-4">
-        <h3 class="text-2xl font-bold text-white text-center">Login / Signup</h3>
-        <p class="text-sm text-slate-400 text-center mt-1">to unlock the full experience</p>
-      </div>
-
-      <!-- Tabs -->
-      <div class="flex gap-2 mb-4 p-1 rounded-xl bg-slate-900/50">
-        <button class="tab flex-1 text-center py-2 rounded-xl transition-colors duration-200 bg-slate-800 text-white font-semibold shadow-inner" id="tabSignIn">Sign In</button>
-        <button class="tab flex-1 text-center py-2 rounded-xl transition-colors duration-200 bg-transparent text-slate-400 font-semibold" id="tabSignUp">Sign Up</button>
-      </div>
-
-      <!-- Sign In Form -->
-      <div id="signinForm">
-        <div class="space-y-4">
-          <div class="field">
-            <label class="block text-xs font-medium text-slate-400">Email</label>
-            <input type="email" id="inEmail" placeholder="you@example.com" autocomplete="username" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
-          </div>
-          <div class="field">
-            <label class="block text-xs font-medium text-slate-400">Password</label>
-            <input type="password" id="inPass" placeholder="••••••••" autocomplete="current-password" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
-          </div>
-        </div>
-        <button class="btn-pro w-full mt-6 bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" id="btnSignInEmail">Sign In</button>
-        <div class="relative flex py-4 items-center">
-          <div class="flex-grow border-t border-slate-800"></div>
-          <span class="flex-shrink mx-4 text-slate-500 text-sm">or</span>
-          <div class="flex-grow border-t border-slate-800"></div>
-        </div>
-        <button class="btn-pro w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors" id="btnGoogle">
-          <svg class="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.5 20.25H24v7.5h11.838c-.792 3.992-3.262 7.378-7.398 9.544L24 40v-4.5c4.782-2.166 8.243-6.528 9.282-11.75H44.5z" fill="#4285F4"/><path d="M24 44.5c5.962 0 10.957-2.128 14.867-5.748l-5.717-4.43c-2.476 1.62-5.592 2.68-8.15 2.68-5.772 0-10.7-3.9-12.483-9.148L2.736 34.25c3.21 6.368 10.024 10.25 19.264 10.25h2z" fill="#34A853"/><path d="M11.517 25.102c-.378-1.504-.576-3.08-.576-4.702s.198-3.198.576-4.702l-8.525-6.602C2.458 14.776 2 19.344 2 21.9h2z" fill="#FBBC04"/><path d="M24 11.5c3.15 0 5.862 1.144 7.994 3.25L38.4 8.7C34.78 4.882 29.782 2.5 24 2.5c-9.24 0-16.054 3.882-19.264 10.25l8.525 6.602c1.783-5.248 6.71-9.148 12.483-9.148h2z" fill="#EA4335"/></svg>
-          Continue with Google
-        </button>
-        <div class="text-red-500 text-xs text-center mt-3 h-4" id="inErr"></div>
-      </div>
-
-      <!-- Sign Up Form -->
-      <div id="signupForm" style="display:none">
-        <div class="space-y-4">
-          <div class="field">
-            <label class="block text-xs font-medium text-slate-400">Full Name</label>
-            <input type="text" id="upName" placeholder="Your Name" autocomplete="name" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
-          </div>
-          <div class="field">
-            <label class="block text-xs font-medium text-slate-400">Email</label>
-            <input type="email" id="upEmail" placeholder="you@example.com" autocomplete="email" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
-          </div>
-          <div class="field">
-            <label class="block text-xs font-medium text-slate-400">Password</label>
-            <input type="password" id="upPass" placeholder="Create a strong password" autocomplete="new-password" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
-          </div>
-        </div>
-        <button class="btn-pro w-full mt-6 bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" id="btnSignUpEmail">Create Account</button>
-        <div class="relative flex py-4 items-center">
-          <div class="flex-grow border-t border-slate-800"></div>
-          <span class="flex-shrink mx-4 text-slate-500 text-sm">or</span>
-          <div class="flex-grow border-t border-slate-800"></div>
-        </div>
-        <button class="btn-pro w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors" id="btnGoogle2">
-          <svg class="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.5 20.25H24v7.5h11.838c-.792 3.992-3.262 7.378-7.398 9.544L24 40v-4.5c4.782-2.166 8.243-6.528 9.282-11.75H44.5z" fill="#4285F4"/><path d="M24 44.5c5.962 0 10.957-2.128 14.867-5.748l-5.717-4.43c-2.476 1.62-5.592 2.68-8.15 2.68-5.772 0-10.7-3.9-12.483-9.148L2.736 34.25c3.21 6.368 10.024 10.25 19.264 10.25h2z" fill="#34A853"/><path d="M11.517 25.102c-.378-1.504-.576-3.08-.576-4.702s.198-3.198.576-4.702l-8.525-6.602C2.458 14.776 2 19.344 2 21.9h2z" fill="#FBBC04"/><path d="M24 11.5c3.15 0 5.862 1.144 7.994 3.25L38.4 8.7C34.78 4.882 29.782 2.5 24 2.5c-9.24 0-16.054 3.882-19.264 10.25l8.525 6.602c1.783-5.248 6.71-9.148 12.483-9.148h2z" fill="#EA4335"/></svg>
-          Continue with Google
-        </button>
-        <div class="text-red-500 text-xs text-center mt-3 h-4" id="upErr"></div>
-      </div>
-
-      <div class="text-green-500 text-xs text-center mt-3 h-4" id="authMsg"></div>
-    </div>
-  </div>
-
-  <!-- Toast for messages -->
-  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-slate-200 px-4 py-2 rounded-xl shadow-lg hidden transition-opacity duration-300" id="toast">Logged out successfully.</div>
-
-  <!-- Firebase SDKs -->
-  <script type="module">
-    // Firebase imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged, signInWithCustomToken, signInAnonymously,
-      GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword,
-      createUserWithEmailAndPassword, updateProfile, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    // Global variables from Canvas environment
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-    // UI Element References
-    const gate = document.getElementById('authGate');
-    const avatarWrap = document.getElementById('avatarWrap');
-    const userPhoto = document.getElementById('userPhoto');
-    const userFallback = document.getElementById('userFallback');
-    const helloName = document.getElementById('helloName');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const toastEl = document.getElementById('toast');
-    const tabSignIn = document.getElementById('tabSignIn');
-    const tabSignUp = document.getElementById('tabSignUp');
-    const signinForm = document.getElementById('signinForm');
-    const signupForm = document.getElementById('signupForm');
-    const inEmail = document.getElementById('inEmail');
-    const inPass = document.getElementById('inPass');
-    const btnSignInEmail = document.getElementById('btnSignInEmail');
-    const inErr = document.getElementById('inErr');
-    const upName = document.getElementById('upName');
-    const upEmail = document.getElementById('upEmail');
-    const upPass = document.getElementById('upPass');
-    const btnSignUpEmail = document.getElementById('btnSignUpEmail');
-    const upErr = document.getElementById('upErr');
-    const btnGoogle = document.getElementById('btnGoogle');
-    const btnGoogle2 = document.getElementById('btnGoogle2');
-    const authMsg = document.getElementById('authMsg');
-    // Main content grid reference
-    const btnGrid = document.getElementById('btnGrid');
-
-    let app, auth;
-
-    // Helper functions
-    const showGate = () => { gate.classList.add('show', 'flex'); gate.classList.remove('hidden'); };
-    const hideGate = () => { gate.classList.add('hidden'); gate.classList.remove('show', 'flex'); };
-    const showToast = (msg = "Done") => {
-      toastEl.textContent = msg;
-      toastEl.classList.remove('hidden');
-      setTimeout(() => { toastEl.classList.add('hidden'); }, 1800);
-    };
-    const initialFromName = (name = "User") => (name.trim()[0] || "U").toUpperCase();
-    const nameFromEmail = (email = "") => email.split("@")[0];
-
-    // Initialize Firebase and set up auth listener
-    const initFirebase = async () => {
-      try {
-        app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        
-        // Initial authentication check using the provided token
-        if (initialAuthToken) {
-          await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-          // Fallback to anonymous sign-in if no token is available
-          await signInAnonymously(auth);
+    <meta name="google-site-verification" content="iPJ9gvz-pcq0qMUyfYB6cbjm11o3cwUVpMwtqDtXbVo" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SGS Study Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles & Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif; /* Modern font */
+            margin: 0;
+            padding: 0;
+            background: #eef2f6; /* Lighter, professional background */
+            color: #333; /* Darker text for readability */
+            line-height: 1.6;
         }
 
-        // Listen for auth state changes and update UI
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            hideGate();
-            // Show main app content
-            btnGrid.style.display = 'grid';
-            avatarWrap.style.display = 'flex';
-            const displayName = user.displayName || nameFromEmail(user.email || "");
-            helloName.textContent = displayName;
-            if (user.photoURL) {
-              userPhoto.src = user.photoURL;
-              userPhoto.style.display = 'block';
-              userFallback.style.display = 'none';
-            } else {
-              userFallback.textContent = initialFromName(displayName || "U");
-              userFallback.style.display = 'flex';
-              userPhoto.style.display = 'none';
+        /* Header Styling */
+        header {
+            background-color: #2c3e50; /* Darker, more premium header */
+            color: white;
+            padding: 10px 30px 20px 30px; /* Adjusted padding-top to move text down */
+            text-align: center;
+            font-size: 28px; /* Slightly larger title */
+            font-weight: 700; /* Bolder */
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow */
+            display: flex;
+            flex-direction: column; /* Stack title and controls */
+            justify-content: center;
+            align-items: center;
+        }
+        .top-right-controls {
+            position: absolute; /* Keep controls at top right */
+            right: 30px;
+            top: 10px; /* Aligned with the very top of the header */
+            display: flex;
+            gap: 15px; /* Increased gap */
+            align-items: center;
+        }
+        .top-right-controls input {
+            padding: 8px 15px; /* More padding */
+            border-radius: 25px; /* Pill-shaped search bar */
+            border: 1px solid #556c8a; /* Subtle border */
+            font-size: 15px;
+            display: none;
+            background-color: #f9f9f9; /* Light background for input */
+            color: #333;
+            transition: all 0.3s ease; /* Smooth transition */
+        }
+        .top-right-controls input.show {
+            display: inline-block;
+            width: 200px; /* Defined width when shown */
+        }
+        .top-right-controls button {
+            background: #3498db; /* Professional blue button */
+            color: white; /* White text for contrast */
+            padding: 8px 18px; /* More padding */
+            font-weight: 600; /* Semi-bold */
+            border: none;
+            border-radius: 25px; /* Pill-shaped buttons */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .top-right-controls button:hover {
+            background: #2980b9; /* Darker blue on hover */
+            transform: translateY(-1px); /* Slight lift */
+        }
+        /* Logout button specific style */
+        #logoutButton {
+            background-color: #e74c3c; /* Red for logout */
+            margin-left: 10px; /* Space from other buttons */
+            display: none; /* Hidden by default */
+        }
+        #logoutButton:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
+        /* Menu icon initially hidden */
+        #menuButton {
+            display: none;
+        }
+
+        /* Admin-only Home Thumbnail Upload Section Styles */
+        #adminHomeThumbnailSection {
+            display: none; /* Hidden by default */
+            padding: 20px;
+            max-width: 900px; /* Adjust as needed */
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            margin-bottom: 30px; /* Space it from other admin elements */
+        }
+        #adminHomeThumbnailSection h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #2c3e50;
+        }
+        .thumbnail-upload-area {
+            width: 100%;
+            /* padding-top and height will be set by JS based on content */
+            position: relative;
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex; /* Use flex for preview images */
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 150px; /* Minimum height for placeholder */
+        }
+        .thumbnail-upload-area .preview-image-wrapper {
+            position: relative;
+            height: 0; /* Important for padding-top to define height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 6px;
+            /* width and padding-top will be set by JS based on number of images */
+        }
+        .thumbnail-upload-area img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the area, cropping if necessary */
+            border-radius: 6px;
+        }
+        #homeThumbnailInput {
+            display: block; /* Make it block for better layout */
+            margin: 15px auto;
+            width: auto; /* Allow natural width */
+            max-width: 300px; /* Limit width */
+        }
+        #adminHomeThumbnailSection button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        #adminHomeThumbnailSection button:hover {
+            background: #2980b9;
+        }
+
+        /* User-facing Home Thumbnail Display Styles (Slider) */
+        #userHomeThumbnailDisplay {
+            width: 100%;
+            max-width: 900px; /* Match admin section width */
+            margin: 0 auto 30px auto; /* Center and add space below */
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            position: relative;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: none; /* Hidden by default, shown when images are loaded */
+        }
+        .slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 1s ease-in-out; /* Fade transition */
+        }
+        .slider-image.active {
+            opacity: 1; /* Active image is visible */
+        }
+
+        /* General Panel Styling */
+        #adminPanel, #materialDetail, #libraryPage, #policyContentDisplay, #categoryContentPage {
+            display: none;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.6s ease-out;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 2em;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+
+        /* Login Panel Styling */
+        #loginPanel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 30px;
+            max-width: 500px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.6s ease-out;
+        }
+        #loginPanel h2 {
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            color: #2c3e50;
+        }
+        #loginPanel input {
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        #loginPanel button {
+            width: 100%;
+            max-width: 350px;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+        #loginPanel button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        /* Specific style for Admin Login button */
+        #loginPanel .admin-login-fields button {
+            background: #f0c14b;
+            color: #111;
+            margin-bottom: 0;
+        }
+        #loginPanel .admin-login-fields button:hover {
+            background: #ddb347;
+        }
+        /* Specific style for ENTER STUDY HUB button */
+        #loginPanel button[onclick="openUserPanel()"] {
+            background: #ff9900;
+            color: white;
+            margin-top: 25px;
+        }
+        #loginPanel button[onclick="openUserPanel()"]:hover {
+            background: #e68a00;
+        }
+        /* Styles for new user login buttons */
+        #loginPanel .user-auth-section {
+            width: 100%;
+            max-width: 350px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #loginPanel .user-auth-section button {
+            background-color: #4285F4;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #loginPanel .user-auth-section button:hover {
+            background-color: #357ae8;
+            transform: translateY(-1px);
+        }
+        #loginPanel .user-auth-section button.anonymous-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        #loginPanel .user-auth-section button.anonymous-btn:hover {
+            background-color: #5a6268;
+        }
+        #loginPanel .auth-separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            margin: 20px 0;
+            color: #888;
+        }
+        #loginPanel .auth-separator::before, #loginPanel .auth-separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        #loginPanel .auth-separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+        #loginPanel .auth-separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+        /* Admin Login Fields Container */
+        #adminLoginFieldsContainer {
+            display: none;
+            width: 100%;
+            max-width: 350px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        #adminLoginFieldsContainer h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+        #adminLoginFieldsContainer input {
+            margin-bottom: 10px;
+        }
+
+        /* User Panel (Home Page) Styling */
+        #userPanel {
+            display: none;
+            padding: 30px;
+            max-width: 1400px;
+            margin: 20px auto;
+            background: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            animation: fadeIn 0.6s ease-out;
+            min-height: 300px;
+        }
+        /* Category Buttons Styling */
+        #categoryButtons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .category-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            width: 180px;
+            height: 120px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .category-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .category-btn.active-category-btn {
+            background-color: #2c3e50;
+            border: 2px solid #f0c14b;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+        .category-btn span {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        /* General Panel Styling */
+        #adminPanel, #materialDetail, #libraryPage, #policyContentDisplay, #categoryContentPage {
+            display: none;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.6s ease-out;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 2em;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+
+        /* Form Elements */
+        input, textarea, select { /* Added select */
+            width: calc(100% - 20px);
+            max-width: 500px;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fcfcfc;
+        }
+        input:focus, textarea:focus, select:focus { /* Added select */
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Admin Panel Specific */
+        #adminPanel button {
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+
+        /* Library Page Specific */
+        #libraryPage .material {
+            margin-bottom: 20px;
+        }
+        #libraryPage .material .buttons {
+            margin-top: 10px;
+        }
+        #libraryPage > button, #categoryContentPage > button {
+            margin-top: 30px;
+            background: #6c757d;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #libraryPage > button:hover, #categoryContentPage > button:hover {
+            background: #5a6268;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Message Box Styles */
+        #customMessageBox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        #customMessageBox > div {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        #messageBoxText {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #customMessageBox button {
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+        }
+        #customMessageBox button.cancel-btn {
+            background: #e74c3c;
+        }
+        #customMessageBox button.cancel-btn:hover {
+            background: #c0392b;
+        }
+        #customMessageBox button.confirm-btn {
+            background: #27ae60;
+        }
+        #customMessageBox button.confirm-btn:hover {
+            background: #229954;
+        }
+
+        /* Side Drawer Styles */
+        .side-drawer {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            right: 0;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+        }
+        .side-drawer.open {
+            width: 250px;
+        }
+        .side-drawer .close-drawer-btn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .side-drawer .close-drawer-btn:hover {
+            color: #e74c3c;
+        }
+        .drawer-links {
+            padding: 8px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .drawer-links button {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 1.1em;
+            color: #333;
+            display: block;
+            transition: 0.3s;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .drawer-links button:hover {
+            background-color: #ddd;
+            color: #2c3e50;
+        }
+        .drawer-overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 1000;
+            transition: opacity 0.5s;
+            opacity: 0;
+        }
+        .drawer-overlay.open {
+            display: block;
+            opacity: 1;
+        }
+        #policyContentDisplay {
+            padding: 30px;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.6s ease-out;
+            text-align: left;
+        }
+        #policyContentDisplay h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #policyContentDisplay button {
+            margin-top: 20px;
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #policyContentDisplay button:hover {
+            background: #7f8c8d;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            #materialList, #adminMaterialList, #libraryItems {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 25px;
             }
-          } else {
-            showGate();
-            // Hide main app content
-            btnGrid.style.display = 'none';
-            avatarWrap.style.display = 'none';
-            helloName.textContent = 'User';
-          }
+            .material {
+                max-width: 250px;
+            }
+            .side-drawer.open {
+                width: 200px;
+            }
+        }
+        @media (max-width: 768px) {
+            header {
+                font-size: 22px;
+                padding: 15px 10px;
+            }
+            .top-right-controls {
+                position: static;
+                transform: none;
+                margin-top: 10px;
+                justify-content: center;
+                width: 100%;
+            }
+            .top-right-controls input.show {
+                width: 100%;
+            }
+            #adminPanel, #userPanel, #materialDetail, #libraryPage, #loginPanel, #policyContentDisplay, #categoryContentPage {
+                padding: 15px;
+                margin: 10px auto;
+            }
+            #loginPanel button {
+                padding: 12px 15px;
+                font-size: 1em;
+            }
+            .material {
+                padding: 10px;
+                max-width: none;
+            }
+            .material img {
+                height: 100px;
+            }
+            h2 {
+                font-size: 1.8em;
+            }
+            .side-drawer.open {
+                width: 180px;
+            }
+            .category-btn {
+                width: 140px;
+                height: 100px;
+                font-size: 1em;
+                padding: 15px;
+            }
+            #categoryButtons {
+                gap: 15px;
+                margin-bottom: 25px;
+            }
+            /* Responsive adjustments for thumbnail section */
+            #adminHomeThumbnailSection, #userHomeThumbnailDisplay {
+                padding: 15px;
+                margin: 10px auto 20px auto;
+            }
+        }
+    </style>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script> <!-- Added Firebase Storage SDK -->
+</head>
+<body>
+    <header>
+        SGS STUDY HUB
+        <div class="top-right-controls">
+            <button class="search-icon" onclick="toggleSearch()">
+                <i class="fas fa-search"></i>
+            </button>
+            <input type="text" id="searchInput" placeholder="Search Material..." oninput="filterMaterials()" />
+            <button onclick="viewLibraryPage()">
+                <i class="fas fa-book"></i> My Library
+            </button>
+            <button id="logoutButton" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+            <button id="menuButton" class="menu-icon" onclick="toggleDrawer()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Admin-only Home Thumbnail Upload Section -->
+    <div id="adminHomeThumbnailSection" style="display: none;">
+        <h2>Upload Home Page Thumbnails (16:9 Ratio, Max 4 images)</h2>
+        <div class="thumbnail-upload-area">
+            <!-- Preview images will be dynamically added here -->
+        </div>
+        <input type="file" id="homeThumbnailInput" accept="image/*" multiple>
+        <button onclick="uploadHomeThumbnails()">Upload Thumbnails</button>
+    </div>
+
+    <!-- Side Drawer -->
+    <div id="sideDrawer" class="side-drawer">
+        <button class="close-drawer-btn" onclick="toggleDrawer()">&times;</button>
+        <div class="drawer-links">
+            <button onclick="showHomePage()">Home</button>
+            <button onclick="showPolicyContent('about')">About Us</button>
+            <button onclick="showPolicyContent('privacyPolicy')">Privacy Policy</button>
+            <button onclick="showPolicyContent('termsCondition')">Terms & Conditions</button>
+            <button onclick="showPolicyContent('refundCancellation')">Refund & Cancellation</button>
+            <button onclick="showPolicyContent('shipping')">Shipping Policy</button>
+            <button onclick="showPolicyContent('pricing')">Pricing</button>
+            <button onclick="showPolicyContent('contact')">Contact Us</button>
+            <button onclick="showPolicyContent('disclaimer')">Disclaimer</button>
+            <button onclick="showPolicyContent('faq')">FAQ</button>
+        </div>
+    </div>
+    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
+
+    <div id="loginPanel">
+        <h2>User Login / Sign Up</h2>
+        <input type="email" id="userEmail" placeholder="Email" />
+        <input type="password" id="userPassword" placeholder="Password" />
+        <button onclick="userLogin()">Login</button>
+        <button onclick="userSignUp()" style="background:#28a745;">Sign Up</button>
+        <div class="auth-separator">OR</div>
+        <div class="user-auth-section">
+            <button onclick="signInWithGoogle()">
+                <i class="fab fa-google"></i> Login with Google
+            </button>
+            <!-- Removed Login with Apple button as requested -->
+            <button onclick="signInAnonymouslyUser()" class="anonymous-btn">
+                <i class="fas fa-user-secret"></i> Continue Anonymously
+            </button>
+        </div>
+        <button onclick="toggleAdminLoginFields()" style="margin-top: 30px; background: #555; color: white;"> Admin Login </button>
+        <div id="adminLoginFieldsContainer">
+            <h2>Admin Panel Login</h2>
+            <input type="text" id="adminId" placeholder="Admin ID" />
+            <input type="password" id="adminPass" placeholder="Password" />
+            <button onclick="adminLogin()">Login</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel updated to remove material management -->
+    <div id="adminPanel">
+        <h2>Admin Panel</h2>
+        <h2>Manage Policy Pages</h2>
+        <label for="aboutContent">About Content:</label><br>
+        <textarea id="aboutContent" placeholder="Enter About Us content"></textarea><br>
+        <label for="privacyPolicyContent">Privacy Policy Content:</label><br>
+        <textarea id="privacyPolicyContent" placeholder="Enter Privacy Policy content"></textarea><br>
+        <label for="termsConditionContent">Terms & Condition Content:</label><br>
+        <textarea id="termsConditionContent" placeholder="Enter Terms & Condition content"></textarea><br>
+        <label for="refundCancellationContent">Refund & Cancellation Content:</label><br>
+        <textarea id="refundCancellationContent" placeholder="Enter Refund & Cancellation content"></textarea><br>
+        <label for="shippingContent">Shipping Content:</label><br>
+        <textarea id="shippingContent" placeholder="Enter Shipping Policy content"></textarea><br>
+        <label for="pricingContent">Pricing Content:</label><br>
+        <textarea id="pricingContent" placeholder="Enter Pricing information"></textarea><br>
+        <label for="contactContent">Contact Content:</label><br>
+        <textarea id="contactContent" placeholder="Enter Contact information"></textarea><br>
+        <label for="disclaimerContent">Disclaimer Content:</label><br>
+        <textarea id="disclaimerContent" placeholder="Enter Disclaimer content"></textarea><br>
+        <label for="faqContent">FAQ Content:</label><br>
+        <textarea id="faqContent" placeholder="Enter FAQ content"></textarea><br>
+        <button onclick="savePolicyContent()">Save Policy Content</button>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- User Panel updated with new buttons and emojis -->
+    <div id="userPanel">
+        <!-- User-facing Home Thumbnail Display (Slider Container) -->
+        <div id="userHomeThumbnailDisplay" style="display: none;">
+            <!-- Images will be dynamically added here -->
+        </div>
+        <div id="categoryButtons">
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1kuiMOHnkRewT9nN4RBaJyrGIjJJBDLtk', '_blank')"><span>📚</span>एसएससी जीडी</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1f7ouSys-SEK-nRITiuDe8y_yWML4Ce_m', '_blank')"><span>📚</span>एसएससी एमटीएस</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1mXVIzRNVTBIoLjDCAT-7Jome1AZ7n6SY', '_blank')"><span>📖</span>लुसेंट</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1aVAB7eZK3wEEyCDc_l4EkDfQ3BgNq4JI', '_blank')"><span>📁</span>सभी PDF</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1fixnpdDIjg98ZLFzGCDCA6I9auFW4-0e', '_blank')"><span>📰</span>करंट अफेयर्स</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1eF9tbYetogTi6QekaVLVKcw-1VbSSnV4', '_blank')"><span>🔔</span>नई वेकेंसी</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1fZaAisQmwVg5UT45ewZikUBRjDNSosFs', '_blank')"><span>📝</span>डेली टेस्ट सीरीज</button>
+            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1fi0wNjxyw11BU2vpNwZxaDQmuTCKmzov', '_blank')"><span>📅</span>पिछले वर्ष</button>
+            <button class="category-btn" onclick="window.open('https://www.sgsexamcracker.store/?m=1', '_blank')"><span>✨</span>नए अपडेट</button>
+        </div>
+    </div>
+
+    <!-- Policy Content Display Page -->
+    <div id="policyContentDisplay">
+        <h2 id="policyContentTitle"></h2>
+        <div id="policyContentText"></div>
+        <button onclick="history.back()">Back</button>
+    </div>
+
+    <!-- Custom Message Box HTML -->
+    <div id="customMessageBox">
+        <div>
+            <p id="messageBoxText"></p>
+            <div id="messageBoxButtons">
+                <button onclick="hideMessageBox()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration (Updated with your provided values)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1py6IHfC6Chf99xvv8T5K3ISAO_cpmk4",
+            authDomain: "sgs-exam-cracker-420.firebaseapp.com",
+            databaseURL: "https://sgs-exam-cracker-420-default-rtdb.firebaseio.com",
+            projectId: "sgs-exam-cracker-420",
+            storageBucket: "sgs-exam-cracker-420.firebasestorage.app",
+            messagingSenderId: "209121129127",
+            appId: "1:209121129127:web:69587a45aa492c2e24a182"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        let policiesRef = db.ref('policies');
+        let homeThumbnailsRef = db.ref('homeThumbnails');
+        let homeSliderInterval;
+
+        let currentUser = null;
+        let policies = {};
+
+        // Attach policies listener once at the start
+        policiesRef.on('value', (snapshot) => {
+            policies = snapshot.val() || {};
+            console.log("Policies loaded from Firebase:", policies);
+            // This ensures content is up-to-date when a user views a policy
         });
-      } catch (e) {
-        console.error("Firebase Initialization Error:", e);
-      }
-    };
-    
-    // Switch Tabs
-    tabSignIn.addEventListener('click', () => {
-      tabSignIn.classList.add('bg-slate-800', 'text-white', 'shadow-inner');
-      tabSignIn.classList.remove('bg-transparent', 'text-slate-400');
-      tabSignUp.classList.remove('bg-slate-800', 'text-white', 'shadow-inner');
-      tabSignUp.classList.add('bg-transparent', 'text-slate-400');
-      signinForm.style.display = 'block';
-      signupForm.style.display = 'none';
-      inErr.textContent = ""; upErr.textContent = ""; authMsg.textContent = "";
-    });
-    tabSignUp.addEventListener('click', () => {
-      tabSignUp.classList.add('bg-slate-800', 'text-white', 'shadow-inner');
-      tabSignUp.classList.remove('bg-transparent', 'text-slate-400');
-      tabSignIn.classList.remove('bg-slate-800', 'text-white', 'shadow-inner');
-      tabSignIn.classList.add('bg-transparent', 'text-slate-400');
-      signupForm.style.display = 'block';
-      signinForm.style.display = 'none';
-      inErr.textContent = ""; upErr.textContent = ""; authMsg.textContent = "";
-    });
 
-    // Email Sign In
-    btnSignInEmail.addEventListener('click', async () => {
-      inErr.textContent = ""; authMsg.textContent = "";
-      try {
-        await signInWithEmailAndPassword(auth, inEmail.value.trim(), inPass.value.trim());
-        authMsg.textContent = "Welcome back!";
-      } catch (e) {
-        inErr.textContent = e.message.replace("Firebase: Error (auth/", "").replace(")", "").replace(/-/g, " ").replace(").", "").trim();
-      }
-    });
+        // Attach home thumbnails listener once at the start
+        homeThumbnailsRef.on('value', (snapshot) => {
+            const thumbnailUrls = snapshot.val() || [];
+            console.log("Home thumbnails loaded from Firebase:", thumbnailUrls);
+            _updateAdminThumbnailPreview(thumbnailUrls);
+            if (currentUser && document.getElementById('userPanel').style.display === 'block') {
+                initHomeSlider(thumbnailUrls);
+            }
+        });
 
-    // Email Sign Up
-    btnSignUpEmail.addEventListener('click', async () => {
-      upErr.textContent = ""; authMsg.textContent = "";
-      const name = upName.value.trim();
-      if (!name) { upErr.textContent = "Please enter your full name."; return; }
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, upEmail.value.trim(), upPass.value.trim());
-        await updateProfile(cred.user, { displayName: name });
-        authMsg.textContent = "Account created. You’re in!";
-      } catch (e) {
-        upErr.textContent = e.message.replace("Firebase: Error (auth/", "").replace(")", "").replace(/-/g, " ").replace(").", "").trim();
-      }
-    });
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                console.log("User logged in:", user.uid, user.email || "Anonymous");
+                document.getElementById('loginPanel').style.display = 'none';
+                document.getElementById('userPanel').style.display = 'block';
+                document.getElementById('logoutButton').style.display = 'block';
+                document.getElementById('searchInput').classList.add('show');
+                document.getElementById('menuButton').style.display = 'block';
+                document.getElementById('adminHomeThumbnailSection').style.display = 'none';
 
-    // Google Sign In
-    const doGoogle = async () => {
-      try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        authMsg.textContent = "Signed in with Google.";
-      } catch (e) {
-        // Silently handle popup closed by user
-        console.error("Google Sign-in Error:", e);
-      }
-    };
-    btnGoogle.addEventListener('click', doGoogle);
-    btnGoogle2.addEventListener('click', doGoogle);
+                homeThumbnailsRef.once('value', (snapshot) => {
+                    const urls = snapshot.val() || [];
+                    initHomeSlider(urls);
+                });
 
-    // Logout
-    logoutBtn.addEventListener('click', async () => {
-      await signOut(auth);
-      showToast("Logged out successfully.");
-    });
-    
-    // Wait for the window to load before starting
-    window.onload = function() {
-      initFirebase();
-    }
-  </script>
+                history.replaceState({page: 'userPanel'}, '', '#userPanel');
+            } else {
+                currentUser = null;
+                console.log("User logged out.");
+                clearInterval(homeSliderInterval);
+                document.getElementById('userHomeThumbnailDisplay').innerHTML = '';
+                document.getElementById('userHomeThumbnailDisplay').style.display = 'none';
 
+                document.getElementById('userPanel').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('loginPanel').style.display = 'flex';
+                document.getElementById('logoutButton').style.display = 'none';
+                document.getElementById('searchInput').classList.remove('show');
+                document.getElementById('menuButton').style.display = 'none';
+                toggleDrawer(true);
+            }
+        });
+
+        // Custom Message Box Functions
+        function showMessageBox(message, type = 'alert', callback = null) {
+            document.getElementById('messageBoxText').innerText = message;
+            const messageBoxButtons = document.getElementById('messageBoxButtons');
+            messageBoxButtons.innerHTML = '';
+            if (type === 'confirm') {
+                const confirmBtn = document.createElement('button');
+                confirmBtn.innerText = 'Yes';
+                confirmBtn.classList.add('confirm-btn');
+                confirmBtn.onclick = () => {
+                    hideMessageBox();
+                    if (callback) callback(true);
+                };
+                messageBoxButtons.appendChild(confirmBtn);
+                const cancelBtn = document.createElement('button');
+                cancelBtn.innerText = 'No';
+                cancelBtn.classList.add('cancel-btn');
+                cancelBtn.onclick = () => {
+                    hideMessageBox();
+                    if (callback) callback(false);
+                };
+                messageBoxButtons.appendChild(cancelBtn);
+            } else {
+                const okBtn = document.createElement('button');
+                okBtn.innerText = 'OK';
+                okBtn.onclick = hideMessageBox;
+                messageBoxButtons.appendChild(okBtn);
+            }
+            document.getElementById('customMessageBox').style.display = 'flex';
+        }
+
+        function hideMessageBox() {
+            document.getElementById('customMessageBox').style.display = 'none';
+        }
+
+        function adminLogin() {
+            const id = document.getElementById('adminId').value;
+            const pass = document.getElementById('adminPass').value;
+            if (id === 'Sachin' && pass === '802165') {
+                document.getElementById('loginPanel').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('adminHomeThumbnailSection').style.display = 'block';
+                document.getElementById('logoutButton').style.display = 'block';
+                populatePolicyFields();
+                history.pushState({page: 'adminPanel'}, '', '#adminPanel');
+            } else {
+                showMessageBox('Invalid Admin Credentials');
+            }
+        }
+
+        function userSignUp() {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            if (!email || !password) {
+                showMessageBox('Please enter both email and password for sign up.');
+                return;
+            }
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => {
+                    showMessageBox('User signed up successfully! You are now logged in.');
+                })
+                .catch((error) => {
+                    showMessageBox('Error signing up: ' + error.message);
+                });
+        }
+
+        function userLogin() {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            if (!email || !password) {
+                showMessageBox('Please enter both email and password for login.');
+                return;
+            }
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    showMessageBox('User logged in successfully!');
+                })
+                .catch((error) => {
+                    showMessageBox('Error logging in: ' + error.message);
+                });
+        }
+
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(() => {
+                    showMessageBox('Signed in with Google!');
+                })
+                .catch((error) => {
+                    showMessageBox('Error signing in with Google: ' + error.message);
+                });
+        }
+
+        function signInAnonymouslyUser() {
+            auth.signInAnonymously()
+                .then(() => {
+                    showMessageBox('Signed in anonymously!');
+                })
+                .catch((error) => {
+                    showMessageBox('Error signing in anonymously: ' + error.message);
+                });
+        }
+
+        function logout() {
+            auth.signOut().then(() => {
+                showMessageBox('Logged out successfully!');
+                document.getElementById('adminHomeThumbnailSection').style.display = 'none';
+            }).catch((error) => {
+                showMessageBox('Error logging out: ' + error.message);
+            });
+        }
+
+        async function uploadHomeThumbnails() {
+            const fileInput = document.getElementById('homeThumbnailInput');
+            const files = fileInput.files;
+            const previewArea = document.querySelector('#adminHomeThumbnailSection .thumbnail-upload-area');
+
+            if (files.length === 0) {
+                showMessageBox('Please select image files to upload.');
+                return;
+            }
+            if (files.length > 4) {
+                showMessageBox('You can upload a maximum of 4 images for the home page thumbnail slider.');
+                return;
+            }
+
+            previewArea.innerHTML = '<p style="text-align: center; padding: 20px;">Uploading images...</p>';
+            showMessageBox('Uploading images, please wait...');
+
+            const newThumbnailUrls = [];
+            const storageRef = storage.ref();
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (!file.type.startsWith('image/')) {
+                        showMessageBox(`Error: File "${file.name}" is not a valid image. Please upload JPG, PNG, or GIF.`);
+                        homeThumbnailsRef.once('value', (snapshot) => {
+                            _updateAdminThumbnailPreview(snapshot.val() || []);
+                        });
+                        return;
+                    }
+
+                    const fileName = `home_thumbnail_${Date.now()}_${i}_${file.name}`;
+                    const imageRef = storageRef.child(`thumbnails/${fileName}`);
+
+                    console.log(`Attempting to upload file: ${file.name}`);
+                    const snapshot = await imageRef.put(file);
+                    console.log(`File ${file.name} uploaded successfully.`);
+
+                    const downloadURL = await snapshot.ref.getDownloadURL();
+                    newThumbnailUrls.push(downloadURL);
+                    console.log(`Download URL for ${file.name}: ${downloadURL.substring(0, 50)}...`);
+                }
+
+                await homeThumbnailsRef.set(newThumbnailUrls);
+                showMessageBox('Home thumbnails uploaded and saved successfully!');
+                console.log("All thumbnail URLs saved to Firebase Realtime Database:", newThumbnailUrls);
+                _updateAdminThumbnailPreview(newThumbnailUrls);
+                fileInput.value = '';
+            } catch (error) {
+                console.error("Overall upload process failed:", error);
+                showMessageBox(`Upload failed: ${error.message}. Please check your Firebase Storage rules and network connection.`);
+                homeThumbnailsRef.once('value', (snapshot) => {
+                    _updateAdminThumbnailPreview(snapshot.val() || []);
+                });
+            }
+        }
+
+        function _updateAdminThumbnailPreview(urls) {
+            const previewArea = document.querySelector('#adminHomeThumbnailSection .thumbnail-upload-area');
+            previewArea.innerHTML = '';
+
+            if (urls && urls.length > 0) {
+                previewArea.style.paddingTop = '0';
+                previewArea.style.height = 'auto';
+                previewArea.style.flexDirection = 'row';
+                previewArea.style.justifyContent = 'center';
+                previewArea.style.alignItems = 'flex-start';
+                previewArea.style.flexWrap = 'wrap';
+
+                urls.forEach(url => {
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.classList.add('preview-image-wrapper');
+                    imgWrapper.style.marginBottom = '10px';
+                    imgWrapper.style.marginRight = '10px';
+
+                    if (urls.length === 1) {
+                        imgWrapper.style.width = '100%';
+                        imgWrapper.style.paddingTop = '56.25%';
+                    } else {
+                        imgWrapper.style.width = 'calc(50% - 5px)';
+                        imgWrapper.style.paddingTop = '28.125%';
+                    }
+
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Thumbnail Preview';
+                    imgWrapper.appendChild(img);
+                    previewArea.appendChild(imgWrapper);
+                });
+            } else {
+                previewArea.innerHTML = '';
+                const defaultImg = document.createElement('img');
+                defaultImg.src = 'https://placehold.co/1600x900/cccccc/000000?text=16:9+Thumbnail+Preview';
+                defaultImg.alt = 'Default Thumbnail Preview';
+                defaultImg.style.position = 'absolute';
+                defaultImg.style.top = '0';
+                defaultImg.style.left = '0';
+                defaultImg.style.width = '100%';
+                defaultImg.style.height = '100%';
+                defaultImg.style.objectFit = 'cover';
+                defaultImg.style.borderRadius = '6px';
+
+                previewArea.style.paddingTop = '56.25%';
+                previewArea.style.height = '0';
+                previewArea.style.flexDirection = 'column';
+                previewArea.style.justifyContent = 'center';
+                previewArea.style.alignItems = 'center';
+                previewArea.style.flexWrap = 'nowrap';
+
+                previewArea.appendChild(defaultImg);
+            }
+        }
+
+
+        function initHomeSlider(urls) {
+            const sliderContainer = document.getElementById('userHomeThumbnailDisplay');
+            sliderContainer.innerHTML = '';
+            clearInterval(homeSliderInterval);
+
+            if (!urls || urls.length === 0) {
+                sliderContainer.style.display = 'none';
+                return;
+            }
+
+            let sliderImages = [];
+            urls.forEach((url, index) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = `Home Slide ${index + 1}`;
+                img.classList.add('slider-image');
+                if (index === 0) {
+                    img.classList.add('active');
+                }
+                sliderContainer.appendChild(img);
+                sliderImages.push(img);
+            });
+
+            sliderContainer.style.display = 'block';
+
+            if (sliderImages.length > 1) {
+                let currentSlide = 0;
+                homeSliderInterval = setInterval(() => {
+                    if (sliderImages.length === 0) return;
+                    sliderImages[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % sliderImages.length;
+                    sliderImages[currentSlide].classList.add('active');
+                }, 5000);
+            }
+        }
+
+        // --- Navigation Functions ---
+        function showHomePage() {
+            toggleDrawer(true);
+            hideAllPanels();
+            document.getElementById('userPanel').style.display = 'block';
+            homeThumbnailsRef.once('value', (snapshot) => {
+                const urls = snapshot.val() || [];
+                initHomeSlider(urls);
+            });
+            history.pushState({page: 'userPanel'}, '', '#userPanel');
+        }
+
+        function viewLibraryPage() {
+            // Functionality removed as per previous requests.
+            // Re-implement if needed.
+            showMessageBox('Library functionality is currently not active.');
+        }
+
+        function showPolicyContent(policyKey) {
+            toggleDrawer(true);
+            hideAllPanels();
+            const titleMap = {
+                about: 'About Us',
+                privacyPolicy: 'Privacy Policy',
+                termsCondition: 'Terms & Conditions',
+                refundCancellation: 'Refund & Cancellation',
+                shipping: 'Shipping Policy',
+                pricing: 'Pricing',
+                contact: 'Contact Us',
+                disclaimer: 'Disclaimer',
+                faq: 'FAQ'
+            };
+            document.getElementById('policyContentTitle').innerText = titleMap[policyKey] || 'Content';
+            document.getElementById('policyContentText').innerHTML = policies[policyKey] || '<p>Content not available yet.</p>';
+            document.getElementById('policyContentDisplay').style.display = 'block';
+            history.pushState({page: 'policyContent', key: policyKey}, '', `#${policyKey}`);
+        }
+
+        function toggleSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.classList.toggle('show');
+            if (searchInput.classList.contains('show')) {
+                searchInput.focus();
+            } else {
+                searchInput.value = '';
+            }
+        }
+
+        function toggleDrawer(forceClose = false) {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            if (forceClose || drawer.classList.contains('open')) {
+                drawer.classList.remove('open');
+                overlay.classList.remove('open');
+            } else if (currentUser) {
+                drawer.classList.add('open');
+                overlay.classList.add('open');
+            }
+        }
+
+        function savePolicyContent() {
+            const policyData = {
+                about: document.getElementById('aboutContent').value,
+                privacyPolicy: document.getElementById('privacyPolicyContent').value,
+                termsCondition: document.getElementById('termsConditionContent').value,
+                refundCancellation: document.getElementById('refundCancellationContent').value,
+                shipping: document.getElementById('shippingContent').value,
+                pricing: document.getElementById('pricingContent').value,
+                contact: document.getElementById('contactContent').value,
+                disclaimer: document.getElementById('disclaimerContent').value,
+                faq: document.getElementById('faqContent').value
+            };
+
+            policiesRef.set(policyData)
+                .then(() => showMessageBox('Policy content saved successfully!'))
+                .catch(error => {
+                    console.error("Error saving policy content:", error);
+                    showMessageBox('Error saving policy content: ' + error.message + '. Please check Firebase rules or network.');
+                });
+        }
+
+        function populatePolicyFields() {
+            if (policies.about) document.getElementById('aboutContent').value = policies.about;
+            if (policies.privacyPolicy) document.getElementById('privacyPolicyContent').value = policies.privacyPolicy;
+            if (policies.termsCondition) document.getElementById('termsConditionContent').value = policies.termsCondition;
+            if (policies.refundCancellation) document.getElementById('refundCancellationContent').value = policies.refundCancellation;
+            if (policies.shipping) document.getElementById('shippingContent').value = policies.shipping;
+            if (policies.pricing) document.getElementById('pricingContent').value = policies.pricing;
+            if (policies.contact) document.getElementById('contactContent').value = policies.contact;
+            if (policies.disclaimer) document.getElementById('disclaimerContent').value = policies.disclaimer;
+            if (policies.faq) document.getElementById('faqContent').value = policies.faq;
+        }
+
+        function toggleAdminLoginFields() {
+            const adminFieldsContainer = document.getElementById('adminLoginFieldsContainer');
+            if (adminFieldsContainer.style.display === 'none' || adminFieldsContainer.style.display === '') {
+                adminFieldsContainer.style.display = 'block';
+            } else {
+                adminFieldsContainer.style.display = 'none';
+            }
+        }
+
+        function hideAllPanels() {
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('userPanel').style.display = 'none';
+            document.getElementById('policyContentDisplay').style.display = 'none';
+            document.getElementById('adminHomeThumbnailSection').style.display = 'none';
+            clearInterval(homeSliderInterval);
+            document.getElementById('userHomeThumbnailDisplay').style.display = 'none';
+        }
+
+        window.onload = function() {
+            console.log("Window loaded. Firebase authentication state will determine the initial UI.");
+        };
+    </script>
 </body>
 </html>
+
