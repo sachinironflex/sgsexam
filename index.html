@@ -1,367 +1,394 @@
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SGS EXAM CRACKER – App</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root{
-      --bg:#0b0b0b; --card:#121212; --muted:#9aa3ae; --text:#ffffff;
-      --accent:#2dd4bf; --danger:#ef4444; --ok:#22c55e;
-      --shadow:0 8px 24px rgba(0,0,0,.35);
+    /* Custom CSS to handle background and font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    :root {
+      --bg-dark: #080808;
+      --card-dark: #121212;
+      --border-dark: #222222;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
-      background:linear-gradient(180deg,#000,#0a0a0a 40%,#111);
-      color:var(--text);
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
     }
-    /* Header */
-    .header{position:sticky; top:0; z-index:50; background:#000; border-bottom:1px solid #1f1f1f;}
-    .header-inner{max-width:1100px; margin:0 auto; padding:14px 16px; display:flex; align-items:center; justify-content:center; position:relative;}
-    .title{font-weight:800; letter-spacing:.5px; color:#fff; text-align:center; font-size:22px;}
-    .avatar{position:absolute; right:16px; top:50%; transform:translateY(-50%); display:flex; align-items:center; gap:10px}
-    .avatar img{width:38px; height:38px; border-radius:50%; object-fit:cover; border:2px solid #1f2937; box-shadow:var(--shadow)}
-    .avatar .fallback{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:#222; border:2px solid #1f2937; font-weight:700; box-shadow:var(--shadow)}
-    .avatar .logout{margin-left:8px; background:#1f2937; border:1px solid #2b2b2b; color:#e5e7eb; padding:6px 10px; border-radius:12px; cursor:pointer}
-    .avatar .logout:hover{background:#2b3440}
-
-    /* Greet line */
-    .greet-wrap{max-width:1100px; margin:4px auto 0; padding:6px 16px 0}
-    .greet{font-size:14px; color:#cbd5e1}
-    .greet strong{color:#fff}
-
-    /* Shayari card */
-    .shayari{
-      max-width:1100px; margin:14px auto; padding:18px; border-radius:18px;
-      background:
-        radial-gradient(1200px 400px at -10% -50%, #dc2626 0%, rgba(220,38,38,.2) 15%, transparent 40%),
-        radial-gradient(1200px 400px at 110% 150%, #f59e0b 0%, rgba(245,158,11,.15) 18%, transparent 40%),
-        linear-gradient(180deg, #121212, #0f0f0f);
-      border:1px solid #1f1f1f; box-shadow:var(--shadow);
+    body {
+      background: var(--bg-dark);
+      color: #e5e7eb;
     }
-    .shayari h2{margin:0 0 8px; font-size:18px; color:#fff; letter-spacing:.4px}
-    .shayari p{margin:6px 0; line-height:1.6; font-weight:600; font-size:16px}
-    .shayari small{color:#cbd5e1}
-
-    /* Grid */
-    .grid{max-width:1100px; margin:12px auto 60px; padding:0 16px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
-    @media (max-width:640px){ .grid{grid-template-columns:repeat(2,1fr)} }
-    .tile{
-      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-      padding:18px 12px; background:var(--card); border:1px solid #1f1f1f; border-radius:18px;
-      text-decoration:none; color:#fff; box-shadow:var(--shadow);
-      transition:transform .15s ease, background .2s ease, border-color .2s ease;
-      aspect-ratio:1/1; /* square */
+    /* Specific styles for the Gate modal */
+    .gate {
+      animation: fadeIn .3s ease-in-out;
     }
-    .tile:hover{transform:translateY(-2px); border-color:#334155; background:#141414}
-    .tile .emoji{font-size:34px; line-height:1}
-    .tile .name{font-weight:700; text-align:center; font-size:14px; color:#e5e7eb}
-    .tile .hint{font-size:12px; color:var(--muted)}
-
-    /* Auth gate (first time login) */
-    .gate{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.72); backdrop-filter: blur(6px); z-index:60;}
-    .gate.show{display:grid}
-    .card{width:min(92vw, 440px); background:#0f1115; border:1px solid #1f1f1f; border-radius:18px; padding:18px; box-shadow:var(--shadow);}
-    .card h3{margin:0 0 10px; font-size:20px}
-    .tabs{display:flex; gap:8px; margin:10px 0 16px}
-    .tab{flex:1; text-align:center; padding:10px 12px; border-radius:12px; border:1px solid #1f1f1f; background:#16181d; color:#d1d5db; cursor:pointer; font-weight:700}
-    .tab.active{border-color:#334155; background:#0b0c10; color:#fff}
-    .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
-    .field label{font-size:12px; color:#aab2be}
-    .field input{background:#0b0c10; border:1px solid #1f1f1f; color:#fff; border-radius:12px; padding:10px 12px; outline:none}
-    .btn{width:100%; padding:12px 14px; border-radius:12px; border:1px solid #2c2c2c; background:#1f2937; color:#e5e7eb; font-weight:800; cursor:pointer}
-    .btn:hover{background:#2b3440}
-    .btn-google{display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; width:100%; border-radius:12px; padding:12px 14px; background:#111827; border:1px solid #334155; color:#e5e7eb; cursor:pointer; margin-top:8px}
-    .btn-google:hover{background:#0f172a}
-    .error{color:var(--danger); font-size:12px; min-height:18px}
-    .success{color:var(--ok); font-size:12px; min-height:18px}
-    .sep{display:flex; align-items:center; gap:12px; color:#9aa3ae; margin:12px 0}
-    .sep:before,.sep:after{content:""; flex:1; height:1px; background:#1f2937}
-
-    /* Toast */
-    .toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#0b0c10; border:1px solid #1f1f1f; padding:10px 14px; border-radius:12px; display:none; z-index:70}
-    .toast.show{display:block}
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .pro-card {
+        /* Glassmorphism effect for the pro-level card */
+        background-color: rgba(18, 18, 18, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        animation: card-in .5s ease-out;
+    }
+    @keyframes card-in {
+      from { transform: scale(0.9) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .input-pro:focus {
+        box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.5); /* Teal glow */
+    }
+    .btn-pro {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    .btn-pro::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: 0.5s;
+        z-index: -1;
+    }
+    .btn-pro:hover::before {
+        left: 100%;
+    }
+    .gradient-text {
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   </style>
 </head>
-<body>
+<body class="bg-zinc-950 text-slate-100">
+
   <!-- HEADER -->
-  <header class="header">
-    <div class="header-inner">
-      <div class="title">SGS EXAM CRACKER</div>
-      <div class="avatar" id="avatarWrap" style="display:none">
-        <span id="userEmail" style="font-size:12px;color:#cbd5e1;display:none"></span>
-        <img id="userPhoto" alt="user" style="display:none"/>
-        <div class="fallback" id="userFallback" style="display:none">U</div>
-        <button class="logout" id="logoutBtn" title="Logout">Logout</button>
+  <header class="sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-gray-800">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-center relative">
+      <div class="text-xl sm:text-2xl font-extrabold tracking-wide text-white">SGS EXAM CRACKER</div>
+      <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 sm:gap-4" id="avatarWrap" style="display:none">
+        <img id="userPhoto" alt="user" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-slate-700 shadow-lg" style="display:none"/>
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-slate-700 text-slate-300 font-bold text-lg border-2 border-slate-700 shadow-lg" id="userFallback" style="display:none">U</div>
+        <button class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-1 px-3 sm:py-2 sm:px-4 rounded-full text-xs sm:text-sm transition-colors" id="logoutBtn" title="Logout">
+          Logout
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- GREET LINE (left-aligned under header) -->
-  <div class="greet-wrap">
-    <div class="greet">Hello, <strong id="helloName">User</strong> 👋</div>
-  </div>
-
-  <!-- SHAYARI (🔥 study motivation) -->
-  <section class="shayari" aria-label="Study Motivation">
-    <h2>🔥 Study के लिए आग — आज नहीं तो कभी नहीं</h2>
-    <p>किताबों की राख नहीं उड़ानी, <br> पन्ने पलट कर किस्मत पलटनी है।</p>
-    <p>घड़ी की टिक-टिक याद दिलाए—<br> आज का आलस, कल की नियुक्ति खा जाएगा।</p>
-    <p>जो रातों को जलते हैं वही सुबह अख़बारों में छपते हैं।</p>
-    <small>— Focus • Discipline • Repeat</small>
-  </section>
-
-  <!-- GRID: 3 per row, square tiles -->
-  <main class="grid" id="btnGrid">
-    <a class="tile" href="https://drive.google.com/drive/folders/1kuiMOHnkRewT9nN4RBaJyrGIjJJBDLtk" target="_blank" rel="noopener" aria-label="SSC GD">
-      <div class="emoji">🛡️</div>
-      <div class="name">SSC GD</div>
-      <div class="hint">Important PDFs</div>
-    </a>
-    <a class="tile" href="https://drive.google.com/drive/folders/1CqVZz4A2JqrqMYambXq7QfkYPborLiIP" target="_blank" rel="noopener" aria-label="SSC MTS">
-      <div class="emoji">🧰</div>
-      <div class="name">SSC MTS</div>
-      <div class="hint">All Sections</div>
-    </a>
-    <a class="tile" href="https://drive.google.com/drive/folders/1mXVIzRNVTBIoLjDCAT-7Jome1AZ7n6SY" target="_blank" rel="noopener" aria-label="LUCENT">
-      <div class="emoji">📘</div>
-      <div class="name">LUCENT</div>
-      <div class="hint">General Knowledge</div>
-    </a>
-    <a class="tile" href="https://drive.google.com/drive/folders/1aVAB7eZK3wEEyCDc_l4EkDfQ3BgNq4JI" target="_blank" rel="noopener" aria-label="ALL PDF">
-      <div class="emoji">📚</div>
-      <div class="name">ALL PDF</div>
-      <div class="hint">One Place Library</div>
-    </a>
-    <a class="tile" href="https://drive.google.com/drive/folders/1eAjiWefAZdNdE-bK1nwvUlP92_7WIGat" target="_blank" rel="noopener" aria-label="Notice Board">
-      <div class="emoji">📢</div>
-      <div class="name">Notice Board</div>
-      <div class="hint">Updates & Info</div>
-    </a>
-    <a class="tile" href="https://drive.google.com/drive/folders/1eF9tbYetogTi6QekaVLVKcw-1VbSSnV4" target="_blank" rel="noopener" aria-label="New Vacancy">
-      <div class="emoji">🆕</div>
-      <div class="name">New Vacancy</div>
-      <div class="hint">Latest Jobs</div>
-    </a>
-  </main>
-
-  <!-- AUTH GATE (first time login) -->
-  <div class="gate" id="authGate" aria-modal="true" role="dialog">
-    <div class="card">
-      <h3>Login / Signup to continue</h3>
-      <div class="tabs">
-        <button class="tab active" id="tabSignIn">Sign In</button>
-        <button class="tab" id="tabSignUp">Sign Up</button>
-      </div>
-
-      <!-- Sign In -->
-      <div id="signinForm">
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="inEmail" placeholder="you@example.com" autocomplete="username"/>
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="inPass" placeholder="••••••••" autocomplete="current-password"/>
-        </div>
-        <button class="btn" id="btnSignInEmail">Sign In with Email</button>
-        <div class="sep">or</div>
-        <button class="btn-google" id="btnGoogle">
-          <span>🟦</span> Continue with Google
-        </button>
-        <div class="error" id="inErr"></div>
-      </div>
-
-      <!-- Sign Up -->
-      <div id="signupForm" style="display:none">
-        <div class="field">
-          <label>Full Name</label>
-          <input type="text" id="upName" placeholder="Your Name" autocomplete="name"/>
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="upEmail" placeholder="you@example.com" autocomplete="email"/>
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="upPass" placeholder="Create a strong password" autocomplete="new-password"/>
-        </div>
-        <button class="btn" id="btnSignUpEmail">Create Account</button>
-        <div class="sep">or</div>
-        <button class="btn-google" id="btnGoogle2">
-          <span>🟦</span> Continue with Google
-        </button>
-        <div class="error" id="upErr"></div>
-      </div>
-
-      <div class="success" id="authMsg"></div>
+  <!-- GREET LINE -->
+  <div class="container mx-auto px-4 mt-2 sm:mt-4">
+    <div class="text-sm sm:text-base text-slate-400">
+      Hello, <strong id="helloName" class="text-white">User</strong> 👋
     </div>
   </div>
 
-  <div class="toast" id="toast">Logged out successfully.</div>
+  <!-- SHAYARI (STUDY MOTIVATION) -->
+  <section class="container mx-auto px-4 py-6 my-4 sm:my-8 rounded-3xl bg-gradient-to-br from-indigo-900/20 to-zinc-950 border border-slate-800 shadow-2xl overflow-hidden relative">
+    <div class="absolute inset-0 z-0 opacity-10">
+      <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://placehold.co/1200x400/0c0c0d/FFFFFF/png?text=Motivation+Pattern');"></div>
+    </div>
+    <div class="relative z-10 text-white">
+      <h2 class="text-lg sm:text-xl font-bold mb-2 gradient-text bg-gradient-to-r from-teal-400 to-cyan-500">🔥 Study के लिए आग — आज नहीं तो कभी नहीं</h2>
+      <p class="mb-1 text-sm sm:text-base leading-relaxed">किताबों की राख नहीं उड़ानी, <br> पन्ने पलट कर किस्मत पलटनी है।</p>
+      <p class="mb-1 text-sm sm:text-base leading-relaxed">घड़ी की टिक-टिक याद दिलाए—<br> आज का आलस, कल की नियुक्ति खा जाएगा।</p>
+      <p class="mb-4 text-sm sm:text-base leading-relaxed">जो रातों को जलते हैं वही सुबह अख़बारों में छपते हैं।</p>
+      <small class="block text-xs sm:text-sm text-slate-400">— Focus • Discipline • Repeat</small>
+    </div>
+  </section>
+
+  <!-- GRID: 3 per row, square tiles -->
+  <main class="container mx-auto px-4 pb-16 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="btnGrid" style="display:none">
+    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1kuiMOHnkRewT9nN4RBaJyrGIjJJBDLtk" target="_blank" rel="noopener" aria-label="SSC GD">
+      <div class="text-4xl sm:text-5xl">🛡️</div>
+      <div class="font-bold text-sm sm:text-base text-white">SSC GD</div>
+      <div class="text-xs sm:text-sm text-slate-400">Important PDFs</div>
+    </a>
+    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1CqVZz4A2JqrqMYambXq7QfkYPborLiIP" target="_blank" rel="noopener" aria-label="SSC MTS">
+      <div class="text-4xl sm:text-5xl">🧰</div>
+      <div class="font-bold text-sm sm:text-base text-white">SSC MTS</div>
+      <div class="text-xs sm:text-sm text-slate-400">All Sections</div>
+    </a>
+    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1mXVIzRNVTBIoLjDCAT-7Jome1AZ7n6SY" target="_blank" rel="noopener" aria-label="LUCENT">
+      <div class="text-4xl sm:text-5xl">📘</div>
+      <div class="font-bold text-sm sm:text-base text-white">LUCENT</div>
+      <div class="text-xs sm:text-sm text-slate-400">General Knowledge</div>
+    </a>
+    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1aVAB7eZK3wEEyCDc_l4EkDfQ3BgNq4JI" target="_blank" rel="noopener" aria-label="ALL PDF">
+      <div class="text-4xl sm:text-5xl">📚</div>
+      <div class="font-bold text-sm sm:text-base text-white">ALL PDF</div>
+      <div class="text-xs sm:text-sm text-slate-400">One Place Library</div>
+    </a>
+    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1eAjiWefAZdNdE-bK1nwvUlP92_7WIGat" target="_blank" rel="noopener" aria-label="Notice Board">
+      <div class="text-4xl sm:text-5xl">📢</div>
+      <div class="font-bold text-sm sm:text-base text-white">Notice Board</div>
+      <div class="text-xs sm:text-sm text-slate-400">Updates & Info</div>
+    </a>
+    <a class="tile bg-slate-900 hover:bg-slate-800 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-xl p-4 rounded-2xl flex flex-col items-center justify-center gap-2 aspect-square border border-slate-800 text-center" href="https://drive.google.com/drive/folders/1eF9tbYetogTi6QekaVLVKcw-1VbSSnV4" target="_blank" rel="noopener" aria-label="New Vacancy">
+      <div class="text-4xl sm:text-5xl">🆕</div>
+      <div class="font-bold text-sm sm:text-base text-white">New Vacancy</div>
+      <div class="text-xs sm:text-sm text-slate-400">Latest Jobs</div>
+    </a>
+  </main>
+
+  <!-- AUTH GATE (login/signup modal) -->
+  <div class="gate fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-opacity duration-300" id="authGate" aria-modal="true" role="dialog">
+    <div class="w-[min(92vw,440px)] rounded-3xl p-6 sm:p-8 shadow-2xl pro-card">
+      <div class="mb-4">
+        <h3 class="text-2xl font-bold text-white text-center">Login / Signup</h3>
+        <p class="text-sm text-slate-400 text-center mt-1">to unlock the full experience</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-4 p-1 rounded-xl bg-slate-900/50">
+        <button class="tab flex-1 text-center py-2 rounded-xl transition-colors duration-200 bg-slate-800 text-white font-semibold shadow-inner" id="tabSignIn">Sign In</button>
+        <button class="tab flex-1 text-center py-2 rounded-xl transition-colors duration-200 bg-transparent text-slate-400 font-semibold" id="tabSignUp">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <div id="signinForm">
+        <div class="space-y-4">
+          <div class="field">
+            <label class="block text-xs font-medium text-slate-400">Email</label>
+            <input type="email" id="inEmail" placeholder="you@example.com" autocomplete="username" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
+          </div>
+          <div class="field">
+            <label class="block text-xs font-medium text-slate-400">Password</label>
+            <input type="password" id="inPass" placeholder="••••••••" autocomplete="current-password" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
+          </div>
+        </div>
+        <button class="btn-pro w-full mt-6 bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" id="btnSignInEmail">Sign In</button>
+        <div class="relative flex py-4 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-slate-500 text-sm">or</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+        <button class="btn-pro w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors" id="btnGoogle">
+          <svg class="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.5 20.25H24v7.5h11.838c-.792 3.992-3.262 7.378-7.398 9.544L24 40v-4.5c4.782-2.166 8.243-6.528 9.282-11.75H44.5z" fill="#4285F4"/><path d="M24 44.5c5.962 0 10.957-2.128 14.867-5.748l-5.717-4.43c-2.476 1.62-5.592 2.68-8.15 2.68-5.772 0-10.7-3.9-12.483-9.148L2.736 34.25c3.21 6.368 10.024 10.25 19.264 10.25h2z" fill="#34A853"/><path d="M11.517 25.102c-.378-1.504-.576-3.08-.576-4.702s.198-3.198.576-4.702l-8.525-6.602C2.458 14.776 2 19.344 2 21.9h2z" fill="#FBBC04"/><path d="M24 11.5c3.15 0 5.862 1.144 7.994 3.25L38.4 8.7C34.78 4.882 29.782 2.5 24 2.5c-9.24 0-16.054 3.882-19.264 10.25l8.525 6.602c1.783-5.248 6.71-9.148 12.483-9.148h2z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <div class="text-red-500 text-xs text-center mt-3 h-4" id="inErr"></div>
+      </div>
+
+      <!-- Sign Up Form -->
+      <div id="signupForm" style="display:none">
+        <div class="space-y-4">
+          <div class="field">
+            <label class="block text-xs font-medium text-slate-400">Full Name</label>
+            <input type="text" id="upName" placeholder="Your Name" autocomplete="name" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
+          </div>
+          <div class="field">
+            <label class="block text-xs font-medium text-slate-400">Email</label>
+            <input type="email" id="upEmail" placeholder="you@example.com" autocomplete="email" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
+          </div>
+          <div class="field">
+            <label class="block text-xs font-medium text-slate-400">Password</label>
+            <input type="password" id="upPass" placeholder="Create a strong password" autocomplete="new-password" class="input-pro w-full bg-slate-900/50 border border-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"/>
+          </div>
+        </div>
+        <button class="btn-pro w-full mt-6 bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" id="btnSignUpEmail">Create Account</button>
+        <div class="relative flex py-4 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-slate-500 text-sm">or</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+        <button class="btn-pro w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl shadow-lg transition-colors" id="btnGoogle2">
+          <svg class="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.5 20.25H24v7.5h11.838c-.792 3.992-3.262 7.378-7.398 9.544L24 40v-4.5c4.782-2.166 8.243-6.528 9.282-11.75H44.5z" fill="#4285F4"/><path d="M24 44.5c5.962 0 10.957-2.128 14.867-5.748l-5.717-4.43c-2.476 1.62-5.592 2.68-8.15 2.68-5.772 0-10.7-3.9-12.483-9.148L2.736 34.25c3.21 6.368 10.024 10.25 19.264 10.25h2z" fill="#34A853"/><path d="M11.517 25.102c-.378-1.504-.576-3.08-.576-4.702s.198-3.198.576-4.702l-8.525-6.602C2.458 14.776 2 19.344 2 21.9h2z" fill="#FBBC04"/><path d="M24 11.5c3.15 0 5.862 1.144 7.994 3.25L38.4 8.7C34.78 4.882 29.782 2.5 24 2.5c-9.24 0-16.054 3.882-19.264 10.25l8.525 6.602c1.783-5.248 6.71-9.148 12.483-9.148h2z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <div class="text-red-500 text-xs text-center mt-3 h-4" id="upErr"></div>
+      </div>
+
+      <div class="text-green-500 text-xs text-center mt-3 h-4" id="authMsg"></div>
+    </div>
+  </div>
+
+  <!-- Toast for messages -->
+  <div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-slate-200 px-4 py-2 rounded-xl shadow-lg hidden transition-opacity duration-300" id="toast">Logged out successfully.</div>
 
   <!-- Firebase SDKs -->
   <script type="module">
+    // Firebase imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+      getAuth, onAuthStateChanged, signInWithCustomToken, signInAnonymously,
       GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword,
       createUserWithEmailAndPassword, updateProfile, signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // ---- Your Firebase Config (Given) ----
-    const firebaseConfig = {
-      apiKey: "AIzaSyC1py6IHfC6Chf99xvv8T5K3ISAO_cpmk4",
-      authDomain: "sgs-exam-cracker-420.firebaseapp.com",
-      projectId: "sgs-exam-cracker-420",
-      storageBucket: "sgs-exam-cracker-420.firebasestorage.app",
-      messagingSenderId: "209121129127",
-      appId: "1:209121129127:web:69587a45aa492c2e24a182"
-    };
+    // Global variables from Canvas environment
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    setPersistence(auth, browserLocalPersistence);
-
-    // UI Refs
+    // UI Element References
     const gate = document.getElementById('authGate');
     const avatarWrap = document.getElementById('avatarWrap');
     const userPhoto = document.getElementById('userPhoto');
     const userFallback = document.getElementById('userFallback');
     const helloName = document.getElementById('helloName');
-    const userEmail = document.getElementById('userEmail');
     const logoutBtn = document.getElementById('logoutBtn');
     const toastEl = document.getElementById('toast');
-
-    // Tabs & Forms
     const tabSignIn = document.getElementById('tabSignIn');
     const tabSignUp = document.getElementById('tabSignUp');
     const signinForm = document.getElementById('signinForm');
     const signupForm = document.getElementById('signupForm');
-
     const inEmail = document.getElementById('inEmail');
-    const inPass  = document.getElementById('inPass');
+    const inPass = document.getElementById('inPass');
     const btnSignInEmail = document.getElementById('btnSignInEmail');
     const inErr = document.getElementById('inErr');
-
     const upName = document.getElementById('upName');
     const upEmail = document.getElementById('upEmail');
     const upPass = document.getElementById('upPass');
     const btnSignUpEmail = document.getElementById('btnSignUpEmail');
     const upErr = document.getElementById('upErr');
-
     const btnGoogle = document.getElementById('btnGoogle');
     const btnGoogle2 = document.getElementById('btnGoogle2');
     const authMsg = document.getElementById('authMsg');
+    // Main content grid reference
+    const btnGrid = document.getElementById('btnGrid');
 
-    // Helpers
-    const showGate = () => gate.classList.add('show');
-    const hideGate = () => gate.classList.remove('show');
-    const showToast = (msg="Done") => {
+    let app, auth;
+
+    // Helper functions
+    const showGate = () => { gate.classList.add('show', 'flex'); gate.classList.remove('hidden'); };
+    const hideGate = () => { gate.classList.add('hidden'); gate.classList.remove('show', 'flex'); };
+    const showToast = (msg = "Done") => {
       toastEl.textContent = msg;
-      toastEl.classList.add('show');
-      setTimeout(()=>toastEl.classList.remove('show'), 1800);
+      toastEl.classList.remove('hidden');
+      setTimeout(() => { toastEl.classList.add('hidden'); }, 1800);
     };
-    const initialFromName = (name="User") => (name.trim()[0] || "U").toUpperCase();
-    const nameFromEmail = (email="") => email.split("@")[0];
+    const initialFromName = (name = "User") => (name.trim()[0] || "U").toUpperCase();
+    const nameFromEmail = (email = "") => email.split("@")[0];
 
-    // Switch Tabs
-    tabSignIn.addEventListener('click', ()=>{
-      tabSignIn.classList.add('active'); tabSignUp.classList.remove('active');
-      signinForm.style.display='block'; signupForm.style.display='none';
-      inErr.textContent=""; upErr.textContent=""; authMsg.textContent="";
-    });
-    tabSignUp.addEventListener('click', ()=>{
-      tabSignUp.classList.add('active'); tabSignIn.classList.remove('active');
-      signupForm.style.display='block'; signinForm.style.display='none';
-      inErr.textContent=""; upErr.textContent=""; authMsg.textContent="";
-    });
-
-    // Auth state
-    onAuthStateChanged(auth, (user)=>{
-      if(user){
-        hideGate();
-        avatarWrap.style.display = 'flex';
-
-        const displayName =
-          user.displayName ||
-          localStorage.getItem('sgs_full_name') ||
-          nameFromEmail(user.email || "");
-
-        helloName.textContent = displayName;
-
-        if(user.email){ userEmail.textContent = user.email; userEmail.style.display = 'none'; }
-
-        if(user.photoURL){
-          userPhoto.src = user.photoURL;
-          userPhoto.style.display='block';
-          userFallback.style.display='none';
-        }else{
-          userFallback.textContent = initialFromName(displayName || "U");
-          userFallback.style.display='grid';
-          userPhoto.style.display='none';
+    // Initialize Firebase and set up auth listener
+    const initFirebase = async () => {
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        
+        // Initial authentication check using the provided token
+        if (initialAuthToken) {
+          await signInWithCustomToken(auth, initialAuthToken);
+        } else {
+          // Fallback to anonymous sign-in if no token is available
+          await signInAnonymously(auth);
         }
-      }else{
-        showGate();
-        avatarWrap.style.display = 'none';
-        helloName.textContent = 'User';
+
+        // Listen for auth state changes and update UI
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            hideGate();
+            // Show main app content
+            btnGrid.style.display = 'grid';
+            avatarWrap.style.display = 'flex';
+            const displayName = user.displayName || nameFromEmail(user.email || "");
+            helloName.textContent = displayName;
+            if (user.photoURL) {
+              userPhoto.src = user.photoURL;
+              userPhoto.style.display = 'block';
+              userFallback.style.display = 'none';
+            } else {
+              userFallback.textContent = initialFromName(displayName || "U");
+              userFallback.style.display = 'flex';
+              userPhoto.style.display = 'none';
+            }
+          } else {
+            showGate();
+            // Hide main app content
+            btnGrid.style.display = 'none';
+            avatarWrap.style.display = 'none';
+            helloName.textContent = 'User';
+          }
+        });
+      } catch (e) {
+        console.error("Firebase Initialization Error:", e);
       }
+    };
+    
+    // Switch Tabs
+    tabSignIn.addEventListener('click', () => {
+      tabSignIn.classList.add('bg-slate-800', 'text-white', 'shadow-inner');
+      tabSignIn.classList.remove('bg-transparent', 'text-slate-400');
+      tabSignUp.classList.remove('bg-slate-800', 'text-white', 'shadow-inner');
+      tabSignUp.classList.add('bg-transparent', 'text-slate-400');
+      signinForm.style.display = 'block';
+      signupForm.style.display = 'none';
+      inErr.textContent = ""; upErr.textContent = ""; authMsg.textContent = "";
+    });
+    tabSignUp.addEventListener('click', () => {
+      tabSignUp.classList.add('bg-slate-800', 'text-white', 'shadow-inner');
+      tabSignUp.classList.remove('bg-transparent', 'text-slate-400');
+      tabSignIn.classList.remove('bg-slate-800', 'text-white', 'shadow-inner');
+      tabSignIn.classList.add('bg-transparent', 'text-slate-400');
+      signupForm.style.display = 'block';
+      signinForm.style.display = 'none';
+      inErr.textContent = ""; upErr.textContent = ""; authMsg.textContent = "";
     });
 
     // Email Sign In
-    btnSignInEmail.addEventListener('click', async ()=>{
-      inErr.textContent = ""; authMsg.textContent="";
-      try{
+    btnSignInEmail.addEventListener('click', async () => {
+      inErr.textContent = ""; authMsg.textContent = "";
+      try {
         await signInWithEmailAndPassword(auth, inEmail.value.trim(), inPass.value.trim());
         authMsg.textContent = "Welcome back!";
-      }catch(e){
-        inErr.textContent = e.message.replace("Firebase:", "").trim();
+      } catch (e) {
+        inErr.textContent = e.message.replace("Firebase: Error (auth/", "").replace(")", "").replace(/-/g, " ").replace(").", "").trim();
       }
     });
 
     // Email Sign Up
-    btnSignUpEmail.addEventListener('click', async ()=>{
-      upErr.textContent = ""; authMsg.textContent="";
+    btnSignUpEmail.addEventListener('click', async () => {
+      upErr.textContent = ""; authMsg.textContent = "";
       const name = upName.value.trim();
-      if(!name){ upErr.textContent = "Please enter your full name."; return; }
-      try{
+      if (!name) { upErr.textContent = "Please enter your full name."; return; }
+      try {
         const cred = await createUserWithEmailAndPassword(auth, upEmail.value.trim(), upPass.value.trim());
         await updateProfile(cred.user, { displayName: name });
-        localStorage.setItem('sgs_full_name', name);
         authMsg.textContent = "Account created. You’re in!";
-      }catch(e){
-        upErr.textContent = e.message.replace("Firebase:", "").trim();
+      } catch (e) {
+        upErr.textContent = e.message.replace("Firebase: Error (auth/", "").replace(")", "").replace(/-/g, " ").replace(").", "").trim();
       }
     });
 
     // Google Sign In
-    const doGoogle = async ()=>{
-      try{
+    const doGoogle = async () => {
+      try {
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider);
         authMsg.textContent = "Signed in with Google.";
-      }catch(e){
-        // Silent for popup closed
+      } catch (e) {
+        // Silently handle popup closed by user
+        console.error("Google Sign-in Error:", e);
       }
     };
     btnGoogle.addEventListener('click', doGoogle);
     btnGoogle2.addEventListener('click', doGoogle);
 
     // Logout
-    logoutBtn.addEventListener('click', async ()=>{
+    logoutBtn.addEventListener('click', async () => {
       await signOut(auth);
-      showToast("Logged out.");
-      showGate();
+      showToast("Logged out successfully.");
     });
-
-    // Block background scroll when gate open (nice UX)
-    const observer = new MutationObserver(()=>{
-      if(gate.classList.contains('show')){ document.body.style.overflow='hidden'; }
-      else{ document.body.style.overflow='auto'; }
-    });
-    observer.observe(gate, { attributes:true, attributeFilter:['class'] });
+    
+    // Wait for the window to load before starting
+    window.onload = function() {
+      initFirebase();
+    }
   </script>
+
 </body>
 </html>
