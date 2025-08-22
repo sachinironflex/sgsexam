@@ -1,1296 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-site-verification" content="iPJ9gvz-pcq0qMUyfYB6cbjm11o3cwUVpMwtqDtXbVo" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SGS Study Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC GD PDF Hub</title>
+    <!-- Google Fonts for a clean look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Global Styles & Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        /* Global styles */
+        :root {
+            --neon-black: #1a1a1a;
+            --button-bg-color: #333;
+            --button-hover-color: #555;
+            --text-color: #fff;
+            --main-text-color: #00ff00; /* Neon green for main text */
+            --sub-text-color: #00ffff; /* Neon cyan for sub-text */
+            --border-color: #00ff00;
         }
+
         body {
-            font-family: 'Poppins', sans-serif; /* Modern font */
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--neon-black);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            padding: 0;
-            background: #eef2f6; /* Lighter, professional background */
-            color: #333; /* Darker text for readability */
-            line-height: 1.6;
-        }
-
-        /* Header Styling */
-        header {
-            background-color: #2c3e50; /* Darker, more premium header */
-            color: white;
-            padding: 10px 30px 20px 30px; /* Adjusted padding-top to move text down */
-            text-align: center;
-            font-size: 28px; /* Slightly larger title */
-            font-weight: 700; /* Bolder */
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow */
-            display: flex;
-            flex-direction: column; /* Stack title and controls */
-            justify-content: center;
-            align-items: center;
-        }
-        .top-right-controls {
-            position: absolute; /* Keep controls at top right */
-            right: 30px;
-            top: 10px; /* Aligned with the very top of the header */
-            display: flex;
-            gap: 15px; /* Increased gap */
-            align-items: center;
-        }
-        .top-right-controls input {
-            padding: 8px 15px; /* More padding */
-            border-radius: 25px; /* Pill-shaped search bar */
-            border: 1px solid #556c8a; /* Subtle border */
-            font-size: 15px;
-            display: none;
-            background-color: #f9f9f9; /* Light background for input */
-            color: #333;
-            transition: all 0.3s ease; /* Smooth transition */
-        }
-        .top-right-controls input.show {
-            display: inline-block;
-            width: 200px; /* Defined width when shown */
-        }
-        .top-right-controls button {
-            background: #3498db; /* Professional blue button */
-            color: white; /* White text for contrast */
-            padding: 8px 18px; /* More padding */
-            font-weight: 600; /* Semi-bold */
-            border: none;
-            border-radius: 25px; /* Pill-shaped buttons */
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .top-right-controls button:hover {
-            background: #2980b9; /* Darker blue on hover */
-            transform: translateY(-1px); /* Slight lift */
-        }
-        /* Logout button specific style */
-        #logoutButton {
-            background-color: #e74c3c; /* Red for logout */
-            margin-left: 10px; /* Space from other buttons */
-            display: none; /* Hidden by default */
-        }
-        #logoutButton:hover {
-            background-color: #c0392b; /* Darker red on hover */
-        }
-        /* Menu icon initially hidden */
-        #menuButton {
-            display: none;
-        }
-
-        /* Admin-only Home Thumbnail Upload Section Styles */
-        #adminHomeThumbnailSection {
-            display: none; /* Hidden by default */
-            padding: 20px;
-            max-width: 900px; /* Adjust as needed */
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            text-align: center;
-            margin-bottom: 30px; /* Space it from other admin elements */
-        }
-        #adminHomeThumbnailSection h2 {
-            margin-bottom: 20px;
-            font-size: 1.8em;
-            color: #2c3e50;
-        }
-        .thumbnail-upload-area {
-            width: 100%;
-            /* padding-top and height will be set by JS based on content */
-            position: relative;
-            background-color: #f0f0f0;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            display: flex; /* Use flex for preview images */
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-height: 150px; /* Minimum height for placeholder */
-        }
-        .thumbnail-upload-area .preview-image-wrapper {
-            position: relative;
-            height: 0; /* Important for padding-top to define height */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            border-radius: 6px;
-            /* width and padding-top will be set by JS based on number of images */
-        }
-        .thumbnail-upload-area img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cover the area, cropping if necessary */
-            border-radius: 6px;
-        }
-        #homeThumbnailInput {
-            display: block; /* Make it block for better layout */
-            margin: 15px auto;
-            width: auto; /* Allow natural width */
-            max-width: 300px; /* Limit width */
-        }
-        #adminHomeThumbnailSection button {
-            background: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        #adminHomeThumbnailSection button:hover {
-            background: #2980b9;
-        }
-
-        /* User-facing Home Thumbnail Display Styles (Slider) */
-        #userHomeThumbnailDisplay {
-            width: 100%;
-            max-width: 900px; /* Match admin section width */
-            margin: 0 auto 30px auto; /* Center and add space below */
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            position: relative;
-            background-color: #f0f0f0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            display: none; /* Hidden by default, shown when images are loaded */
-        }
-        .slider-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-            opacity: 0; /* Hidden by default */
-            transition: opacity 1s ease-in-out; /* Fade transition */
-        }
-        .slider-image.active {
-            opacity: 1; /* Active image is visible */
-        }
-
-        /* General Panel Styling */
-        #adminPanel, #materialDetail, #libraryPage, #policyContentDisplay, #categoryContentPage {
-            display: none;
-            padding: 30px;
-            max-width: 1200px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 2em;
-        }
-        hr {
-            border: 0;
-            height: 1px;
-            background: #eee;
-            margin: 30px 0;
-        }
-
-        /* Login Panel Styling */
-        #loginPanel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            padding: 30px;
-            max-width: 500px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-        }
-        #loginPanel h2 {
-            margin-bottom: 20px;
-            font-size: 2.2em;
-            color: #2c3e50;
-        }
-        #loginPanel input {
-            width: 100%;
-            max-width: 350px;
-            margin-bottom: 15px;
-            padding: 12px 15px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-        #loginPanel button {
-            width: 100%;
-            max-width: 350px;
-            padding: 15px 20px;
-            font-size: 1.2em;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            letter-spacing: 0.5px;
-        }
-        #loginPanel button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
-        /* Specific style for Admin Login button */
-        #loginPanel .admin-login-fields button {
-            background: #f0c14b;
-            color: #111;
-            margin-bottom: 0;
-        }
-        #loginPanel .admin-login-fields button:hover {
-            background: #ddb347;
-        }
-        /* Specific style for ENTER STUDY HUB button */
-        #loginPanel button[onclick="openUserPanel()"] {
-            background: #ff9900;
-            color: white;
-            margin-top: 25px;
-        }
-        #loginPanel button[onclick="openUserPanel()"]:hover {
-            background: #e68a00;
-        }
-        /* Styles for new user login buttons */
-        #loginPanel .user-auth-section {
-            width: 100%;
-            max-width: 350px;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        #loginPanel .user-auth-section button {
-            background-color: #4285F4;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px 20px;
-            font-size: 1em;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        #loginPanel .user-auth-section button:hover {
-            background-color: #357ae8;
-            transform: translateY(-1px);
-        }
-        #loginPanel .user-auth-section button.anonymous-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        #loginPanel .user-auth-section button.anonymous-btn:hover {
-            background-color: #5a6268;
-        }
-        #loginPanel .auth-separator {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-            max-width: 350px;
-            margin: 20px 0;
-            color: #888;
-        }
-        #loginPanel .auth-separator::before, #loginPanel .auth-separator::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-        #loginPanel .auth-separator:not(:empty)::before {
-            margin-right: .25em;
-        }
-        #loginPanel .auth-separator:not(:empty)::after {
-            margin-left: .25em;
-        }
-        /* Admin Login Fields Container */
-        #adminLoginFieldsContainer {
-            display: none;
-            width: 100%;
-            max-width: 350px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
             text-align: center;
         }
-        #adminLoginFieldsContainer h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-        }
-        #adminLoginFieldsContainer input {
-            margin-bottom: 10px;
-        }
 
-        /* User Panel (Home Page) Styling */
-        #userPanel {
-            display: none;
-            padding: 30px;
-            max-width: 1400px;
-            margin: 20px auto;
-            background: #f8f9fa;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            animation: fadeIn 0.6s ease-out;
-            min-height: 300px;
-        }
-        /* Category Buttons Styling */
-        #categoryButtons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-        .category-btn {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            width: 180px;
-            height: 120px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.2em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .category-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        .category-btn.active-category-btn {
-            background-color: #2c3e50;
-            border: 2px solid #f0c14b;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-        }
-        .category-btn span {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        /* General Panel Styling */
-        #adminPanel, #materialDetail, #libraryPage, #policyContentDisplay, #categoryContentPage {
-            display: none;
-            padding: 30px;
-            max-width: 1200px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 2em;
-        }
-        hr {
-            border: 0;
-            height: 1px;
-            background: #eee;
-            margin: 30px 0;
-        }
-
-        /* Form Elements */
-        input, textarea, select { /* Added select */
-            width: calc(100% - 20px);
-            max-width: 500px;
-            margin-bottom: 15px;
-            padding: 12px 15px;
-            border: 1px solid #dcdcdc;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            background-color: #fcfcfc;
-        }
-        input:focus, textarea:focus, select:focus { /* Added select */
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-            outline: none;
-        }
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        /* Admin Panel Specific */
-        #adminPanel button {
-            margin-top: 10px;
-            margin-right: 10px;
-        }
-
-        /* Library Page Specific */
-        #libraryPage .material {
-            margin-bottom: 20px;
-        }
-        #libraryPage .material .buttons {
-            margin-top: 10px;
-        }
-        #libraryPage > button, #categoryContentPage > button {
-            margin-top: 30px;
-            background: #6c757d;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #libraryPage > button:hover, #categoryContentPage > button:hover {
-            background: #5a6268;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Custom Message Box Styles */
-        #customMessageBox {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        #customMessageBox > div {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
+        .container {
             width: 90%;
-        }
-        #messageBoxText {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        #customMessageBox button {
-            background: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            margin: 5px;
-        }
-        #customMessageBox button.cancel-btn {
-            background: #e74c3c;
-        }
-        #customMessageBox button.cancel-btn:hover {
-            background: #c0392b;
-        }
-        #customMessageBox button.confirm-btn {
-            background: #27ae60;
-        }
-        #customMessageBox button.confirm-btn:hover {
-            background: #229954;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            border: 2px solid var(--border-color);
+            position: relative;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Side Drawer Styles */
-        .side-drawer {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1001;
-            top: 0;
-            right: 0;
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+        h1 {
+            color: var(--main-text-color);
+            text-shadow: 0 0 5px var(--main-text-color);
+            margin-bottom: 20px;
         }
-        .side-drawer.open {
-            width: 250px;
-        }
-        .side-drawer .close-drawer-btn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
-            background: none;
-            border: none;
-            color: #333;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .side-drawer .close-drawer-btn:hover {
-            color: #e74c3c;
-        }
-        .drawer-links {
-            padding: 8px 15px;
+        
+        /* Main button styling */
+        .btn-container {
+            flex-grow: 1;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Aligned to start for better scroll layout */
+            gap: 15px;
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding-right: 10px; /* Space for scrollbar */
+        }
+
+        .btn {
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background-color: var(--button-bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.2);
+            width: 100%;
+            max-width: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 255, 0, 0.4);
+        }
+
+        /* SSC GD specific button */
+        #ssc-gd-btn {
+            font-size: 24px;
+            height: 150px;
+            width: 150px;
+            border-radius: 20px;
             flex-direction: column;
             gap: 10px;
         }
-        .drawer-links button {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 1.1em;
-            color: #333;
-            display: block;
-            transition: 0.3s;
-            background: none;
-            border: none;
-            text-align: left;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .drawer-links button:hover {
-            background-color: #ddd;
-            color: #2c3e50;
-        }
-        .drawer-overlay {
-            position: fixed;
-            display: none;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.4);
-            z-index: 1000;
-            transition: opacity 0.5s;
-            opacity: 0;
-        }
-        .drawer-overlay.open {
-            display: block;
-            opacity: 1;
-        }
-        #policyContentDisplay {
-            padding: 30px;
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            animation: fadeIn 0.6s ease-out;
-            text-align: left;
-        }
-        #policyContentDisplay h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #policyContentDisplay button {
-            margin-top: 20px;
-            background: #95a5a6;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 1em;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #policyContentDisplay button:hover {
-            background: #7f8c8d;
+
+        #ssc-gd-btn:hover {
+            transform: scale(1.05);
         }
 
-        /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            #materialList, #adminMaterialList, #libraryItems {
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 25px;
-            }
-            .material {
-                max-width: 250px;
-            }
-            .side-drawer.open {
-                width: 200px;
-            }
+        .emoji {
+            font-size: 28px;
         }
-        @media (max-width: 768px) {
-            header {
-                font-size: 22px;
-                padding: 15px 10px;
-            }
-            .top-right-controls {
-                position: static;
-                transform: none;
-                margin-top: 10px;
-                justify-content: center;
-                width: 100%;
-            }
-            .top-right-controls input.show {
-                width: 100%;
-            }
-            #adminPanel, #userPanel, #materialDetail, #libraryPage, #loginPanel, #policyContentDisplay, #categoryContentPage {
-                padding: 15px;
-                margin: 10px auto;
-            }
-            #loginPanel button {
-                padding: 12px 15px;
-                font-size: 1em;
-            }
-            .material {
-                padding: 10px;
-                max-width: none;
-            }
-            .material img {
-                height: 100px;
-            }
-            h2 {
-                font-size: 1.8em;
-            }
-            .side-drawer.open {
-                width: 180px;
-            }
-            .category-btn {
-                width: 140px;
-                height: 100px;
-                font-size: 1em;
-                padding: 15px;
-            }
-            #categoryButtons {
-                gap: 15px;
-                margin-bottom: 25px;
-            }
-            /* Responsive adjustments for thumbnail section */
-            #adminHomeThumbnailSection, #userHomeThumbnailDisplay {
-                padding: 15px;
-                margin: 10px auto 20px auto;
-            }
+        
+        /* Subject/Chapter button styling */
+        .subject-btn, .chapter-btn {
+            width: 80%;
+            padding: 12px;
+        }
+
+        /* Links and content styling */
+        .content-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .link-item {
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--sub-text-color);
+            box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
+        }
+
+        .link-item h3 {
+            color: var(--sub-text-color);
+            margin-top: 0;
+        }
+
+        .link-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .link-actions a {
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .view-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .download-btn {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .download-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        /* Back button styling */
+        #back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #555;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #back-btn:hover {
+            background-color: #777;
+        }
+
+        /* Hide/Show logic */
+        .hidden {
+            display: none !important;
         }
     </style>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script> <!-- Added Firebase Storage SDK -->
 </head>
 <body>
-    <header>
-        SGS STUDY HUB
-        <div class="top-right-controls">
-            <button class="search-icon" onclick="toggleSearch()">
-                <i class="fas fa-search"></i>
-            </button>
-            <input type="text" id="searchInput" placeholder="Search Material..." oninput="filterMaterials()" />
-            <button onclick="viewLibraryPage()">
-                <i class="fas fa-book"></i> My Library
-            </button>
-            <button id="logoutButton" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-            <button id="menuButton" class="menu-icon" onclick="toggleDrawer()">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </header>
 
-    <!-- Admin-only Home Thumbnail Upload Section -->
-    <div id="adminHomeThumbnailSection" style="display: none;">
-        <h2>Upload Home Page Thumbnails (16:9 Ratio, Max 4 images)</h2>
-        <div class="thumbnail-upload-area">
-            <!-- Preview images will be dynamically added here -->
-        </div>
-        <input type="file" id="homeThumbnailInput" accept="image/*" multiple>
-        <button onclick="uploadHomeThumbnails()">Upload Thumbnails</button>
+<div class="container">
+    <div id="back-btn" class="hidden">← Back</div>
+
+    <div id="main-screen" class="btn-container">
+        <h1>SSC GD PDF Hub</h1>
+        <button id="ssc-gd-btn" class="btn">
+            <span class="emoji">📚</span>
+            <span>SSC GD</span>
+        </button>
     </div>
 
-    <!-- Side Drawer -->
-    <div id="sideDrawer" class="side-drawer">
-        <button class="close-drawer-btn" onclick="toggleDrawer()">&times;</button>
-        <div class="drawer-links">
-            <button onclick="showHomePage()">Home</button>
-            <button onclick="showPolicyContent('about')">About Us</button>
-            <button onclick="showPolicyContent('privacyPolicy')">Privacy Policy</button>
-            <button onclick="showPolicyContent('termsCondition')">Terms & Conditions</button>
-            <button onclick="showPolicyContent('refundCancellation')">Refund & Cancellation</button>
-            <button onclick="showPolicyContent('shipping')">Shipping Policy</button>
-            <button onclick="showPolicyContent('pricing')">Pricing</button>
-            <button onclick="showPolicyContent('contact')">Contact Us</button>
-            <button onclick="showPolicyContent('disclaimer')">Disclaimer</button>
-            <button onclick="showPolicyContent('faq')">FAQ</button>
-        </div>
-    </div>
-    <div id="drawerOverlay" class="drawer-overlay" onclick="toggleDrawer()"></div>
-
-    <div id="loginPanel">
-        <h2>User Login / Sign Up</h2>
-        <input type="email" id="userEmail" placeholder="Email" />
-        <input type="password" id="userPassword" placeholder="Password" />
-        <button onclick="userLogin()">Login</button>
-        <button onclick="userSignUp()" style="background:#28a745;">Sign Up</button>
-        <div class="auth-separator"></div>
-            <!-- Removed Login with Apple button as requested -->
-            
-        </div>
-        <button onclick="toggleAdminLoginFields()" style="margin-top: 30px; background: #555; color: white;"> Admin Login </button>
-        <div id="adminLoginFieldsContainer">
-            <h2>Admin Panel Login</h2>
-            <input type="text" id="adminId" placeholder="Admin ID" />
-            <input type="password" id="adminPass" placeholder="Password" />
-            <button onclick="adminLogin()">Login</button>
-        </div>
+    <div id="all-class-pdf-screen" class="btn-container hidden">
+        <button id="all-class-pdf-btn" class="btn">
+            <span class="emoji">📂</span>
+            <span>ALL CLASS PDF'S</span>
+        </button>
     </div>
 
-    <!-- Admin Panel updated to remove material management -->
-    <div id="adminPanel">
-        <h2>Admin Panel</h2>
-        <h2>Manage Policy Pages</h2>
-        <label for="aboutContent">About Content:</label><br>
-        <textarea id="aboutContent" placeholder="Enter About Us content"></textarea><br>
-        <label for="privacyPolicyContent">Privacy Policy Content:</label><br>
-        <textarea id="privacyPolicyContent" placeholder="Enter Privacy Policy content"></textarea><br>
-        <label for="termsConditionContent">Terms & Condition Content:</label><br>
-        <textarea id="termsConditionContent" placeholder="Enter Terms & Condition content"></textarea><br>
-        <label for="refundCancellationContent">Refund & Cancellation Content:</label><br>
-        <textarea id="refundCancellationContent" placeholder="Enter Refund & Cancellation content"></textarea><br>
-        <label for="shippingContent">Shipping Content:</label><br>
-        <textarea id="shippingContent" placeholder="Enter Shipping Policy content"></textarea><br>
-        <label for="pricingContent">Pricing Content:</label><br>
-        <textarea id="pricingContent" placeholder="Enter Pricing information"></textarea><br>
-        <label for="contactContent">Contact Content:</label><br>
-        <textarea id="contactContent" placeholder="Enter Contact information"></textarea><br>
-        <label for="disclaimerContent">Disclaimer Content:</label><br>
-        <textarea id="disclaimerContent" placeholder="Enter Disclaimer content"></textarea><br>
-        <label for="faqContent">FAQ Content:</label><br>
-        <textarea id="faqContent" placeholder="Enter FAQ content"></textarea><br>
-        <button onclick="savePolicyContent()">Save Policy Content</button>
-        <button onclick="logout()">Logout</button>
+    <div id="subject-screen" class="btn-container hidden">
+        <button id="hindi-btn" class="btn subject-btn"><span class="emoji"></span> HINDI</button>
+        <button id="math-btn" class="btn subject-btn"><span class="emoji">➕</span> MATH</button>
+        <button id="reasoning-btn" class="btn subject-btn"><span class="emoji">🧠</span> REASONING</button>
+        <button id="gk-gs-btn" class="btn subject-btn"><span class="emoji">🌍</span> GK/GS</button>
     </div>
 
-    <!-- User Panel updated with new buttons and emojis -->
-    <div id="userPanel">
-        <!-- User-facing Home Thumbnail Display (Slider Container) -->
-        <div id="userHomeThumbnailDisplay" style="display: none;">
-            <!-- Images will be dynamically added here -->
-        </div>
-        <div id="categoryButtons">
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1kuiMOHnkRewT9nN4RBaJyrGIjJJBDLtk', '_blank')"><span>📚</span>एसएससी जीडी</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1f7ouSys-SEK-nRITiuDe8y_yWML4Ce_m', '_blank')"><span>📚</span>एसएससी एमटीएस</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1mXVIzRNVTBIoLjDCAT-7Jome1AZ7n6SY', '_blank')"><span>📖</span>लुसेंट</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1aVAB7eZK3wEEyCDc_l4EkDfQ3BgNq4JI', '_blank')"><span>📁</span>सभी PDF</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1fixnpdDIjg98ZLFzGCDCA6I9auFW4-0e', '_blank')"><span>📰</span>करंट अफेयर्स</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1eF9tbYetogTi6QekaVLVKcw-1VbSSnV4', '_blank')"><span>🔔</span>नई वेकेंसी</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1fZaAisQmwVg5UT45ewZikUBRjDNSosFs', '_blank')"><span>📝</span>डेली टेस्ट सीरीज</button>
-            <button class="category-btn" onclick="window.open('https://drive.google.com/drive/folders/1fi0wNjxyw11BU2vpNwZxaDQmuTCKmzov', '_blank')"><span>📅</span>पिछले वर्ष</button>
-            <button class="category-btn" onclick="window.open('https://www.sgsexamcracker.store/?m=1', '_blank')"><span>✨</span>नए अपडेट</button>
-        </div>
+    <div id="hindi-chapters-screen" class="btn-container hidden"></div>
+    <div id="math-chapters-screen" class="btn-container hidden"></div>
+    <div id="reasoning-chapters-screen" class="btn-container hidden"></div>
+    <div id="gk-gs-chapters-screen" class="btn-container hidden"></div>
+
+    <div id="content-screen" class="content-container hidden">
+        <h2 id="content-title"></h2>
+        <!-- PDF links will be dynamically added here -->
     </div>
 
-    <!-- Policy Content Display Page -->
-    <div id="policyContentDisplay">
-        <h2 id="policyContentTitle"></h2>
-        <div id="policyContentText"></div>
-        <button onclick="history.back()">Back</button>
-    </div>
+</div>
 
-    <!-- Custom Message Box HTML -->
-    <div id="customMessageBox">
-        <div>
-            <p id="messageBoxText"></p>
-            <div id="messageBoxButtons">
-                <button onclick="hideMessageBox()">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Firebase Configuration (Updated with your provided values)
-        const firebaseConfig = {
-  apiKey: "AIzaSyC1py6IHfC6Chf99xvv8T5K3ISAO_cpmk4",
-  authDomain: "sgs-exam-cracker-420.firebaseapp.com",
-  databaseURL: "https://sgs-exam-cracker-420-default-rtdb.firebaseio.com",
-  projectId: "sgs-exam-cracker-420",
-  storageBucket: "sgs-exam-cracker-420.firebasestorage.app",
-  messagingSenderId: "209121129127",
-  appId: "1:209121129127:web:69587a45aa492c2e24a182"
-};
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        const storage = firebase.storage();
-
-        let policiesRef = db.ref('policies');
-        let homeThumbnailsRef = db.ref('homeThumbnails');
-        let homeSliderInterval;
-
-        let currentUser = null;
-        let policies = {};
-
-        // Attach policies listener once at the start
-        policiesRef.on('value', (snapshot) => {
-            policies = snapshot.val() || {};
-            console.log("Policies loaded from Firebase:", policies);
-            // This ensures content is up-to-date when a user views a policy
-        });
-
-        // Attach home thumbnails listener once at the start
-        homeThumbnailsRef.on('value', (snapshot) => {
-            const thumbnailUrls = snapshot.val() || [];
-            console.log("Home thumbnails loaded from Firebase:", thumbnailUrls);
-            _updateAdminThumbnailPreview(thumbnailUrls);
-            if (currentUser && document.getElementById('userPanel').style.display === 'block') {
-                initHomeSlider(thumbnailUrls);
-            }
-        });
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                console.log("User logged in:", user.uid, user.email || "Anonymous");
-                document.getElementById('loginPanel').style.display = 'none';
-                document.getElementById('userPanel').style.display = 'block';
-                document.getElementById('logoutButton').style.display = 'block';
-                document.getElementById('searchInput').classList.add('show');
-                document.getElementById('menuButton').style.display = 'block';
-                document.getElementById('adminHomeThumbnailSection').style.display = 'none';
-
-                homeThumbnailsRef.once('value', (snapshot) => {
-                    const urls = snapshot.val() || [];
-                    initHomeSlider(urls);
-                });
-
-                history.replaceState({page: 'userPanel'}, '', '#userPanel');
-            } else {
-                currentUser = null;
-                console.log("User logged out.");
-                clearInterval(homeSliderInterval);
-                document.getElementById('userHomeThumbnailDisplay').innerHTML = '';
-                document.getElementById('userHomeThumbnailDisplay').style.display = 'none';
-
-                document.getElementById('userPanel').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'none';
-                document.getElementById('loginPanel').style.display = 'flex';
-                document.getElementById('logoutButton').style.display = 'none';
-                document.getElementById('searchInput').classList.remove('show');
-                document.getElementById('menuButton').style.display = 'none';
-                toggleDrawer(true);
-            }
-        });
-
-        // Custom Message Box Functions
-        function showMessageBox(message, type = 'alert', callback = null) {
-            document.getElementById('messageBoxText').innerText = message;
-            const messageBoxButtons = document.getElementById('messageBoxButtons');
-            messageBoxButtons.innerHTML = '';
-            if (type === 'confirm') {
-                const confirmBtn = document.createElement('button');
-                confirmBtn.innerText = 'Yes';
-                confirmBtn.classList.add('confirm-btn');
-                confirmBtn.onclick = () => {
-                    hideMessageBox();
-                    if (callback) callback(true);
-                };
-                messageBoxButtons.appendChild(confirmBtn);
-                const cancelBtn = document.createElement('button');
-                cancelBtn.innerText = 'No';
-                cancelBtn.classList.add('cancel-btn');
-                cancelBtn.onclick = () => {
-                    hideMessageBox();
-                    if (callback) callback(false);
-                };
-                messageBoxButtons.appendChild(cancelBtn);
-            } else {
-                const okBtn = document.createElement('button');
-                okBtn.innerText = 'OK';
-                okBtn.onclick = hideMessageBox;
-                messageBoxButtons.appendChild(okBtn);
-            }
-            document.getElementById('customMessageBox').style.display = 'flex';
-        }
-
-        function hideMessageBox() {
-            document.getElementById('customMessageBox').style.display = 'none';
-        }
-
-        function adminLogin() {
-            const id = document.getElementById('adminId').value;
-            const pass = document.getElementById('adminPass').value;
-            if (id === 'Sachin' && pass === '802165') {
-                document.getElementById('loginPanel').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                document.getElementById('adminHomeThumbnailSection').style.display = 'block';
-                document.getElementById('logoutButton').style.display = 'block';
-                populatePolicyFields();
-                history.pushState({page: 'adminPanel'}, '', '#adminPanel');
-            } else {
-                showMessageBox('Invalid Admin Credentials');
-            }
-        }
-
-        function userSignUp() {
-            const email = document.getElementById('userEmail').value;
-            const password = document.getElementById('userPassword').value;
-            if (!email || !password) {
-                showMessageBox('Please enter both email and password for sign up.');
-                return;
-            }
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(() => {
-                    showMessageBox('User signed up successfully! You are now logged in.');
-                })
-                .catch((error) => {
-                    showMessageBox('Error signing up: ' + error.message);
-                });
-        }
-
-        function userLogin() {
-            const email = document.getElementById('userEmail').value;
-            const password = document.getElementById('userPassword').value;
-            if (!email || !password) {
-                showMessageBox('Please enter both email and password for login.');
-                return;
-            }
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    showMessageBox('User logged in successfully!');
-                })
-                .catch((error) => {
-                    showMessageBox('Error logging in: ' + error.message);
-                });
-        }
-
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then(() => {
-                    showMessageBox('Signed in with Google!');
-                })
-                .catch((error) => {
-                    showMessageBox('Error signing in with Google: ' + error.message);
-                });
-        }
-
-        function signInAnonymouslyUser() {
-            auth.signInAnonymously()
-                .then(() => {
-                    showMessageBox('Signed in anonymously!');
-                })
-                .catch((error) => {
-                    showMessageBox('Error signing in anonymously: ' + error.message);
-                });
-        }
-
-        function logout() {
-            auth.signOut().then(() => {
-                showMessageBox('Logged out successfully!');
-                document.getElementById('adminHomeThumbnailSection').style.display = 'none';
-            }).catch((error) => {
-                showMessageBox('Error logging out: ' + error.message);
-            });
-        }
-
-        async function uploadHomeThumbnails() {
-            const fileInput = document.getElementById('homeThumbnailInput');
-            const files = fileInput.files;
-            const previewArea = document.querySelector('#adminHomeThumbnailSection .thumbnail-upload-area');
-
-            if (files.length === 0) {
-                showMessageBox('Please select image files to upload.');
-                return;
-            }
-            if (files.length > 4) {
-                showMessageBox('You can upload a maximum of 4 images for the home page thumbnail slider.');
-                return;
-            }
-
-            previewArea.innerHTML = '<p style="text-align: center; padding: 20px;">Uploading images...</p>';
-            showMessageBox('Uploading images, please wait...');
-
-            const newThumbnailUrls = [];
-            const storageRef = storage.ref();
-
-            try {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    if (!file.type.startsWith('image/')) {
-                        showMessageBox(`Error: File "${file.name}" is not a valid image. Please upload JPG, PNG, or GIF.`);
-                        homeThumbnailsRef.once('value', (snapshot) => {
-                            _updateAdminThumbnailPreview(snapshot.val() || []);
-                        });
-                        return;
-                    }
-
-                    const fileName = `home_thumbnail_${Date.now()}_${i}_${file.name}`;
-                    const imageRef = storageRef.child(`thumbnails/${fileName}`);
-
-                    console.log(`Attempting to upload file: ${file.name}`);
-                    const snapshot = await imageRef.put(file);
-                    console.log(`File ${file.name} uploaded successfully.`);
-
-                    const downloadURL = await snapshot.ref.getDownloadURL();
-                    newThumbnailUrls.push(downloadURL);
-                    console.log(`Download URL for ${file.name}: ${downloadURL.substring(0, 50)}...`);
-                }
-
-                await homeThumbnailsRef.set(newThumbnailUrls);
-                showMessageBox('Home thumbnails uploaded and saved successfully!');
-                console.log("All thumbnail URLs saved to Firebase Realtime Database:", newThumbnailUrls);
-                _updateAdminThumbnailPreview(newThumbnailUrls);
-                fileInput.value = '';
-            } catch (error) {
-                console.error("Overall upload process failed:", error);
-                showMessageBox(`Upload failed: ${error.message}. Please check your Firebase Storage rules and network connection.`);
-                homeThumbnailsRef.once('value', (snapshot) => {
-                    _updateAdminThumbnailPreview(snapshot.val() || []);
-                });
-            }
-        }
-
-        function _updateAdminThumbnailPreview(urls) {
-            const previewArea = document.querySelector('#adminHomeThumbnailSection .thumbnail-upload-area');
-            previewArea.innerHTML = '';
-
-            if (urls && urls.length > 0) {
-                previewArea.style.paddingTop = '0';
-                previewArea.style.height = 'auto';
-                previewArea.style.flexDirection = 'row';
-                previewArea.style.justifyContent = 'center';
-                previewArea.style.alignItems = 'flex-start';
-                previewArea.style.flexWrap = 'wrap';
-
-                urls.forEach(url => {
-                    const imgWrapper = document.createElement('div');
-                    imgWrapper.classList.add('preview-image-wrapper');
-                    imgWrapper.style.marginBottom = '10px';
-                    imgWrapper.style.marginRight = '10px';
-
-                    if (urls.length === 1) {
-                        imgWrapper.style.width = '100%';
-                        imgWrapper.style.paddingTop = '56.25%';
-                    } else {
-                        imgWrapper.style.width = 'calc(50% - 5px)';
-                        imgWrapper.style.paddingTop = '28.125%';
-                    }
-
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = 'Thumbnail Preview';
-                    imgWrapper.appendChild(img);
-                    previewArea.appendChild(imgWrapper);
-                });
-            } else {
-                previewArea.innerHTML = '';
-                const defaultImg = document.createElement('img');
-                defaultImg.src = 'https://placehold.co/1600x900/cccccc/000000?text=16:9+Thumbnail+Preview';
-                defaultImg.alt = 'Default Thumbnail Preview';
-                defaultImg.style.position = 'absolute';
-                defaultImg.style.top = '0';
-                defaultImg.style.left = '0';
-                defaultImg.style.width = '100%';
-                defaultImg.style.height = '100%';
-                defaultImg.style.objectFit = 'cover';
-                defaultImg.style.borderRadius = '6px';
-
-                previewArea.style.paddingTop = '56.25%';
-                previewArea.style.height = '0';
-                previewArea.style.flexDirection = 'column';
-                previewArea.style.justifyContent = 'center';
-                previewArea.style.alignItems = 'center';
-                previewArea.style.flexWrap = 'nowrap';
-
-                previewArea.appendChild(defaultImg);
-            }
-        }
-
-
-        function initHomeSlider(urls) {
-            const sliderContainer = document.getElementById('userHomeThumbnailDisplay');
-            sliderContainer.innerHTML = '';
-            clearInterval(homeSliderInterval);
-
-            if (!urls || urls.length === 0) {
-                sliderContainer.style.display = 'none';
-                return;
-            }
-
-            let sliderImages = [];
-            urls.forEach((url, index) => {
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = `Home Slide ${index + 1}`;
-                img.classList.add('slider-image');
-                if (index === 0) {
-                    img.classList.add('active');
-                }
-                sliderContainer.appendChild(img);
-                sliderImages.push(img);
-            });
-
-            sliderContainer.style.display = 'block';
-
-            if (sliderImages.length > 1) {
-                let currentSlide = 0;
-                homeSliderInterval = setInterval(() => {
-                    if (sliderImages.length === 0) return;
-                    sliderImages[currentSlide].classList.remove('active');
-                    currentSlide = (currentSlide + 1) % sliderImages.length;
-                    sliderImages[currentSlide].classList.add('active');
-                }, 5000);
-            }
-        }
-
-        // --- Navigation Functions ---
-        function showHomePage() {
-            toggleDrawer(true);
-            hideAllPanels();
-            document.getElementById('userPanel').style.display = 'block';
-            homeThumbnailsRef.once('value', (snapshot) => {
-                const urls = snapshot.val() || [];
-                initHomeSlider(urls);
-            });
-            history.pushState({page: 'userPanel'}, '', '#userPanel');
-        }
-
-        function viewLibraryPage() {
-            // Functionality removed as per previous requests.
-            // Re-implement if needed.
-            showMessageBox('Library functionality is currently not active.');
-        }
-
-        function showPolicyContent(policyKey) {
-            toggleDrawer(true);
-            hideAllPanels();
-            const titleMap = {
-                about: 'About Us',
-                privacyPolicy: 'Privacy Policy',
-                termsCondition: 'Terms & Conditions',
-                refundCancellation: 'Refund & Cancellation',
-                shipping: 'Shipping Policy',
-                pricing: 'Pricing',
-                contact: 'Contact Us',
-                disclaimer: 'Disclaimer',
-                faq: 'FAQ'
-            };
-            document.getElementById('policyContentTitle').innerText = titleMap[policyKey] || 'Content';
-            document.getElementById('policyContentText').innerHTML = policies[policyKey] || '<p>Content not available yet.</p>';
-            document.getElementById('policyContentDisplay').style.display = 'block';
-            history.pushState({page: 'policyContent', key: policyKey}, '', `#${policyKey}`);
-        }
-
-        function toggleSearch() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.classList.toggle('show');
-            if (searchInput.classList.contains('show')) {
-                searchInput.focus();
-            } else {
-                searchInput.value = '';
-            }
-        }
-
-        function toggleDrawer(forceClose = false) {
-            const drawer = document.getElementById('sideDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            if (forceClose || drawer.classList.contains('open')) {
-                drawer.classList.remove('open');
-                overlay.classList.remove('open');
-            } else if (currentUser) {
-                drawer.classList.add('open');
-                overlay.classList.add('open');
-            }
-        }
-
-        function savePolicyContent() {
-            const policyData = {
-                about: document.getElementById('aboutContent').value,
-                privacyPolicy: document.getElementById('privacyPolicyContent').value,
-                termsCondition: document.getElementById('termsConditionContent').value,
-                refundCancellation: document.getElementById('refundCancellationContent').value,
-                shipping: document.getElementById('shippingContent').value,
-                pricing: document.getElementById('pricingContent').value,
-                contact: document.getElementById('contactContent').value,
-                disclaimer: document.getElementById('disclaimerContent').value,
-                faq: document.getElementById('faqContent').value
-            };
-
-            policiesRef.set(policyData)
-                .then(() => showMessageBox('Policy content saved successfully!'))
-                .catch(error => {
-                    console.error("Error saving policy content:", error);
-                    showMessageBox('Error saving policy content: ' + error.message + '. Please check Firebase rules or network.');
-                });
-        }
-
-        function populatePolicyFields() {
-            if (policies.about) document.getElementById('aboutContent').value = policies.about;
-            if (policies.privacyPolicy) document.getElementById('privacyPolicyContent').value = policies.privacyPolicy;
-            if (policies.termsCondition) document.getElementById('termsConditionContent').value = policies.termsCondition;
-            if (policies.refundCancellation) document.getElementById('refundCancellationContent').value = policies.refundCancellation;
-            if (policies.shipping) document.getElementById('shippingContent').value = policies.shipping;
-            if (policies.pricing) document.getElementById('pricingContent').value = policies.pricing;
-            if (policies.contact) document.getElementById('contactContent').value = policies.contact;
-            if (policies.disclaimer) document.getElementById('disclaimerContent').value = policies.disclaimer;
-            if (policies.faq) document.getElementById('faqContent').value = policies.faq;
-        }
-
-        function toggleAdminLoginFields() {
-            const adminFieldsContainer = document.getElementById('adminLoginFieldsContainer');
-            if (adminFieldsContainer.style.display === 'none' || adminFieldsContainer.style.display === '') {
-                adminFieldsContainer.style.display = 'block';
-            } else {
-                adminFieldsContainer.style.display = 'none';
-            }
-        }
-
-        function hideAllPanels() {
-            document.getElementById('loginPanel').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('userPanel').style.display = 'none';
-            document.getElementById('policyContentDisplay').style.display = 'none';
-            document.getElementById('adminHomeThumbnailSection').style.display = 'none';
-            clearInterval(homeSliderInterval);
-            document.getElementById('userHomeThumbnailDisplay').style.display = 'none';
-        }
-
-        window.onload = function() {
-            console.log("Window loaded. Firebase authentication state will determine the initial UI.");
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get all the screen elements
+        const screens = {
+            main: document.getElementById('main-screen'),
+            allClassPdf: document.getElementById('all-class-pdf-screen'),
+            subject: document.getElementById('subject-screen'),
+            hindiChapters: document.getElementById('hindi-chapters-screen'),
+            mathChapters: document.getElementById('math-chapters-screen'),
+            reasoningChapters: document.getElementById('reasoning-chapters-screen'),
+            gkGsChapters: document.getElementById('gk-gs-chapters-screen'),
+            content: document.getElementById('content-screen')
         };
-    </script>
+
+        // Get button elements
+        const sscGDBtn = document.getElementById('ssc-gd-btn');
+        const allClassPdfBtn = document.getElementById('all-class-pdf-btn');
+        const hindiBtn = document.getElementById('hindi-btn');
+        const mathBtn = document.getElementById('math-btn');
+        const reasoningBtn = document.getElementById('reasoning-btn');
+        const gkGsBtn = document.getElementById('gk-gs-btn');
+        const backBtn = document.getElementById('back-btn');
+        const contentTitle = document.getElementById('content-title');
+
+        // State management for navigation
+        const navigationHistory = [{ screen: 'main' }];
+
+        // Define data for each subject and its chapters
+        const data = {
+            hindi: {
+                title: 'हिंदी PDF’s',
+                chapters: {
+                    'vilom-shabd': { name: 'विलोम शब्द', emoji: '🔄', links: [{ title: 'विलोम शब्द उदाहरण 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'विलोम शब्द अभ्यास 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'vartaniya': { name: 'वर्तनीय @@', emoji: '✏️', links: [{ title: 'वर्तनीय नियम PDF', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'वर्तनीय अभ्यास प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'vakyansh': { name: 'वाक्यांश', emoji: '📝', links: [{ title: 'वाक्यांश उदाहरण', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'वाक्यांश अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'paryavachi': { name: 'पर्यावची शब्द', emoji: '🌳', links: [{ title: 'पर्यायवाची शब्द नोट्स', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'पर्यायवाची शब्द प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'tatsam-tadbhav': { name: 'तत्सम तद्भव', emoji: '📜', links: [{ title: 'तत्सम तद्भव नोट्स', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'तत्सम तद्भव प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'deshaj-videshaj': { name: 'देशज विदेशद शब्द', emoji: '🗣️', links: [{ title: 'देशज-विदेशज नोट्स', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'देशज-विदेशज अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'abhyash-prashan': { name: 'अभयाश प्राशन तत्सम तद्भव', emoji: '❓', links: [{ title: 'अभ्यास प्रश्न 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'अभ्यास प्रश्न 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'shabd-yugm': { name: 'शब्द युग्म', emoji: '⚖️', links: [{ title: 'शब्द युग्म उदाहरण', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'शब्द युग्म प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'anekarthik': { name: 'अनेकरथिक शब्द', emoji: '🎭', links: [{ title: 'अनेकार्थिक शब्द नोट्स', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'अनेकार्थिक शब्द अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'sangya': { name: 'संज्ञा', emoji: '👤', links: [{ title: 'संज्ञा के प्रकार', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'संज्ञा प्रश्नोत्तरी', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'sarvanam': { name: 'सर्वनाम', emoji: '🤝', links: [{ title: 'सर्वनाम नियम', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'सर्वनाम अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'visheshad': { name: 'विशेषड', emoji: '🌟', links: [{ title: 'विशेषण नोट्स', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'विशेषण प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'kriya': { name: 'क्रिया', emoji: '🏃', links: [{ title: 'क्रिया के भेद', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'क्रिया अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'kaal': { name: 'काल @', emoji: '⏰', links: [{ title: 'काल के नियम', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'काल प्रश्नोत्तरी', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'link': { name: 'लिंक #', emoji: '🔗', links: [{ title: 'लिंग के प्रकार', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'लिंग अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'vachan': { name: 'वचन @', emoji: '👥', links: [{ title: 'वचन के नियम', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'वचन अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'ling-vachan-abhyas': { name: 'लिंग वचन अभ्यास', emoji: '📖', links: [{ title: 'लिंग-वचन अभ्यास 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'लिंग-वचन अभ्यास 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'karak': { name: 'कारक #', emoji: '🎯', links: [{ title: 'कारक के नियम', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'कारक प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'avyay': { name: 'अव्यय #', emoji: '❌', links: [{ title: 'अव्यय के प्रकार', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'अव्यय प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] }
+                }
+            },
+            math: {
+                title: 'गणित PDF’s',
+                chapters: {
+                    'ratio-proporation': { name: 'Ratio & Proporation', emoji: '📈', links: [{ title: 'Ratio & Proporation Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Ratio & Proporation Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'lcm-hcf': { name: 'LCM & HCF', emoji: '🔢', links: [{ title: 'LCM & HCF Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'LCM & HCF Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'time-and-work': { name: 'Time and Work', emoji: '⏱️', links: [{ title: 'Time and Work Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Time and Work Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'pipe-tanki': { name: 'Pipe or Tanki', emoji: '💧', links: [{ title: 'Pipe and Tank Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Pipe and Tank Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'ausat': { name: 'औसत', emoji: '📊', links: [{ title: 'Average Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Average Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'pratishat': { name: 'प्रतिशत', emoji: '💯', links: [{ title: 'Percentage Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Percentage Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'labh-hani': { name: 'लाभ और हानी', emoji: '💰', links: [{ title: 'Profit & Loss Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Profit & Loss Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'batta': { name: 'बट्टा', emoji: '📉', links: [{ title: 'Discount Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Discount Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'sadharan-byaj': { name: 'साधारण ब्याज', emoji: '💵', links: [{ title: 'Simple Interest Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Simple Interest Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'chakravridhhi-byaj': { name: 'चक्रवृद्धि ब्याज', emoji: '🏦', links: [{ title: 'Compound Interest Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Compound Interest Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'samay-chal-duri': { name: 'समय & चल और दूरी', emoji: '🛣️', links: [{ title: 'Time, Speed, Distance Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Time, Speed, Distance Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'relgadi': { name: 'रेलगाड़ी', emoji: '🚂', links: [{ title: 'Trains Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Trains Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'nav-dhara': { name: 'नाव एण्ड धारा', emoji: '⛵', links: [{ title: 'Boats & Streams Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Boats & Streams Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'number-system': { name: 'Number System', emoji: '🔢', links: [{ title: 'Number System Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Number System Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'saralikaran': { name: 'सरलीकरण', emoji: '🧮', links: [{ title: 'Simplification Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Simplification Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'trikonmiti': { name: 'त्रिकोणमिति', emoji: '📐', links: [{ title: 'Trigonometry Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Trigonometry Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] }
+                }
+            },
+            reasoning: {
+                title: 'रीजनिंग PDF’s',
+                chapters: {
+                    'coding-decoding': { name: 'Coding Decoding', emoji: '🧩', links: [{ title: 'Coding Decoding Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Coding Decoding Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'analogy-test': { name: 'Analogy Test', emoji: '🤔', links: [{ title: 'Analogy Test Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Analogy Test Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'ven-arekh': { name: 'वेन आरेख', emoji: '⭕', links: [{ title: 'वेन आरेख उदाहरण', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'वेन आरेख प्रश्न', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'alphabet-test': { name: 'Alphabet Test', emoji: '🔡', links: [{ title: 'Alphabet Test Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Alphabet Test Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'word-formation': { name: 'Word Formation', emoji: '✍️', links: [{ title: 'Word Formation Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Word Formation Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'number-series': { name: 'Number Series', emoji: '🔢', links: [{ title: 'Number Series Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Number Series Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'wrong-number-series': { name: 'Worng Number Series', emoji: '❌', links: [{ title: 'Wrong Number Series Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Wrong Number Series Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'alphabet-series': { name: 'Alphabet series', emoji: '🔤', links: [{ title: 'Alphabet Series Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Alphabet Series Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'repeated-series': { name: 'Repeated Series', emoji: '🔁', links: [{ title: 'Repeated Series Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Repeated Series Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'similar-set': { name: 'Similar Set', emoji: '👯', links: [{ title: 'Similar Set Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Similar Set Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'blood-relation': { name: 'Blood Relation', emoji: '👪', links: [{ title: 'Blood Relation Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Blood Relation Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'mathematical-operations': { name: 'Mathatical Operations', emoji: '✖️', links: [{ title: 'Math Operations Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Math Operations Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'missing-number': { name: 'Missing Number', emoji: '🕵️', links: [{ title: 'Missing Number Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Missing Number Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'classification': { name: 'Classification', emoji: '🗂️', links: [{ title: 'Classification Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Classification Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'ranking-test': { name: 'Ranking Test', emoji: '🥇', links: [{ title: 'Ranking Test Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Ranking Test Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'order-sequence': { name: 'Order Sequence', emoji: '📃', links: [{ title: 'Order Sequence Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Order Sequence Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'seating-arrangement': { name: 'Seating arreangement', emoji: '🪑', links: [{ title: 'Seating Arrangement Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Seating Arrangement Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'pasa': { name: 'पासा', emoji: '🎲', links: [{ title: 'पासा उदाहरण', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'पासा अभ्यास', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'syllogism': { name: 'Syllogism', emoji: '💡', links: [{ title: 'Syllogism Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Syllogism Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'direction': { name: 'Direction', emoji: '🧭', links: [{ title: 'Direction Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Direction Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'mirror-image': { name: 'Mirror & Water Image & Paper Folding or cutting', emoji: '🖼️', links: [{ title: 'Mirror Image Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Water Image Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'figure-completions': { name: 'Figure Completions & Hidden Figure', emoji: '🧩', links: [{ title: 'Figure Completion Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Hidden Figure Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'figure-series': { name: 'Figure Series', emoji: '➡️', links: [{ title: 'Figure Series Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Figure Series Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'miscellaneous': { name: 'Miscellaneous', emoji: '🤔', links: [{ title: 'Miscellaneous Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Miscellaneous Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'figure-counting': { name: 'Figure Counting', emoji: '🔢', links: [{ title: 'Figure Counting Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Figure Counting Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'calendar': { name: 'Calendar', emoji: '🗓️', links: [{ title: 'Calendar Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Calendar Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'clock': { name: 'clock', emoji: '🕰️', links: [{ title: 'Clock Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Clock Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] }
+                }
+            },
+            gkGs: {
+                title: 'GK/GS PDF’s',
+                chapters: {
+                    'geography': { name: 'Geography', emoji: '🗺️', links: [{ title: 'Geography Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Geography Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'physics': { name: 'physics', emoji: '⚛️', links: [{ title: 'Physics Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Physics Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'polity': { name: 'polity', emoji: '🏛️', links: [{ title: 'Polity Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Polity Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'economics': { name: 'economics', emoji: '📊', links: [{ title: 'Economics Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Economics Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'history': { name: 'History', emoji: '📜', links: [{ title: 'History Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'History Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'statik-gk': { name: 'Statik Gk', emoji: '�', links: [{ title: 'Statik Gk Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Statik Gk Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] },
+                    'chemistry': { name: 'Chemistry', emoji: '🧪', links: [{ title: 'Chemistry Example 1', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }, { title: 'Chemistry Practice 2', view: 'https://www.orimi.com/pdf-test.pdf', download: 'https://www.orimi.com/pdf-test.pdf' }] }
+                }
+            }
+        };
+
+        // Function to show a specific screen and hide others
+        function showScreen(screenId) {
+            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+            screens[screenId].classList.remove('hidden');
+        }
+
+        // Function to render chapter buttons for a subject
+        function renderChapters(subjectKey) {
+            const subjectData = data[subjectKey];
+            const chapterScreen = screens[`${subjectKey}Chapters`];
+            chapterScreen.innerHTML = ''; // Clear previous chapters
+
+            for (const key in subjectData.chapters) {
+                if (subjectData.chapters.hasOwnProperty(key)) {
+                    const chapter = subjectData.chapters[key];
+                    const button = document.createElement('button');
+                    button.className = 'btn chapter-btn';
+                    button.innerHTML = `<span class="emoji">${chapter.emoji}</span><span>${chapter.name}</span>`;
+                    button.addEventListener('click', () => {
+                        showScreen('content');
+                        renderLinks(subjectKey, key);
+                        navigationHistory.push({ screen: 'content', subject: subjectKey, chapter: key });
+                        backBtn.classList.remove('hidden');
+                    });
+                    chapterScreen.appendChild(button);
+                }
+            }
+        }
+        
+        // Function to render PDF links for a specific chapter
+        function renderLinks(subjectKey, chapterKey) {
+            const links = data[subjectKey].chapters[chapterKey].links;
+            const contentContainer = screens.content;
+            contentContainer.innerHTML = ''; // Clear previous content
+
+            contentTitle.textContent = data[subjectKey].chapters[chapterKey].name;
+            contentContainer.appendChild(contentTitle); // Add title back
+            
+            links.forEach(link => {
+                const linkItem = document.createElement('div');
+                linkItem.className = 'link-item';
+                linkItem.innerHTML = `
+                    <h3>${link.title}</h3>
+                    <div class="link-actions">
+                        <a href="${link.view}" class="btn view-btn" target="_blank">View</a>
+                        <a href="${link.download}" class="btn download-btn" download>Download</a>
+                    </div>
+                `;
+                contentContainer.appendChild(linkItem);
+            });
+        }
+
+        // Event Listeners for main buttons
+        sscGDBtn.addEventListener('click', () => {
+            showScreen('allClassPdf');
+            navigationHistory.push({ screen: 'allClassPdf' });
+            backBtn.classList.remove('hidden');
+        });
+
+        allClassPdfBtn.addEventListener('click', () => {
+            showScreen('subject');
+            navigationHistory.push({ screen: 'subject' });
+            backBtn.classList.remove('hidden');
+        });
+
+        // Event Listeners for subject buttons
+        hindiBtn.addEventListener('click', () => {
+            showScreen('hindiChapters');
+            renderChapters('hindi');
+            navigationHistory.push({ screen: 'hindiChapters' });
+            backBtn.classList.remove('hidden');
+        });
+        mathBtn.addEventListener('click', () => {
+            showScreen('mathChapters');
+            renderChapters('math');
+            navigationHistory.push({ screen: 'mathChapters' });
+            backBtn.classList.remove('hidden');
+        });
+        reasoningBtn.addEventListener('click', () => {
+            showScreen('reasoningChapters');
+            renderChapters('reasoning');
+            navigationHistory.push({ screen: 'reasoningChapters' });
+            backBtn.classList.remove('hidden');
+        });
+        gkGsBtn.addEventListener('click', () => {
+            showScreen('gkGsChapters');
+            renderChapters('gkGs');
+            navigationHistory.push({ screen: 'gkGsChapters' });
+            backBtn.classList.remove('hidden');
+        });
+
+        // Back button functionality
+        backBtn.addEventListener('click', () => {
+            if (navigationHistory.length > 1) {
+                navigationHistory.pop(); // Remove current screen from history
+                const previousState = navigationHistory[navigationHistory.length - 1];
+                showScreen(previousState.screen);
+            }
+            if (navigationHistory.length <= 1) {
+                 backBtn.classList.add('hidden');
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
-
-
-
-
