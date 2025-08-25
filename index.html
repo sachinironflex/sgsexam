@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,16 +74,25 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-    // Global variable setup for Firebase context
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    // Firebase और ऐप स्थिति के लिए ग्लोबल वेरिएबल सेटअप
+    let firebaseConfig = {
+      apiKey: "AIzaSyB9thAZ6J72ovXU2CXBeeFIiKyj3McgwfI",
+      authDomain: "ssc-gd-c174a.firebaseapp.com",
+      databaseURL: "https://ssc-gd-c174a-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ssc-gd-c174a",
+      storageBucket: "ssc-gd-c174a.firebasestorage.app",
+      messagingSenderId: "306957230185",
+      appId: "1:306957230185:web:a32e27c4406eb7eb15c2f8"
+    };
 
-    // Admin Credentials
+    const appId = firebaseConfig.appId;
+
+    // एडमिन क्रेडेंशियल्स
     const ADMIN_ID = "Sachin";
-    const ADMIN_PASSWORD = "802165";
+    const ADMIN_EMAIL = "sachinkumarjii753@gmail.com";
+    const ADMIN_PASSWORD = "Sachin@802165";
 
-    // Application State Management
+    // एप्लीकेशन स्टेट मैनेजमेंट
     const appState = {
         currentPage: 'splash',
         user: null,
@@ -110,46 +118,49 @@
     try {
         app = firebase.initializeApp(firebaseConfig);
         auth = app.auth();
-        db = app.firestore(); // For user progress
-        rtdb = app.database(); // For public questions
+        db = app.firestore(); // Firestore user progress के लिए
+        rtdb = app.database(); // Realtime Database प्रश्नों और कंटेंट के लिए
     } catch (error) {
         console.error("Firebase Initialization Error: ", error);
+        showModal('त्रुटि', `Firebase को शुरू करने में त्रुटि। कृपया बाद में पुनः प्रयास करें।`, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
     }
     
     // Auth State Listener
     auth.onAuthStateChanged(async (user) => {
+        appState.user = user;
         if (user) {
-            appState.user = user;
             appState.userProfile = {
-                displayName: user.displayName || user.email,
-                photoURL: user.photoURL || `https://placehold.co/100x100/A0AEC0/ffffff?text=${user.email.charAt(0).toUpperCase()}`
+                displayName: user.displayName || user.email || 'User',
+                photoURL: user.photoURL || `https://placehold.co/100x100/A0AEC0/ffffff?text=${(user.email || 'U').charAt(0).toUpperCase()}`
             };
-            if (appState.currentPage === 'login') {
-                if (user.email === ADMIN_ID && user.uid) { // Admin ID is an email, not just 'Sachin'
-                    appState.isAdmin = true;
-                    appState.currentPage = 'admin';
-                } else {
-                    appState.isAdmin = false;
-                    appState.currentPage = 'main';
-                }
+            if (user.email === ADMIN_EMAIL) {
+                appState.isAdmin = true;
+                console.log("Admin UID:", user.uid);
+            } else {
+                appState.isAdmin = false;
             }
-            if (appState.currentPage !== 'splash') {
-                await fetchUserProgress();
+            if (appState.currentPage === 'login' || appState.currentPage === 'admin') {
+                if (appState.isAdmin) {
+                    navigateTo('admin');
+                } else {
+                    navigateTo('main');
+                }
             }
         } else {
             appState.user = null;
             appState.userProfile = null;
             appState.isAdmin = false;
             if (appState.currentPage !== 'splash') {
-                appState.currentPage = 'login';
+                navigateTo('login');
             }
         }
+        await fetchUserProgress();
         renderApp();
     });
 
-    // Custom Modal Function
-    function showModal(title, message, buttons) {
-        appState.modal = { isOpen: true, title, message, buttons };
+    // कस्टम मोडल फंक्शन
+    function showModal(title, message, buttons, contentHtml = '') {
+        appState.modal = { isOpen: true, title, message, buttons, contentHtml };
         renderModal();
     }
 
@@ -158,16 +169,17 @@
         renderModal();
     }
 
-    // Render Modal
+    // मोडल रेंडर करें
     function renderModal() {
         const modalContainer = document.getElementById('modal-container');
         if (appState.modal.isOpen) {
             modalContainer.classList.remove('hidden');
+            let content = appState.modal.contentHtml || `<p class="text-gray-700 text-center mb-6">${appState.modal.message}</p>`;
             modalContainer.innerHTML = `
                 <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
                     <h3 class="text-xl font-bold mb-4 text-center">${appState.modal.title}</h3>
-                    <p class="text-gray-700 text-center mb-6">${appState.modal.message}</p>
-                    <div class="flex justify-center space-x-4">
+                    ${content}
+                    <div class="flex justify-center space-x-4 mt-6">
                         ${appState.modal.buttons.map(btn => `
                             <button id="modal-btn-${btn.id}" class="px-6 py-2 rounded-lg font-semibold shadow-md transition-transform transform hover:scale-105 ${btn.class}">${btn.text}</button>
                         `).join('')}
@@ -175,10 +187,13 @@
                 </div>
             `;
             appState.modal.buttons.forEach(btn => {
-                document.getElementById(`modal-btn-${btn.id}`).onclick = () => {
-                    hideModal();
-                    if (btn.action) btn.action();
-                };
+                const modalBtn = document.getElementById(`modal-btn-${btn.id}`);
+                if (modalBtn) {
+                    modalBtn.onclick = () => {
+                        hideModal();
+                        if (btn.action) btn.action();
+                    };
+                }
             });
         } else {
             modalContainer.classList.add('hidden');
@@ -186,39 +201,117 @@
         }
     }
 
-    // --- Firebase Logic for User Progress (Firestore) ---
+    // --- फायरस्टोर से उपयोगकर्ता की प्रगति का तर्क (Firestore) ---
     async function fetchUserProgress() {
         if (!appState.user) return;
         try {
-            const userProgressRef = db.collection(`artifacts/${appId}/users/${appState.user.uid}/userProgress`).doc('main');
-            const doc = await userProgressRef.get();
-            if (doc.exists) {
-                appState.userProgress = doc.data();
+            const userId = auth.currentUser?.uid;
+            if (!userId) return;
+            // FIX: Check if we are online before trying to get document from Firestore
+            if (navigator.onLine) {
+                const userProgressRef = db.collection(`artifacts/${appId}/users/${userId}/userProgress`).doc('main');
+                const doc = await userProgressRef.get();
+                if (doc.exists) {
+                    appState.userProgress = doc.data();
+                } else {
+                    appState.userProgress = {};
+                }
             } else {
-                appState.userProgress = {};
+                console.error("उपयोगकर्ता की प्रगति लाने में त्रुटि: Client is offline.");
+                appState.userProgress = {}; // Fallback to empty progress
             }
         } catch (error) {
-            console.error("Error fetching user progress:", error);
+            console.error("उपयोगकर्ता की प्रगति लाने में त्रुटि:", error);
         }
     }
 
     async function updateUserProgress(subject, testNumber) {
         if (!appState.user) return;
-        const userProgressRef = db.collection(`artifacts/${appId}/users/${appState.user.uid}/userProgress`).doc('main');
+        const userId = auth.currentUser?.uid;
+        if (!userId) return;
+        if (!navigator.onLine) {
+            console.error("उपयोगकर्ता की प्रगति को अपडेट करने में त्रुटि: Client is offline.");
+            return;
+        }
+        const userProgressRef = db.collection(`artifacts/${appId}/users/${userId}/userProgress`).doc('main');
         const progressData = { ...appState.userProgress, [subject]: testNumber };
         try {
             await userProgressRef.set(progressData, { merge: true });
             appState.userProgress = progressData;
         } catch (error) {
-            console.error("Error updating user progress:", error);
+            console.error("उपयोगकर्ता की प्रगति को अपडेट करने में त्रुटि:", error);
         }
     }
+    
+    // फायरस्टोर में क्विज की प्रगति को सेव करें
+    async function saveQuizProgress() {
+        if (!appState.user) return;
+        const userId = auth.currentUser?.uid;
+        if (!userId || !navigator.onLine) return;
 
-    // --- Navigation and Rendering ---
+        const quizProgressRef = db.collection(`artifacts/${appId}/users/${userId}/quizProgress`).doc(appState.activeSubject);
+        const data = {
+            subject: appState.activeSubject,
+            testNumber: appState.activeTestNumber,
+            currentQuestionIndex: appState.currentQuestionIndex,
+            userAnswers: appState.userAnswers // Firestore में ऑब्जेक्ट स्टोर कर सकते हैं
+        };
+
+        try {
+            await quizProgressRef.set(data);
+        } catch (error) {
+            console.error("क्विज की प्रगति को सेव करने में त्रुटि:", error);
+        }
+    }
+    
+    // फायरस्टोर से क्विज की प्रगति को लाएँ
+    async function fetchQuizProgress() {
+        if (!appState.user) return;
+        const userId = auth.currentUser?.uid;
+        if (!userId || !navigator.onLine) return;
+
+        const quizProgressRef = db.collection(`artifacts/${appId}/users/${userId}/quizProgress`).doc(appState.activeSubject);
+        try {
+            const doc = await quizProgressRef.get();
+            if (doc.exists && doc.data().testNumber === appState.activeTestNumber) {
+                return doc.data();
+            }
+        } catch (error) {
+            console.error("क्विज की प्रगति लाने में त्रुटि:", error);
+        }
+        return null;
+    }
+
+    // --- नेविगेशन और रेंडरिंग ---
     function navigateTo(page, params = {}) {
         appState.currentPage = page;
         Object.keys(params).forEach(key => appState[key] = params[key]);
         renderApp();
+    }
+    
+    // बेस UI स्ट्रक्चर को एक बार रेंडर करें
+    function renderBaseUI() {
+        const appContainer = document.getElementById('app');
+        appContainer.innerHTML = `
+            <!-- टॉप हेडर -->
+            <header id="app-header" class="w-full bg-black text-white p-4 flex items-center justify-between shadow-lg fixed top-0 z-30"></header>
+            
+            <!-- दराज मेनू -->
+            <div id="drawer" class="drawer bg-gray-800 text-white w-64 p-4 space-y-4 fixed inset-y-0 left-0 z-40 shadow-xl overflow-y-auto"></div>
+
+            <!-- मुख्य सामग्री क्षेत्र -->
+            <main id="main-content" class="flex-grow w-full p-4 mt-20 md:p-6 transition-all duration-300 ease-in-out"></main>
+        `;
+
+        // Drawer ko band karne ka logic
+        document.getElementById('app').addEventListener('click', (event) => {
+            const drawer = document.getElementById('drawer');
+            const toggleButton = document.getElementById('toggle-drawer');
+            // Agar drawer khula hai aur click drawer ya toggle button ke bahar hua hai
+            if (drawer && drawer.classList.contains('open') && !drawer.contains(event.target) && !toggleButton.contains(event.target)) {
+                drawer.classList.remove('open');
+            }
+        });
     }
 
     function renderApp() {
@@ -236,31 +329,98 @@
                 break;
             case 'main':
                 document.body.classList.add('bg-gray-100');
-                renderMainPage();
+                renderBaseUI(); // बेस UI रेंडर करें
+                renderHeader();
+                renderDrawer();
+                renderMainPageContent(); // केवल कंटेंट रेंडर करें
                 break;
             case 'admin':
                 document.body.classList.add('bg-gray-100');
-                renderAdminPanel();
+                renderBaseUI(); // बेस UI रेंडर करें
+                renderHeader();
+                renderDrawer(); // एडमिन के लिए भी drawer render karein
+                renderAdminPanelContent(); // केवल कंटेंट रेंडर करें
                 break;
             case 'subject':
                 document.body.classList.add('bg-gray-100');
-                renderSubjectPage();
+                renderBaseUI(); // बेस UI रेंडर करें
+                renderHeader();
+                renderDrawer();
+                renderSubjectPageContent(); // केवल कंटेंट रेंडर करें
                 break;
             case 'quiz':
                 document.body.classList.add('bg-gray-100');
-                renderQuizPage();
+                renderBaseUI();
+                renderQuizPageContent();
                 break;
             case 'results':
                 document.body.classList.add('bg-gray-100');
-                renderResultsPage();
+                renderBaseUI();
+                renderResultsPageContent();
                 break;
             default:
                 renderSplashScreen();
                 break;
         }
     }
-    
-    // --- Splash Screen ---
+
+    // नया फंक्शन: हेडर रेंडर करें
+    function renderHeader() {
+        const header = document.getElementById('app-header');
+        if (!header) return;
+        header.innerHTML = `
+            <button id="toggle-drawer" class="text-xl px-2 py-1 rounded-full hover:bg-gray-800 transition-colors duration-200"><i class="fas fa-bars"></i></button>
+            <h1 class="text-2xl font-extrabold neon-glow">GD ExamCracker</h1>
+            <div class="user-profile-container flex items-center space-x-2">
+                <span class="text-sm hidden sm:inline">${appState.userProfile.displayName}</span>
+                <img src="${appState.userProfile.photoURL}" alt="User Photo" class="w-10 h-10 rounded-full border-2 border-white shadow-md">
+            </div>
+        `;
+        document.getElementById('toggle-drawer').addEventListener('click', (event) => {
+            const drawer = document.getElementById('drawer');
+            if (drawer) {
+                drawer.classList.toggle('open');
+                event.stopPropagation(); // Drawer toggle button par click karne par drawer band na ho
+            }
+        });
+    }
+
+    // नया फंक्शन: दराज रेंडर करें
+    function renderDrawer() {
+        const drawer = document.getElementById('drawer');
+        if (!drawer) return;
+        let drawerButtons;
+        if (appState.isAdmin) {
+             drawerButtons = `
+                <div class="text-center py-4">
+                    <img src="${appState.userProfile.photoURL}" alt="User Photo" class="w-20 h-20 rounded-full mx-auto mb-2 border-2 border-white shadow-md">
+                    <p class="text-lg font-bold">${appState.userProfile.displayName}</p>
+                </div>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="navigateTo('main')">Home</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showAdminSection('add-question')">प्रश्न जोड़ें</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 transition-colors duration-200 mt-auto shadow-md" onclick="handleLogout()">लॉगआउट</button>
+             `;
+        } else {
+             drawerButtons = `
+                <div class="text-center py-4">
+                    <img src="${appState.userProfile.photoURL}" alt="User Photo" class="w-20 h-20 rounded-full mx-auto mb-2 border-2 border-white shadow-md">
+                    <p class="text-lg font-bold">${appState.userProfile.displayName}</p>
+                </div>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="navigateTo('main')">Home</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('About', 'About Page Content...')">About</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('Privacy Policy', 'Privacy Policy Content...')">Privacy Policy</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('Terms & Conditions', 'Terms & Conditions Content...')">Terms & Conditions</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('Disclaimer', 'Disclaimer Content...')">Disclaimer</button>
+                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="shareApp()">Share App</button>
+                <button id="logout-btn" class="w-full text-left py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 transition-colors duration-200 mt-auto shadow-md" onclick="handleLogout()">लॉगआउट</button>
+             `;
+        }
+        drawer.innerHTML = drawerButtons;
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // --- स्प्लैश स्क्रीन ---
     function renderSplashScreen() {
         const appContainer = document.getElementById('app');
         document.body.classList.add('bg-blue-800', 'flex', 'items-center', 'justify-center');
@@ -282,7 +442,7 @@
         }, 2000);
     }
     
-    // --- Login Page ---
+    // --- लॉगिन पेज ---
     function renderLoginPage() {
         const appContainer = document.getElementById('app');
         appContainer.innerHTML = `
@@ -313,32 +473,32 @@
             </div>
         `;
         
-        // Add event listeners
+        // इवेंट लिसनर्स जोड़ें
         document.getElementById('login-email-btn').addEventListener('click', handleEmailLogin);
         document.getElementById('login-google-btn').addEventListener('click', handleGoogleLogin);
-        document.getElementById('admin-login-btn').addEventListener('click', handleAdminLogin);
+        document.getElementById('admin-login-btn').addEventListener('click', showAdminLoginModal);
         document.getElementById('signup-link').addEventListener('click', handleSignup);
         document.getElementById('forgot-password-link').addEventListener('click', handleForgotPassword);
         
-        // Trigger fade-in animation
+        // फ़ेड-इन एनिमेशन ट्रिगर करें
         setTimeout(() => {
             document.querySelector('.animate-fade-in-up').classList.remove('scale-95', 'opacity-0');
         }, 100);
     }
     
-    // Login handlers
+    // लॉगिन हैंडलर्स
     async function handleEmailLogin() {
         const email = document.getElementById('email-input').value;
         const password = document.getElementById('password-input').value;
         if (!email || !password) {
-            showModal('Error', 'Please enter both email and password.', [{ text: 'OK', id: 'ok', class: 'bg-blue-500 text-white' }]);
+            showModal('Error', 'कृपया ईमेल और पासवर्ड दोनों दर्ज करें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-blue-500 text-white' }]);
             return;
         }
         try {
             await auth.signInWithEmailAndPassword(email, password);
             navigateTo('main');
         } catch (error) {
-            showModal('Login Failed', error.message, [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+            showModal('लॉगिन विफल', 'लॉगिन विफल रहा: ' + error.message, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
         }
     }
 
@@ -348,22 +508,63 @@
             await auth.signInWithPopup(provider);
             navigateTo('main');
         } catch (error) {
-            showModal('Login Failed', error.message, [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+            showModal('लॉगिन विफल', 'Google लॉगिन विफल रहा: ' + error.message, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
         }
     }
+    
+    // एडमिन लॉगिन मोडल दिखाएं
+    function showAdminLoginModal() {
+        const modalContent = `
+            <div class="space-y-4">
+                <div>
+                    <input id="admin-id-input" type="text" placeholder="Admin ID" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                </div>
+                <div>
+                    <input id="admin-password-input" type="password" placeholder="Password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                </div>
+                <p id="admin-error-message" class="text-red-500 text-sm text-center hidden"></p>
+            </div>
+        `;
+        showModal('Admin Login', '', [{
+            text: 'Login',
+            id: 'admin-login-confirm-btn',
+            class: 'bg-green-600 text-white',
+            action: checkAdminCredentials
+        }, {
+            text: 'Cancel',
+            id: 'admin-login-cancel-btn',
+            class: 'bg-gray-500 text-white',
+            action: hideModal
+        }], modalContent);
+    }
+    
+    // एडमिन क्रेडेंशियल्स जांचें
+    async function checkAdminCredentials() {
+        const adminIdInput = document.getElementById('admin-id-input');
+        const adminPasswordInput = document.getElementById('admin-password-input');
+        const errorMessageDiv = document.getElementById('admin-error-message');
 
-    function handleAdminLogin() {
-        const email = document.getElementById('email-input').value;
-        const password = document.getElementById('password-input').value;
-        if (email === ADMIN_ID && password === ADMIN_PASSWORD) {
-            auth.signInAnonymously().then(() => {
+        if (!adminIdInput || !adminPasswordInput || !errorMessageDiv) {
+            return;
+        }
+        
+        const adminId = adminIdInput.value;
+        const adminPassword = adminPasswordInput.value;
+
+        if (adminId === ADMIN_ID && adminPassword === ADMIN_PASSWORD) {
+            try {
+                await auth.signInWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASSWORD);
                 appState.isAdmin = true;
+                hideModal();
+                console.log("Admin UID:", auth.currentUser.uid);
                 navigateTo('admin');
-            }).catch(error => {
-                showModal('Admin Login Failed', error.message, [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
-            });
+            } catch (error) {
+                errorMessageDiv.textContent = 'लॉगिन विफल रहा: ' + error.message;
+                errorMessageDiv.classList.remove('hidden');
+            }
         } else {
-            showModal('Admin Login Failed', 'Invalid Admin ID or Password.', [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+            errorMessageDiv.textContent = 'अमान्य एडमिन आईडी या पासवर्ड।';
+            errorMessageDiv.classList.remove('hidden');
         }
     }
 
@@ -371,107 +572,96 @@
         const email = document.getElementById('email-input').value;
         const password = document.getElementById('password-input').value;
         if (!email || !password) {
-            showModal('Error', 'Please enter a valid email and password for signup.', [{ text: 'OK', id: 'ok', class: 'bg-blue-500 text-white' }]);
+            showModal('Error', 'कृपया साइनअप के लिए एक वैध ईमेल और पासवर्ड दर्ज करें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-blue-500 text-white' }]);
             return;
         }
         auth.createUserWithEmailAndPassword(email, password)
             .then(() => {
-                showModal('Success', 'Account created! Please log in.', [{ text: 'OK', id: 'ok', class: 'bg-green-500 text-white' }]);
+                showModal('सफलता', 'खाता बनाया गया! कृपया लॉग इन करें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-green-500 text-white' }]);
             })
             .catch(error => {
-                showModal('Signup Failed', error.message, [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+                showModal('साइनअप विफल', 'साइनअप विफल रहा: ' + error.message, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
             });
     }
 
     function handleForgotPassword() {
         const email = document.getElementById('email-input').value;
         if (!email) {
-            showModal('Error', 'Please enter your email to reset the password.', [{ text: 'OK', id: 'ok', class: 'bg-blue-500 text-white' }]);
+            showModal('Error', 'पासवर्ड रीसेट करने के लिए कृपया अपना ईमेल दर्ज करें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-blue-500 text-white' }]);
             return;
         }
         auth.sendPasswordResetEmail(email)
             .then(() => {
-                showModal('Password Reset', 'A password reset link has been sent to your email.', [{ text: 'OK', id: 'ok', class: 'bg-green-500 text-white' }]);
+                showModal('पासवर्ड रीसेट', 'आपके ईमेल पर एक पासवर्ड रीसेट लिंक भेजा गया है।', [{ text: 'ठीक है', id: 'ok', class: 'bg-green-500 text-white' }]);
             })
             .catch(error => {
-                showModal('Password Reset Failed', error.message, [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+                showModal('पासवर्ड रीसेट विफल', 'पासवर्ड रीसेट विफल रहा: ' + error.message, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
             });
     }
 
-    // --- Admin Panel ---
-    function renderAdminPanel() {
-        const appContainer = document.getElementById('app');
-        appContainer.innerHTML = `
-            <div class="flex w-full h-screen">
-                <!-- Drawer -->
-                <div id="drawer" class="drawer bg-gray-800 text-white w-64 p-4 space-y-4 fixed inset-y-0 left-0 z-40 shadow-xl overflow-y-auto">
-                    <h3 class="text-xl font-bold mb-6">Admin Panel</h3>
-                    <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showAdminSection('add-question')">Add Question</button>
-                    <div class="border-t border-gray-700 my-4"></div>
-                    <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showAdminSection('about-content')">About Content</button>
-                    <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showAdminSection('privacy-content')">Privacy Policy Content</button>
-                    <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="handleLogout()">Logout</button>
-                </div>
-
-                <!-- Main Content Area -->
-                <div class="flex-grow ml-0 md:ml-64 p-6 transition-all duration-300 ease-in-out">
-                    <!-- Top Bar -->
-                    <div class="flex justify-between items-center mb-6">
-                        <button id="toggle-drawer" class="text-gray-700 md:hidden"><i class="fas fa-bars text-2xl"></i></button>
-                        <h2 class="text-2xl font-bold text-gray-800">Admin Dashboard</h2>
-                        <div></div>
-                    </div>
-                    <!-- Dynamic Section -->
-                    <div id="admin-content" class="bg-white p-6 rounded-lg shadow-lg">
-                        <h3 class="text-xl text-gray-600">Please select an option from the drawer.</h3>
-                    </div>
-                </div>
+    // --- एडमिन पैनल ---
+    function renderAdminPanelContent() {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
+        contentDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">एडमिन डैशबोर्ड</h2>
+                <div></div>
+            </div>
+            <div id="admin-content-section" class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl text-gray-600">कृपया दराज से एक विकल्प चुनें।</h3>
             </div>
         `;
-        document.getElementById('toggle-drawer').addEventListener('click', () => {
-            document.getElementById('drawer').classList.toggle('open');
-        });
+        showAdminSection('add-question');
     }
-
-    // Admin section renderer
+    
+    // एडमिन सेक्शन रेंडरर
     function showAdminSection(section) {
-        const contentDiv = document.getElementById('admin-content');
+        const contentDiv = document.getElementById('admin-content-section');
+        if (!contentDiv) return;
         const subjects = ["Hindi", "Reasoning", "Maths", "Current Affairs", "GK", "Science", "Geography", "Policy", "History", "Previous Year", "Bihar GK"];
+        const testNumbers = Array.from({ length: 12 }, (_, i) => i + 1);
 
         let html = '';
         if (section === 'add-question') {
             html = `
-                <h3 class="text-2xl font-bold mb-4">Add New Question</h3>
+                <h3 class="text-2xl font-bold mb-4">नया प्रश्न जोड़ें</h3>
                 <div class="mb-4">
-                    <label for="subject-select" class="block text-gray-700 font-semibold mb-2">Select Subject:</label>
+                    <label for="subject-select" class="block text-gray-700 font-semibold mb-2">विषय चुनें:</label>
                     <select id="subject-select" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         ${subjects.map(s => `<option value="${s}">${s}</option>`).join('')}
                     </select>
                 </div>
                 <div class="mb-4">
-                    <label for="question-text" class="block text-gray-700 font-semibold mb-2">Question Text:</label>
+                    <label for="test-select" class="block text-gray-700 font-semibold mb-2">टेस्ट नंबर चुनें:</label>
+                    <select id="test-select" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        ${testNumbers.map(n => `<option value="test${n}">टेस्ट ${n}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="question-text" class="block text-gray-700 font-semibold mb-2">प्रश्न टेक्स्ट:</label>
                     <textarea id="question-text" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div class="space-y-4 mb-4">
                     <div>
-                        <label for="option-A" class="block text-gray-700">Option A:</label>
+                        <label for="option-A" class="block text-gray-700">विकल्प A:</label>
                         <input id="option-A" type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300">
                     </div>
                     <div>
-                        <label for="option-B" class="block text-gray-700">Option B:</label>
+                        <label for="option-B" class="block text-gray-700">विकल्प B:</label>
                         <input id="option-B" type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300">
                     </div>
                     <div>
-                        <label for="option-C" class="block text-gray-700">Option C:</label>
+                        <label for="option-C" class="block text-gray-700">विकल्प C:</label>
                         <input id="option-C" type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300">
                     </div>
                     <div>
-                        <label for="option-D" class="block text-gray-700">Option D:</label>
+                        <label for="option-D" class="block text-gray-700">विकल्प D:</label>
                         <input id="option-D" type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300">
                     </div>
                 </div>
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">Correct Answer:</label>
+                    <label class="block text-gray-700 font-semibold mb-2">सही उत्तर:</label>
                     <div class="flex space-x-4">
                         <label class="flex items-center"><input type="radio" name="correct-answer" value="A" class="form-radio text-blue-500"> <span class="ml-2">A</span></label>
                         <label class="flex items-center"><input type="radio" name="correct-answer" value="B" class="form-radio text-blue-500"> <span class="ml-2">B</span></label>
@@ -479,28 +669,87 @@
                         <label class="flex items-center"><input type="radio" name="correct-answer" value="D" class="form-radio text-blue-500"> <span class="ml-2">D</span></label>
                     </div>
                 </div>
-                <button id="save-question-btn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors duration-200 shadow-md">Save Question</button>
+                <button id="save-question-btn" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors duration-200 shadow-md">प्रश्न सेव करें</button>
             `;
-        } else if (section === 'about-content' || section === 'privacy-content') {
+        } else if (section === 'about-content' || section === 'privacy-content' || section === 'terms-content' || section === 'disclaimer-content') {
             html = `
                 <h3 class="text-2xl font-bold mb-4">Edit ${section.replace('-content', '')}</h3>
                 <textarea id="content-text" rows="10" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"></textarea>
-                <button id="save-content-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200 shadow-md">Save Content</button>
+                <button id="save-content-btn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200 shadow-md">सामग्री सेव करें</button>
             `;
         }
         contentDiv.innerHTML = html;
 
         if (section === 'add-question') {
             document.getElementById('save-question-btn').addEventListener('click', handleSaveQuestion);
-        } else if (section === 'about-content' || section === 'privacy-content') {
+        } else if (section.endsWith('-content')) {
             document.getElementById('save-content-btn').addEventListener('click', () => handleSaveContent(section));
-            // Placeholder: Fetch existing content from a new RTDB path if it exists
+            fetchContent(section);
         }
+        const drawer = document.getElementById('drawer');
+        if (drawer) drawer.classList.remove('open');
     }
     
-    // --- Admin Functionality ---
+    // नया फंक्शन: एडमिन कंटेंट को सेव करें
+    async function handleSaveContent(section) {
+        const content = document.getElementById('content-text').value;
+        const contentRef = rtdb.ref(`appContent/${section.replace('-content', '')}`);
+        try {
+            await contentRef.set(content);
+            showModal('सफलता', `सामग्री सफलतापूर्वक सेव की गई!`, [{ text: 'ठीक है', id: 'ok', class: 'bg-green-500 text-white' }]);
+        } catch (error) {
+            showModal('त्रुटि', `सामग्री सेव करने में विफल: ${error.message}`, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
+        }
+    }
+
+    // नया फंक्शन: एडमिन कंटेंट को लाएँ
+    async function fetchContent(section) {
+        const contentRef = rtdb.ref(`appContent/${section.replace('-content', '')}`);
+        try {
+            const snapshot = await contentRef.once('value');
+            const content = snapshot.val();
+            const contentTextarea = document.getElementById('content-text');
+            if (content && contentTextarea) {
+                contentTextarea.value = content;
+            }
+        } catch (error) {
+            console.error("कंटेंट लाने में त्रुटि:", error);
+        }
+    }
+
+    // नया फंक्शन: यूज़र को कंटेंट दिखाएं
+    async function showContentPage(title, defaultContent) {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
+
+        const contentRef = rtdb.ref(`appContent/${title.replace(/ /g, '').toLowerCase()}`);
+        let content = defaultContent;
+        try {
+            const snapshot = await contentRef.once('value');
+            const fetchedContent = snapshot.val();
+            if (fetchedContent) {
+                content = fetchedContent;
+            }
+        } catch (error) {
+            console.error("कंटेंट लाने में त्रुटि:", error);
+        }
+
+        contentDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">${title}</h2>
+                <div></div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <p class="text-gray-700 whitespace-pre-wrap">${content}</p>
+            </div>
+        `;
+        document.getElementById('drawer').classList.remove('open');
+    }
+
+    // --- एडमिन कार्यक्षमता ---
     async function handleSaveQuestion() {
         const subject = document.getElementById('subject-select').value;
+        const testNumber = document.getElementById('test-select').value;
         const questionText = document.getElementById('question-text').value;
         const optionA = document.getElementById('option-A').value;
         const optionB = document.getElementById('option-B').value;
@@ -508,8 +757,8 @@
         const optionD = document.getElementById('option-D').value;
         const correctAnswer = document.querySelector('input[name="correct-answer"]:checked')?.value;
 
-        if (!subject || !questionText || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
-            showModal('Error', 'Please fill all fields.', [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+        if (!subject || !testNumber || !questionText || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
+            showModal('Error', 'कृपया सभी फ़ील्ड भरें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
             return;
         }
 
@@ -522,25 +771,27 @@
             answer: correctAnswer
         };
 
-        const dbRef = rtdb.ref(`quiz/${subject}/test1`); // Using 'test1' as a placeholder testNumber. Admin should ideally select this.
+        const dbRef = rtdb.ref(`quiz/${subject}/${testNumber}`);
         try {
             await dbRef.push(questionData);
-            showModal('Success', 'Question saved successfully!', [{ text: 'OK', id: 'ok', class: 'bg-green-500 text-white' }]);
-            // Clear form
+            showModal('सफलता', 'प्रश्न सफलतापूर्वक सेव किया गया!', [{ text: 'ठीक है', id: 'ok', class: 'bg-green-500 text-white' }]);
+            // फॉर्म साफ़ करें
             document.getElementById('question-text').value = '';
             document.getElementById('option-A').value = '';
             document.getElementById('option-B').value = '';
             document.getElementById('option-C').value = '';
             document.getElementById('option-D').value = '';
-            document.querySelector('input[name="correct-answer"]:checked').checked = false;
+            const checkedRadio = document.querySelector('input[name="correct-answer"]:checked');
+            if(checkedRadio) checkedRadio.checked = false;
         } catch (error) {
-            showModal('Error', 'Failed to save question: ' + error.message, [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+            showModal('त्रुटि', `प्रश्न को सेव करने में विफल: ${error.message}`, [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
         }
     }
     
-    // --- Main Page (User) ---
-    function renderMainPage() {
-        const appContainer = document.getElementById('app');
+    // --- मुख्य पृष्ठ (उपयोगकर्ता) ---
+    function renderMainPageContent() {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
         const subjects = [
             { name: "Hindi", emoji: "🇮🇳" }, { name: "Reasoning", emoji: "🧠" },
             { name: "Maths", emoji: "🧮" }, { name: "Current Affairs", emoji: "📰" },
@@ -550,67 +801,36 @@
             { name: "Bihar GK", emoji: "🏰" }
         ];
 
-        appContainer.innerHTML = `
-            <!-- Top Header -->
-            <header class="w-full bg-black text-white p-4 flex items-center justify-between shadow-lg fixed top-0 z-30">
-                <button id="toggle-drawer" class="text-xl px-2 py-1 rounded-full hover:bg-gray-800 transition-colors duration-200"><i class="fas fa-bars"></i></button>
-                <h1 class="text-2xl font-extrabold neon-glow">GD ExamCracker</h1>
-                <div class="user-profile-container flex items-center space-x-2">
-                    <span class="text-sm hidden sm:inline">${appState.userProfile.displayName}</span>
-                    <img src="${appState.userProfile.photoURL}" alt="User Photo" class="w-10 h-10 rounded-full border-2 border-white shadow-md">
-                </div>
-            </header>
-
-            <!-- Drawer Menu -->
-            <div id="drawer" class="drawer bg-gray-800 text-white w-64 p-4 space-y-4 fixed inset-y-0 left-0 z-40 shadow-xl overflow-y-auto">
-                <div class="text-center py-4">
-                    <img src="${appState.userProfile.photoURL}" alt="User Photo" class="w-20 h-20 rounded-full mx-auto mb-2 border-2 border-white shadow-md">
-                    <p class="text-lg font-bold">${appState.userProfile.displayName}</p>
-                </div>
-                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('About', 'About Page Content...')">About</button>
-                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('Privacy Policy', 'Privacy Policy Content...')">Privacy Policy</button>
-                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('Terms & Conditions', 'Terms & Conditions Content...')">Terms & Conditions</button>
-                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="showContentPage('Disclaimer', 'Disclaimer Content...')">Disclaimer</button>
-                <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors duration-200" onclick="shareApp()">Share App</button>
-                <button id="logout-btn" class="w-full text-left py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 transition-colors duration-200 mt-auto shadow-md">Logout</button>
+        contentDiv.innerHTML = `
+            <div class="grid subject-button-grid gap-4 max-w-4xl mx-auto">
+                ${subjects.map(s => `
+                    <button class="bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 transform transition-transform hover:scale-105" onclick="navigateToSubject('${s.name}')">
+                        <span class="text-4xl">${s.emoji}</span>
+                        <span class="font-semibold text-gray-800">${s.name}</span>
+                    </button>
+                `).join('')}
             </div>
-
-            <!-- Main Content Area -->
-            <main class="flex-grow w-full p-4 mt-20 md:p-6 transition-all duration-300 ease-in-out">
-                <div class="grid subject-button-grid gap-4 max-w-4xl mx-auto">
-                    ${subjects.map(s => `
-                        <button class="bg-white p-6 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 transform transition-transform hover:scale-105" onclick="navigateToSubject('${s.name}')">
-                            <span class="text-4xl">${s.emoji}</span>
-                            <span class="font-semibold text-gray-800">${s.name}</span>
-                        </button>
-                    `).join('')}
-                </div>
-            </main>
         `;
-
-        document.getElementById('toggle-drawer').addEventListener('click', () => {
-            document.getElementById('drawer').classList.toggle('open');
-        });
-        document.getElementById('logout-btn').addEventListener('click', handleLogout);
     }
     
-    // Handle Logout
+    // लॉगआउट संभालें
     function handleLogout() {
         auth.signOut().then(() => {
             navigateTo('login');
         }).catch(error => {
-            showModal('Logout Failed', 'An error occurred during logout.', [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white' }]);
+            showModal('लॉगआउट विफल', 'लॉगआउट के दौरान एक त्रुटि हुई।', [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white' }]);
         });
     }
 
-    // --- Subject Page ---
+    // --- विषय पृष्ठ ---
     function navigateToSubject(subjectName) {
         appState.activeSubject = subjectName;
         navigateTo('subject');
     }
 
-    function renderSubjectPage() {
-        const appContainer = document.getElementById('app');
+    function renderSubjectPageContent() {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
         const completedTests = appState.userProgress[appState.activeSubject] || 0;
         const testButtons = Array.from({ length: 12 }, (_, i) => {
             const testNumber = i + 1;
@@ -620,62 +840,56 @@
             let buttonClass = '';
 
             if (isCompleted) {
-                statusText = 'Completed';
+                statusText = 'पूरा हुआ';
                 buttonClass = 'bg-green-500 hover:bg-green-600';
             } else if (isUnlocked) {
-                statusText = 'Unlocked';
+                statusText = 'अनलॉक';
                 buttonClass = 'bg-blue-500 hover:bg-blue-600';
             } else {
-                statusText = 'Locked';
+                statusText = 'लॉक';
                 buttonClass = 'bg-gray-400 cursor-not-allowed';
             }
             
             return `
                 <button class="w-full py-4 rounded-lg text-white font-bold shadow-md transition-transform transform hover:scale-105 ${buttonClass}" 
                         ${isUnlocked ? `onclick="startTest(${testNumber})"` : 'disabled'}>
-                    Test ${testNumber}
+                    टेस्ट ${testNumber}
                     <span class="block text-xs font-normal mt-1">${statusText}</span>
                 </button>
             `;
         }).join('');
 
-        appContainer.innerHTML = `
-            <!-- Top Header -->
-            <header class="w-full bg-black text-white p-4 flex items-center justify-between shadow-lg fixed top-0 z-30">
-                <button onclick="navigateTo('main')" class="text-xl px-2 py-1 rounded-full hover:bg-gray-800 transition-colors duration-200"><i class="fas fa-arrow-left"></i></button>
-                <h1 class="text-2xl font-extrabold neon-glow">${appState.activeSubject} Tests</h1>
-                <div class="w-8"></div>
-            </header>
-            <div class="container mx-auto p-4 mt-20">
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                    ${testButtons}
-                </div>
+        contentDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">${appState.activeSubject} टेस्ट</h2>
+                <div></div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                ${testButtons}
             </div>
         `;
     }
 
-    // --- Quiz Logic ---
+    // --- क्विज तर्क ---
     async function startTest(testNumber) {
         appState.activeTestNumber = testNumber;
         appState.currentQuestionIndex = 0;
         appState.userAnswers = {};
 
-        // Check for existing progress
-        const testProgressKey = `${appState.activeSubject}-${testNumber}`;
-        const storedProgress = JSON.parse(localStorage.getItem(testProgressKey));
+        // मौजूदा प्रगति के लिए जांच करें
+        const storedProgress = await fetchQuizProgress();
 
         if (storedProgress && Object.keys(storedProgress.userAnswers).length > 0) {
             showModal(
-                'Resume Test',
-                'Would you like to continue the test from where you left off or restart?',
+                'टेस्ट फिर से शुरू करें',
+                'क्या आप टेस्ट वहीं से जारी रखना चाहेंगे जहाँ आपने छोड़ा था या शुरू से शुरू करना चाहेंगे?',
                 [
-                    { text: 'Continue', id: 'continue', class: 'bg-blue-500 text-white', action: () => {
+                    { text: 'जारी रखें', id: 'continue', class: 'bg-blue-500 text-white', action: () => {
                         appState.userAnswers = storedProgress.userAnswers;
                         appState.currentQuestionIndex = storedProgress.currentQuestionIndex;
                         fetchQuestions();
                     }},
-                    { text: 'Restart', id: 'restart', class: 'bg-red-500 text-white', action: () => {
-                        localStorage.removeItem(testProgressKey);
+                    { text: 'पुनः शुरू करें', id: 'restart', class: 'bg-red-500 text-white', action: () => {
                         fetchQuestions();
                     }}
                 ]
@@ -686,8 +900,10 @@
     }
 
     async function fetchQuestions() {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
         const loadingHtml = `<div class="flex items-center justify-center min-h-screen"><i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i></div>`;
-        document.getElementById('app').innerHTML = loadingHtml;
+        contentDiv.innerHTML = loadingHtml;
 
         const subject = appState.activeSubject;
         const testNumber = appState.activeTestNumber;
@@ -697,19 +913,20 @@
             const snapshot = await dbRef.once('value');
             const questionsObject = snapshot.val();
             if (questionsObject) {
-                appState.questions = Object.values(questionsObject).slice(0, 20); // Get first 20 questions
+                appState.questions = Object.values(questionsObject).slice(0, 20); // पहले 20 प्रश्न प्राप्त करें
                 navigateTo('quiz');
             } else {
-                showModal('Error', 'No questions found for this test. Please try another one.', [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white', action: () => navigateTo('subject') }]);
+                showModal('त्रुटि', 'इस टेस्ट के लिए कोई प्रश्न नहीं मिला। कृपया दूसरा प्रयास करें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white', action: () => navigateTo('subject') }]);
             }
         } catch (error) {
-            console.error("Error fetching questions:", error);
-            showModal('Error', 'Failed to load quiz. Please check your network and try again.', [{ text: 'OK', id: 'ok', class: 'bg-red-500 text-white', action: () => navigateTo('subject') }]);
+            console.error("प्रश्नों को लाने में त्रुटि:", error);
+            showModal('त्रुटि', 'क्विज लोड करने में विफल। कृपया अपना नेटवर्क जांचें और पुनः प्रयास करें।', [{ text: 'ठीक है', id: 'ok', class: 'bg-red-500 text-white', action: () => navigateTo('subject') }]);
         }
     }
 
-    function renderQuizPage() {
-        const appContainer = document.getElementById('app');
+    function renderQuizPageContent() {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
         const question = appState.questions[appState.currentQuestionIndex];
         if (!question) {
             return navigateTo('results');
@@ -722,15 +939,12 @@
         
         const currentAnswer = appState.userAnswers[appState.currentQuestionIndex];
 
-        appContainer.innerHTML = `
-            <!-- Top Header -->
-            <header class="w-full bg-black text-white p-4 flex items-center justify-between shadow-lg fixed top-0 z-30">
-                <button onclick="handleBackDuringQuiz()" class="text-xl px-2 py-1 rounded-full hover:bg-gray-800 transition-colors duration-200"><i class="fas fa-arrow-left"></i></button>
-                <h1 class="text-2xl font-extrabold neon-glow">Quiz</h1>
-                <div class="text-lg">Q. ${appState.currentQuestionIndex + 1}/${appState.questions.length}</div>
-            </header>
-
-            <div class="container mx-auto p-4 mt-20 max-w-2xl w-full">
+        contentDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">क्विज</h2>
+                <div class="text-lg">प्र. ${appState.currentQuestionIndex + 1}/${appState.questions.length}</div>
+            </div>
+            <div class="container mx-auto p-4 max-w-2xl w-full">
                 <div class="bg-white p-6 rounded-lg shadow-lg mb-4">
                     <p class="text-lg font-semibold text-gray-800">${question.question}</p>
                 </div>
@@ -749,101 +963,87 @@
 
     function handleBackDuringQuiz() {
         showModal(
-            'Exit Quiz?',
-            'Your progress will be saved. Do you want to exit the test?',
+            'क्विज से बाहर निकलें?',
+            'आपकी प्रगति सेव की जाएगी। क्या आप टेस्ट से बाहर निकलना चाहते हैं?',
             [
-                { text: 'Yes', id: 'yes', class: 'bg-red-500 text-white', action: () => {
+                { text: 'हाँ', id: 'yes', class: 'bg-red-500 text-white', action: () => {
                     saveQuizProgress();
                     navigateTo('subject');
                 }},
-                { text: 'No', id: 'no', class: 'bg-blue-500 text-white', action: () => {} }
+                { text: 'नहीं', id: 'no', class: 'bg-blue-500 text-white', action: () => {} }
             ]
         );
     }
 
-    function saveQuizProgress() {
-        const testProgressKey = `${appState.activeSubject}-${appState.activeTestNumber}`;
-        const progress = {
-            userAnswers: appState.userAnswers,
-            currentQuestionIndex: appState.currentQuestionIndex
-        };
-        localStorage.setItem(testProgressKey, JSON.stringify(progress));
-    }
-
-    function handleAnswer(answer) {
+    async function handleAnswer(answer) {
         appState.userAnswers[appState.currentQuestionIndex] = answer;
-        saveQuizProgress(); // Save progress after each answer
+        await saveQuizProgress(); // प्रत्येक उत्तर के बाद प्रगति सेव करें
         setTimeout(() => {
             appState.currentQuestionIndex++;
-            renderQuizPage();
-        }, 500); // Small delay for visual feedback
+            renderQuizPageContent();
+        }, 500); // दृश्य प्रतिक्रिया के लिए थोड़ी देरी
     }
 
-    // --- Results Page ---
-    function renderResultsPage() {
+    // --- परिणाम पृष्ठ ---
+    function renderResultsPageContent() {
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
         let correctCount = 0;
         let incorrectCount = 0;
-        let answeredCount = 0;
         appState.questions.forEach((q, index) => {
             const userAnswer = appState.userAnswers[index];
-            if (userAnswer) {
-                answeredCount++;
-                if (userAnswer === q.answer) {
-                    correctCount++;
-                } else {
-                    incorrectCount++;
-                }
+            if (userAnswer && userAnswer === q.answer) {
+                correctCount++;
+            } else if (userAnswer) {
+                incorrectCount++;
             }
         });
 
-        const appContainer = document.getElementById('app');
-        appContainer.innerHTML = `
-            <!-- Top Header -->
-            <header class="w-full bg-black text-white p-4 flex items-center justify-between shadow-lg fixed top-0 z-30">
-                <button onclick="navigateTo('subject')" class="text-xl px-2 py-1 rounded-full hover:bg-gray-800 transition-colors duration-200"><i class="fas fa-arrow-left"></i></button>
-                <h1 class="text-2xl font-extrabold neon-glow">Test Results</h1>
-                <div class="w-8"></div>
-            </header>
-
-            <div class="container mx-auto p-4 mt-20 max-w-2xl w-full">               <div class="bg-white p-6 rounded-lg shadow-lg text-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Quiz Complete!</h2>
-                    <p class="text-xl font-semibold text-gray-700">Your Score:</p>
+        contentDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">टेस्ट परिणाम</h2>
+                <div></div>
+            </div>
+            <div class="container mx-auto p-4 max-w-2xl w-full">
+               <div class="bg-white p-6 rounded-lg shadow-lg text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">क्विज पूरा हुआ!</h2>
+                    <p class="text-xl font-semibold text-gray-700">आपका स्कोर:</p>
                     <p class="text-5xl font-extrabold text-blue-600 my-4">${correctCount}/${appState.questions.length}</p>
                     <div class="flex justify-around text-center">
                         <div>
                             <p class="text-green-600 font-bold text-xl">${correctCount}</p>
-                            <p class="text-gray-600">Correct</p>
+                            <p class="text-gray-600">सही</p>
                         </div>
                         <div>
                             <p class="text-red-600 font-bold text-xl">${incorrectCount}</p>
-                            <p class="text-gray-600">Incorrect</p>
+                            <p class="text-gray-600">गलत</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex flex-col space-y-4">
-                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200 shadow-lg" onclick="viewAllQuestions()">View All Questions</button>
-                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200 shadow-lg" onclick="reAttemptTest()">Re-Attempt Test</button>
+                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200 shadow-lg" onclick="viewAllQuestions()">सभी प्रश्न देखें</button>
+                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors duration-200 shadow-lg" onclick="reAttemptTest()">पुनः प्रयास करें</button>
                 </div>
             </div>
         `;
         
-        localStorage.removeItem(`${appState.activeSubject}-${appState.activeTestNumber}`);
         updateUserProgress(appState.activeSubject, appState.activeTestNumber);
     }
     
-    // Results page actions
+    // परिणाम पृष्ठ क्रियाएँ
     function viewAllQuestions() {
-        const appContainer = document.getElementById('app');
+        const contentDiv = document.getElementById('main-content');
+        if (!contentDiv) return;
         const questionsHtml = appState.questions.map((q, index) => {
             const userAnswer = appState.userAnswers[index];
             const isCorrect = userAnswer === q.answer;
-            const userStatus = isCorrect ? 'Correct' : 'Incorrect';
+            const userStatus = isCorrect ? 'सही' : 'गलत';
             const statusClass = isCorrect ? 'text-green-600' : 'text-red-600';
 
             return `
                 <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-                    <p class="font-semibold text-gray-800">Q. ${index + 1}: ${q.question}</p>
+                    <p class="font-semibold text-gray-800">प्र. ${index + 1}: ${q.question}</p>
                     <ul class="list-disc list-inside mt-2 text-gray-700">
                         <li>A. ${q.optionA}</li>
                         <li>B. ${q.optionB}</li>
@@ -851,21 +1051,19 @@
                         <li>D. ${q.optionD}</li>
                     </ul>
                     <p class="mt-2 text-sm">
-                        <span class="font-bold">Your Answer:</span> <span class="${userStatus === 'Correct' ? 'text-green-600' : 'text-red-600'}">${userAnswer} (${userStatus})</span>
+                        <span class="font-bold">आपका उत्तर:</span> <span class="${statusClass}">${userAnswer || 'कोई उत्तर नहीं'} (${userStatus})</span>
                     </p>
-                    <p class="mt-1 text-sm font-bold text-blue-600">Correct Answer: ${q.answer}</p>
+                    <p class="mt-1 text-sm font-bold text-blue-600">सही उत्तर: ${q.answer}</p>
                 </div>
             `;
         }).join('');
 
-        appContainer.innerHTML = `
-            <!-- Top Header -->
-            <header class="w-full bg-black text-white p-4 flex items-center justify-between shadow-lg fixed top-0 z-30">
-                <button onclick="navigateTo('results')" class="text-xl px-2 py-1 rounded-full hover:bg-gray-800 transition-colors duration-200"><i class="fas fa-arrow-left"></i></button>
-                <h1 class="text-2xl font-extrabold neon-glow">All Questions</h1>
-                <div class="w-8"></div>
-            </header>
-            <div class="container mx-auto p-4 mt-20">
+        contentDiv.innerHTML = `
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">सभी प्रश्न</h2>
+                <div></div>
+            </div>
+            <div class="container mx-auto p-4">
                 ${questionsHtml}
             </div>
         `;
@@ -875,26 +1073,27 @@
         navigateTo('quiz', { currentQuestionIndex: 0, userAnswers: {} });
     }
 
-    // --- Back Button and Share Logic ---
+    // --- बैक बटन और शेयर तर्क ---
     window.onpopstate = () => {
-        // Implement history-based navigation if needed
+        // इतिहास-आधारित नेविगेशन को आवश्यकतानुसार लागू करें
     };
 
     function shareApp() {
+        // Share API not available in all contexts, provide a fallback.
         if (navigator.share) {
             navigator.share({
                 title: 'GD ExamCracker',
-                text: 'Prepare for GD exams with GD ExamCracker!',
+                text: 'GD एग्जाम की तैयारी करें GD ExamCracker के साथ!',
                 url: window.location.href,
             }).then(() => {
-                console.log('Thanks for sharing!');
+                console.log('शेयर करने के लिए धन्यवाद!');
             }).catch(console.error);
         } else {
-            showModal('Share App', 'Please copy this link to share: ' + window.location.href, [{ text: 'OK', id: 'ok', class: 'bg-blue-500 text-white' }]);
+            showModal('ऐप शेयर करें', 'शेयर करने के लिए कृपया इस लिंक को कॉपी करें: ' + window.location.href, [{ text: 'ठीक है', id: 'ok', class: 'bg-blue-500 text-white' }]);
         }
     }
 
-    // Initial render
+    // प्रारंभिक रेंडर
     window.onload = () => {
         renderApp();
     };
